@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react'
+import { Link } from 'react-router-dom'
 import { motion, useInView } from 'framer-motion'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
@@ -12,7 +13,8 @@ import {
   Zap,
   Shield,
   CheckCircle,
-  BarChart3
+  BarChart3,
+  Globe
 } from 'lucide-react'
 
 const AppSection = () => {
@@ -20,36 +22,8 @@ const AppSection = () => {
   const isInView = useInView(sectionRef, { once: true, margin: "-100px" })
 
   useEffect(() => {
-    gsap.registerPlugin(ScrollTrigger)
-
-    // Animate phone mockup
-    gsap.from('.phone-mockup', {
-      y: 100,
-      opacity: 0,
-      duration: 1,
-      ease: 'power3.out',
-      scrollTrigger: {
-        trigger: sectionRef.current,
-        start: 'top 80%',
-        end: 'bottom 20%',
-        toggleActions: 'play none none reverse'
-      }
-    })
-
-    // Animate app features
-    gsap.from('.app-feature', {
-      x: -50,
-      opacity: 0,
-      duration: 0.8,
-      stagger: 0.2,
-      ease: 'power3.out',
-      scrollTrigger: {
-        trigger: sectionRef.current,
-        start: 'top 80%',
-        end: 'bottom 20%',
-        toggleActions: 'play none none reverse'
-      }
-    })
+    // Disabled GSAP animations to prevent conflicts
+    // Using Framer Motion animations instead for stability
   }, [])
 
   const appFeatures = [
@@ -325,6 +299,21 @@ const AppSection = () => {
                   <div className="text-sm font-semibold">Google Play</div>
                 </div>
               </motion.button>
+
+              <Link to="/app/register">
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="flex items-center space-x-3 bg-gradient-to-r from-primary-500 to-accent-500 text-white px-6 py-3 rounded-lg hover:from-primary-600 hover:to-accent-600 transition-colors"
+                >
+                  <Globe className="w-6 h-6" />
+                  <div className="text-left">
+                    <div className="text-xs">Try it now</div>
+                    <div className="text-sm font-semibold">Web App</div>
+                  </div>
+                  <ArrowRight className="w-4 h-4" />
+                </motion.button>
+              </Link>
             </div>
 
             {/* QR Code */}

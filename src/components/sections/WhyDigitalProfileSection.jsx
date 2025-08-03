@@ -18,37 +18,8 @@ const WhyDigitalProfileSection = () => {
   const isInView = useInView(sectionRef, { once: true, margin: "-100px" })
 
   useEffect(() => {
-    gsap.registerPlugin(ScrollTrigger)
-
-    // Animate benefits on scroll
-    gsap.from('.benefit-card', {
-      y: 100,
-      opacity: 0,
-      duration: 0.8,
-      stagger: 0.2,
-      ease: 'power3.out',
-      scrollTrigger: {
-        trigger: sectionRef.current,
-        start: 'top 80%',
-        end: 'bottom 20%',
-        toggleActions: 'play none none reverse'
-      }
-    })
-
-    // Animate icons
-    gsap.from('.benefit-icon', {
-      scale: 0,
-      rotation: 180,
-      duration: 0.6,
-      stagger: 0.1,
-      ease: 'back.out(1.7)',
-      scrollTrigger: {
-        trigger: sectionRef.current,
-        start: 'top 80%',
-        end: 'bottom 20%',
-        toggleActions: 'play none none reverse'
-      }
-    })
+    // Disabled GSAP animations to prevent conflicts with homepage
+    // Using Framer Motion animations instead for stability
   }, [])
 
   const benefits = [

@@ -20,45 +20,8 @@ const ProductsSection = () => {
   const isInView = useInView(sectionRef, { once: true, margin: "-100px" })
 
   useEffect(() => {
-    gsap.registerPlugin(ScrollTrigger)
-
-    // Animate product cards on scroll
-    gsap.from('.product-card', {
-      y: 100,
-      opacity: 0,
-      duration: 0.8,
-      stagger: 0.2,
-      ease: 'power3.out',
-      scrollTrigger: {
-        trigger: sectionRef.current,
-        start: 'top 80%',
-        end: 'bottom 20%',
-        toggleActions: 'play none none reverse'
-      }
-    })
-
-    // Hover animations for product cards
-    gsap.utils.toArray('.product-card').forEach(card => {
-      const cardInner = card.querySelector('.card-inner')
-      
-      card.addEventListener('mouseenter', () => {
-        gsap.to(cardInner, {
-          y: -10,
-          scale: 1.02,
-          duration: 0.3,
-          ease: 'power2.out'
-        })
-      })
-      
-      card.addEventListener('mouseleave', () => {
-        gsap.to(cardInner, {
-          y: 0,
-          scale: 1,
-          duration: 0.3,
-          ease: 'power2.out'
-        })
-      })
-    })
+    // Disabled GSAP animations to prevent homepage conflicts
+    // Using CSS hover effects and Framer Motion instead
   }, [])
 
   const products = [

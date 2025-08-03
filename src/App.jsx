@@ -23,19 +23,19 @@ import DashboardPage from './pages/DashboardPage'
 import ProfilePage from './pages/ProfilePage'
 import NotFoundPage from './pages/NotFoundPage'
 
-// Register GSAP plugins
+// App Section Pages
+import AppRegisterPage from './pages/app/RegisterPage'
+import AppLoginPage from './pages/app/LoginPage'
+import AppDashboardPage from './pages/app/DashboardPage'
+// Admin imports
+import AdminLoginPage from './pages/admin/AdminLoginPage'
+import AdminDashboardPage from './pages/admin/AdminDashboardPage'
+
+// Register GSAP plugins globally
 gsap.registerPlugin(ScrollTrigger)
 
 function App() {
-  useEffect(() => {
-    // Initialize GSAP ScrollTrigger
-    ScrollTrigger.refresh()
-    
-    // Cleanup on unmount
-    return () => {
-      ScrollTrigger.getAll().forEach(trigger => trigger.kill())
-    }
-  }, [])
+  // Removed global ScrollTrigger setup to prevent conflicts with individual sections
 
   return (
     <ThemeProvider>
@@ -49,23 +49,98 @@ function App() {
               <link rel="canonical" href="https://taponn.com" />
             </Helmet>
             
-            <Navbar />
-            
-            <main className="flex-1">
-              <Routes>
-                <Route path="/" element={<HomePage />} />
-                <Route path="/products" element={<ProductsPage />} />
-                <Route path="/product/:slug" element={<ProductDetailPage />} />
-                <Route path="/about" element={<AboutPage />} />
-                <Route path="/contact" element={<ContactPage />} />
-                <Route path="/dashboard/*" element={<DashboardPage />} />
-                <Route path="/profile/:username" element={<ProfilePage />} />
-                <Route path="*" element={<NotFoundPage />} />
-              </Routes>
-            </main>
-            
-            <Footer />
-            <ScrollToTop />
+            <Routes>
+                      {/* App Section Routes */}
+        <Route path="/app/register" element={<AppRegisterPage />} />
+        <Route path="/app/login" element={<AppLoginPage />} />
+        <Route path="/app/*" element={<AppDashboardPage />} />
+
+        {/* Admin Routes */}
+        <Route path="/admin/login" element={<AdminLoginPage />} />
+        <Route path="/admin/*" element={<AdminDashboardPage />} />
+              
+              {/* Main Website Routes with Layout */}
+              <Route path="/" element={
+                <>
+                  <Navbar />
+                  <main className="flex-1">
+                    <HomePage />
+                  </main>
+                  <Footer />
+                  <ScrollToTop />
+                </>
+              } />
+              <Route path="/products" element={
+                <>
+                  <Navbar />
+                  <main className="flex-1">
+                    <ProductsPage />
+                  </main>
+                  <Footer />
+                  <ScrollToTop />
+                </>
+              } />
+              <Route path="/product/:slug" element={
+                <>
+                  <Navbar />
+                  <main className="flex-1">
+                    <ProductDetailPage />
+                  </main>
+                  <Footer />
+                  <ScrollToTop />
+                </>
+              } />
+              <Route path="/about" element={
+                <>
+                  <Navbar />
+                  <main className="flex-1">
+                    <AboutPage />
+                  </main>
+                  <Footer />
+                  <ScrollToTop />
+                </>
+              } />
+              <Route path="/contact" element={
+                <>
+                  <Navbar />
+                  <main className="flex-1">
+                    <ContactPage />
+                  </main>
+                  <Footer />
+                  <ScrollToTop />
+                </>
+              } />
+              <Route path="/dashboard/*" element={
+                <>
+                  <Navbar />
+                  <main className="flex-1">
+                    <DashboardPage />
+                  </main>
+                  <Footer />
+                  <ScrollToTop />
+                </>
+              } />
+              <Route path="/profile/:username" element={
+                <>
+                  <Navbar />
+                  <main className="flex-1">
+                    <ProfilePage />
+                  </main>
+                  <Footer />
+                  <ScrollToTop />
+                </>
+              } />
+              <Route path="*" element={
+                <>
+                  <Navbar />
+                  <main className="flex-1">
+                    <NotFoundPage />
+                  </main>
+                  <Footer />
+                  <ScrollToTop />
+                </>
+              } />
+            </Routes>
           </div>
         </AnalyticsProvider>
       </AuthProvider>

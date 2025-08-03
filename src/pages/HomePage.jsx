@@ -23,36 +23,46 @@ const HomePage = () => {
   const typedRef = useRef(null)
 
   useEffect(() => {
-    // Initialize GSAP ScrollTrigger
-    gsap.registerPlugin(ScrollTrigger)
-
     // Track page view
     trackEvent('page_view', 'navigation', 'homepage')
 
-    // Initialize Typed.js
-    if (typedRef.current) {
-      const typed = new Typed(typedRef.current, {
-        strings: [
-          'Share Instantly.',
-          'Connect Effortlessly.',
-          'Grow Your Network.',
-          'Manage Leads Smartly.'
-        ],
-        typeSpeed: 50,
-        backSpeed: 30,
-        backDelay: 2000,
-        loop: true,
-        showCursor: true,
-        cursorChar: '|',
-      })
-
-      return () => {
-        typed.destroy()
+    // Initialize Typed.js with proper timing
+    let typed = null
+    
+    const initTyped = () => {
+      if (typedRef.current && !typed) {
+        typed = new Typed(typedRef.current, {
+          strings: [
+            'Share Instantly.',
+            'Connect Effortlessly.',
+            'Grow Your Network.',
+            'Manage Leads Smartly.'
+          ],
+          typeSpeed: 60,
+          backSpeed: 40,
+          backDelay: 2000,
+          loop: true,
+          showCursor: true,
+          cursorChar: '|',
+          startDelay: 1500,
+        })
       }
     }
 
-    // Cleanup GSAP on unmount
+    // Start typed animation after ensuring the component is mounted
+    const typedTimeout = setTimeout(initTyped, 1000)
+
+    // Force kill all ScrollTrigger instances to prevent conflicts
+    ScrollTrigger.getAll().forEach(trigger => trigger.kill())
+
+    // Single cleanup function
     return () => {
+      clearTimeout(typedTimeout)
+      if (typed) {
+        typed.destroy()
+        typed = null
+      }
+      // Kill any remaining ScrollTrigger instances
       ScrollTrigger.getAll().forEach(trigger => trigger.kill())
     }
   }, [trackEvent])
@@ -79,7 +89,7 @@ const HomePage = () => {
         <meta name="twitter:image" content="/og-image.jpg" />
       </Helmet>
 
-      <div className="min-h-screen">
+      <div className="min-h-screen text-stable">
         {/* Hero Section */}
         <HeroSection typedRef={typedRef} />
 

@@ -23,22 +23,8 @@ const FeaturesSection = () => {
   const [activeTab, setActiveTab] = useState(0)
 
   useEffect(() => {
-    gsap.registerPlugin(ScrollTrigger)
-
-    // Animate feature cards
-    gsap.from('.feature-card', {
-      y: 100,
-      opacity: 0,
-      duration: 0.8,
-      stagger: 0.2,
-      ease: 'power3.out',
-      scrollTrigger: {
-        trigger: sectionRef.current,
-        start: 'top 80%',
-        end: 'bottom 20%',
-        toggleActions: 'play none none reverse'
-      }
-    })
+    // Disabled GSAP animations to prevent homepage conflicts
+    // Using Framer Motion animations instead for stability
   }, [])
 
   const features = [

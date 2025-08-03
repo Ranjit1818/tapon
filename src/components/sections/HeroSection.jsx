@@ -19,56 +19,8 @@ const HeroSection = ({ typedRef }) => {
   const floatingBadgesRef = useRef(null)
 
   useEffect(() => {
-    // GSAP animations for hero section
-    const tl = gsap.timeline()
-
-    tl.from('.hero-title', {
-      y: 100,
-      opacity: 0,
-      duration: 1,
-      ease: 'power3.out'
-    })
-    .from('.hero-subtitle', {
-      y: 50,
-      opacity: 0,
-      duration: 0.8,
-      ease: 'power3.out'
-    }, '-=0.5')
-    .from('.hero-buttons', {
-      y: 30,
-      opacity: 0,
-      duration: 0.6,
-      ease: 'power3.out'
-    }, '-=0.3')
-    .from('.floating-badge', {
-      y: 50,
-      opacity: 0,
-      duration: 0.5,
-      stagger: 0.1,
-      ease: 'power3.out'
-    }, '-=0.2')
-
-    // Floating animation for badges
-    gsap.to('.floating-badge', {
-      y: -20,
-      duration: 2,
-      ease: 'power2.inOut',
-      stagger: 0.2,
-      repeat: -1,
-      yoyo: true
-    })
-
-    // Parallax effect for background
-    gsap.to('.hero-bg', {
-      yPercent: -20,
-      ease: 'none',
-      scrollTrigger: {
-        trigger: heroRef.current,
-        start: 'top bottom',
-        end: 'bottom top',
-        scrub: true
-      }
-    })
+    // No GSAP animations to prevent conflicts with Framer Motion
+    // All animations are now handled by Framer Motion for stability
   }, [])
 
   const handleDemoBooking = () => {
@@ -85,9 +37,10 @@ const HeroSection = ({ typedRef }) => {
     <section 
       ref={heroRef}
       className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-primary-50 via-white to-accent-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900"
+      style={{ position: 'relative', zIndex: 1 }}
     >
       {/* Background Elements */}
-      <div className="absolute inset-0 hero-bg">
+      <div className="absolute inset-0">
         {/* Animated Background Pattern */}
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-20 left-20 w-72 h-72 bg-primary-300 rounded-full mix-blend-multiply filter blur-xl animate-float"></div>
@@ -107,37 +60,41 @@ const HeroSection = ({ typedRef }) => {
       {/* Floating Badges */}
       <div ref={floatingBadgesRef} className="absolute inset-0 pointer-events-none">
         <motion.div
-          className="floating-badge absolute top-20 left-10 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300"
+          className="absolute top-20 left-10 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 animate-float"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
+          transition={{ delay: 0.5, duration: 0.8 }}
+          style={{ animationDelay: '0s' }}
         >
           🌱 Eco-friendly
         </motion.div>
         
         <motion.div
-          className="floating-badge absolute top-32 right-20 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300"
+          className="absolute top-32 right-20 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 animate-float"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.7 }}
+          transition={{ delay: 0.7, duration: 0.8 }}
+          style={{ animationDelay: '1s' }}
         >
           ⚡ Instant Sharing
         </motion.div>
         
         <motion.div
-          className="floating-badge absolute bottom-32 left-20 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300"
+          className="absolute bottom-32 left-20 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 animate-float"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.9 }}
+          transition={{ delay: 0.9, duration: 0.8 }}
+          style={{ animationDelay: '2s' }}
         >
           🌍 Global Network
         </motion.div>
         
         <motion.div
-          className="floating-badge absolute bottom-20 right-10 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300"
+          className="absolute bottom-20 right-10 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 animate-float"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.1 }}
+          transition={{ delay: 1.1, duration: 0.8 }}
+          style={{ animationDelay: '3s' }}
         >
           🎯 Lead Management
         </motion.div>
@@ -148,59 +105,53 @@ const HeroSection = ({ typedRef }) => {
         <div className="max-w-4xl mx-auto">
           {/* Main Title */}
           <motion.h1 
-            className="hero-title text-5xl md:text-7xl lg:text-8xl font-bold text-gray-900 dark:text-white mb-6"
-            initial={{ opacity: 0, y: 50 }}
+            className="text-5xl md:text-7xl lg:text-8xl font-bold text-gray-900 dark:text-white mb-6 relative z-10 text-stable"
+            initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
           >
-            <span className="gradient-text">TapOnn</span>
+            <span className="gradient-text text-stable">TapOnn</span>
           </motion.h1>
 
           {/* Typed Subtitle */}
           <motion.div 
-            className="hero-subtitle text-2xl md:text-3xl lg:text-4xl font-medium text-gray-700 dark:text-gray-300 mb-8"
-            initial={{ opacity: 0, y: 30 }}
+            className="text-2xl md:text-3xl lg:text-4xl font-medium text-gray-700 dark:text-gray-300 mb-8 relative z-10 min-h-[3rem] text-stable"
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
+            transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
           >
-            <span ref={typedRef} className="typed-text"></span>
+            <span ref={typedRef} className="typed-text text-stable"></span>
           </motion.div>
 
-          {/* Description */}
-          <motion.p 
-            className="hero-subtitle text-lg md:text-xl text-gray-600 dark:text-gray-400 mb-12 max-w-3xl mx-auto"
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-          >
-            Transform your networking experience with our revolutionary NFC-based digital profile platform. 
-            Share your information instantly, connect effortlessly, and manage leads smartly.
-          </motion.p>
+
 
           {/* CTA Buttons */}
           <motion.div 
-            className="hero-buttons flex flex-col sm:flex-row gap-4 justify-center items-center mb-16"
-            initial={{ opacity: 0, y: 30 }}
+            className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16 mt-12 relative z-10 text-stable"
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.6 }}
+            transition={{ duration: 0.8, delay: 0.5, ease: "easeOut" }}
           >
+            <Link to="/app/register">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="btn-primary flex items-center space-x-2 text-lg px-8 py-4"
+              >
+                <Sparkles size={20} />
+                <span>Get Started</span>
+                <ArrowRight size={20} />
+              </motion.button>
+            </Link>
+
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={handleDemoBooking}
-              className="btn-primary flex items-center space-x-2 text-lg px-8 py-4"
+              className="btn-secondary flex items-center space-x-2 text-lg px-8 py-4"
             >
               <Play size={20} />
               <span>Book Demo</span>
-            </motion.button>
-
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="btn-secondary flex items-center space-x-2 text-lg px-8 py-4"
-            >
-              <span>Explore More</span>
-              <ArrowRight size={20} />
             </motion.button>
           </motion.div>
 
