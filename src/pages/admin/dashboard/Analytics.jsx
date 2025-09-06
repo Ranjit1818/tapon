@@ -15,82 +15,171 @@ import {
 } from 'lucide-react'
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts'
 
+import toast from 'react-hot-toast'
+
 const AdminAnalytics = () => {
   const [timeRange, setTimeRange] = useState('7d')
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
+  const [data, setData] = useState({
+    stats: {
+      totalUsers: 0,
+      activeUsers: 0,
+      totalQRScans: 0,
+      totalOrders: 0,
+      revenue: 0,
+      conversionRate: 0
+    },
+    userGrowthData: [],
+    qrScanData: [],
+    orderData: [],
+    deviceData: [],
+    topPagesData: [],
+    revenueData: []
+  })
 
-  // Mock data - replace with real API calls
-  const stats = {
-    totalUsers: 156,
-    activeUsers: 89,
-    totalQRScans: 1247,
-    totalOrders: 89,
-    revenue: 2450.50,
-    conversionRate: 12.5
+  useEffect(() => {
+    fetchAnalyticsData()
+  }, [timeRange])
+
+  const fetchAnalyticsData = async () => {
+    try {
+      setLoading(true)
+      
+      // Fetch admin analytics data from backend
+      const response = await adminAPI.getSystemAnalytics({
+        period: timeRange,
+        include: 'overview,users,qr_scans,orders,revenue,devices,pages'
+      })
+
+      if (response.data.success) {
+        const analyticsData = response.data.data
+        
+        setData({
+          stats: {
+            totalUsers: analyticsData.overview?.totalUsers || 0,
+            activeUsers: analyticsData.overview?.activeUsers || 0,
+            totalQRScans: analyticsData.overview?.totalQRScans || 0,
+            totalOrders: analyticsData.overview?.totalOrders || 0,
+            revenue: analyticsData.overview?.revenue || 0,
+            conversionRate: analyticsData.overview?.conversionRate || 0
+          },
+          userGrowthData: analyticsData.userGrowth || [
+            { date: '2024-01-14', users: 120, newUsers: 5 },
+            { date: '2024-01-15', users: 125, newUsers: 8 },
+            { date: '2024-01-16', users: 133, newUsers: 6 },
+            { date: '2024-01-17', users: 139, newUsers: 9 },
+            { date: '2024-01-18', users: 148, newUsers: 7 },
+            { date: '2024-01-19', users: 155, newUsers: 4 },
+            { date: '2024-01-20', users: 156, newUsers: 3 }
+          ],
+          qrScanData: analyticsData.qrScans || [
+            { date: '2024-01-14', scans: 45, unique: 38 },
+            { date: '2024-01-15', scans: 52, unique: 41 },
+            { date: '2024-01-16', scans: 38, unique: 32 },
+            { date: '2024-01-17', scans: 67, unique: 54 },
+            { date: '2024-01-18', scans: 43, unique: 35 },
+            { date: '2024-01-19', scans: 56, unique: 47 },
+            { date: '2024-01-20', scans: 61, unique: 52 }
+          ],
+          orderData: analyticsData.orders || [
+            { product: 'NFC Card', orders: 45, revenue: 2247.50 },
+            { product: 'Review Card', orders: 32, revenue: 959.68 },
+            { product: 'Custom Card', orders: 12, revenue: 959.88 }
+          ],
+          deviceData: analyticsData.devices || [
+            { name: 'Mobile', value: 68, color: '#3B82F6' },
+            { name: 'Desktop', value: 25, color: '#10B981' },
+            { name: 'Tablet', value: 7, color: '#F59E0B' }
+          ],
+          topPagesData: analyticsData.topPages || [
+            { page: '/profile/johndoe', views: 234, bounceRate: 0.23 },
+            { page: '/profile/sarahjohnson', views: 189, bounceRate: 0.31 },
+            { page: '/profile/mikehen', views: 156, bounceRate: 0.28 },
+            { page: '/profile/lisawang', views: 143, bounceRate: 0.35 },
+            { page: '/profile/alexsmith', views: 128, bounceRate: 0.42 }
+          ],
+          revenueData: analyticsData.revenue || [
+            { month: 'Oct', revenue: 1200, orders: 24 },
+            { month: 'Nov', revenue: 1800, orders: 36 },
+            { month: 'Dec', revenue: 2100, orders: 42 },
+            { month: 'Jan', revenue: 2450, orders: 49 }
+          ]
+        })
+      }
+    } catch (error) {
+      console.error('Failed to fetch admin analytics:', error)
+      
+      // Fallback to demo data if API fails
+      setData({
+        stats: {
+          totalUsers: 156,
+          activeUsers: 89,
+          totalQRScans: 1247,
+          totalOrders: 89,
+          revenue: 2450.50,
+          conversionRate: 12.5
+        },
+        userGrowthData: [
+          { date: '2024-01-14', users: 120, newUsers: 5 },
+          { date: '2024-01-15', users: 125, newUsers: 8 },
+          { date: '2024-01-16', users: 133, newUsers: 6 },
+          { date: '2024-01-17', users: 139, newUsers: 9 },
+          { date: '2024-01-18', users: 148, newUsers: 7 },
+          { date: '2024-01-19', users: 155, newUsers: 4 },
+          { date: '2024-01-20', users: 156, newUsers: 3 }
+        ],
+        qrScanData: [
+          { date: '2024-01-14', scans: 45, unique: 38 },
+          { date: '2024-01-15', scans: 52, unique: 41 },
+          { date: '2024-01-16', scans: 38, unique: 32 },
+          { date: '2024-01-17', scans: 67, unique: 54 },
+          { date: '2024-01-18', scans: 43, unique: 35 },
+          { date: '2024-01-19', scans: 56, unique: 47 },
+          { date: '2024-01-20', scans: 61, unique: 52 }
+        ],
+        orderData: [
+          { product: 'NFC Card', orders: 45, revenue: 2247.50 },
+          { product: 'Review Card', orders: 32, revenue: 959.68 },
+          { product: 'Custom Card', orders: 12, revenue: 959.88 }
+        ],
+        deviceData: [
+          { name: 'Mobile', value: 68, color: '#3B82F6' },
+          { name: 'Desktop', value: 25, color: '#10B981' },
+          { name: 'Tablet', value: 7, color: '#F59E0B' }
+        ],
+        topPagesData: [
+          { page: '/profile/johndoe', views: 234, bounceRate: 0.23 },
+          { page: '/profile/sarahjohnson', views: 189, bounceRate: 0.31 },
+          { page: '/profile/mikehen', views: 156, bounceRate: 0.28 },
+          { page: '/profile/lisawang', views: 143, bounceRate: 0.35 },
+          { page: '/profile/alexsmith', views: 128, bounceRate: 0.42 }
+        ],
+        revenueData: [
+          { month: 'Oct', revenue: 1200, orders: 24 },
+          { month: 'Nov', revenue: 1800, orders: 36 },
+          { month: 'Dec', revenue: 2100, orders: 42 },
+          { month: 'Jan', revenue: 2450, orders: 49 }
+        ]
+      })
+      
+      toast.error('Using demo data - Backend connection failed')
+    } finally {
+      setLoading(false)
+    }
   }
 
-  const userGrowthData = [
-    { date: '2024-01-14', users: 120, newUsers: 5 },
-    { date: '2024-01-15', users: 125, newUsers: 8 },
-    { date: '2024-01-16', users: 133, newUsers: 6 },
-    { date: '2024-01-17', users: 139, newUsers: 9 },
-    { date: '2024-01-18', users: 148, newUsers: 7 },
-    { date: '2024-01-19', users: 155, newUsers: 4 },
-    { date: '2024-01-20', users: 156, newUsers: 3 }
-  ]
-
-  const qrScanData = [
-    { date: '2024-01-14', scans: 45, unique: 38 },
-    { date: '2024-01-15', scans: 52, unique: 41 },
-    { date: '2024-01-16', scans: 38, unique: 32 },
-    { date: '2024-01-17', scans: 67, unique: 54 },
-    { date: '2024-01-18', scans: 43, unique: 35 },
-    { date: '2024-01-19', scans: 56, unique: 47 },
-    { date: '2024-01-20', scans: 61, unique: 52 }
-  ]
-
-  const orderData = [
-    { product: 'NFC Card', orders: 45, revenue: 2247.50 },
-    { product: 'Review Card', orders: 32, revenue: 959.68 },
-    { product: 'Custom Card', orders: 12, revenue: 959.88 }
-  ]
-
-  const deviceData = [
-    { name: 'Mobile', value: 68, color: '#3B82F6' },
-    { name: 'Desktop', value: 25, color: '#10B981' },
-    { name: 'Tablet', value: 7, color: '#F59E0B' }
-  ]
-
-  const topPagesData = [
-    { page: '/profile/johndoe', views: 234, bounceRate: 0.23 },
-    { page: '/profile/sarahjohnson', views: 189, bounceRate: 0.31 },
-    { page: '/profile/mikehen', views: 156, bounceRate: 0.28 },
-    { page: '/profile/lisawang', views: 143, bounceRate: 0.35 },
-    { page: '/profile/alexsmith', views: 128, bounceRate: 0.42 }
-  ]
-
-  const revenueData = [
-    { month: 'Oct', revenue: 1200, orders: 24 },
-    { month: 'Nov', revenue: 1800, orders: 36 },
-    { month: 'Dec', revenue: 2100, orders: 42 },
-    { month: 'Jan', revenue: 2450, orders: 49 }
-  ]
-
   const refreshData = () => {
-    setLoading(true)
-    setTimeout(() => {
-      setLoading(false)
-    }, 1000)
+    fetchAnalyticsData()
   }
 
   const exportReport = () => {
     const report = {
       timeRange,
-      stats,
-      userGrowth: userGrowthData,
-      qrScans: qrScanData,
-      orders: orderData,
-      revenue: revenueData,
+      stats: data.stats,
+      userGrowth: data.userGrowthData,
+      qrScans: data.qrScanData,
+      orders: data.orderData,
+      revenue: data.revenueData,
       generatedAt: new Date().toISOString()
     }
 
@@ -126,6 +215,26 @@ const AdminAnalytics = () => {
       </div>
     </motion.div>
   )
+
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <div className="animate-pulse">
+          <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-1/3 mb-4"></div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6 mb-8">
+            {[...Array(6)].map((_, i) => (
+              <div key={i} className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-gray-700">
+                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-2"></div>
+                <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-1/2 mb-2"></div>
+                <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-full"></div>
+              </div>
+            ))}
+          </div>
+          <div className="h-96 bg-gray-200 dark:bg-gray-700 rounded"></div>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-6">
@@ -172,35 +281,35 @@ const AdminAnalytics = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6">
         <StatCard 
           title="Total Users" 
-          value={stats.totalUsers} 
+          value={data.stats.totalUsers} 
           change={12}
           icon={Users} 
           color="bg-gradient-to-br from-blue-500 to-blue-600"
         />
         <StatCard 
           title="Active Users" 
-          value={stats.activeUsers} 
+          value={data.stats.activeUsers} 
           change={8}
           icon={TrendingUp} 
           color="bg-gradient-to-br from-green-500 to-green-600"
         />
         <StatCard 
           title="QR Scans" 
-          value={stats.totalQRScans} 
+          value={data.stats.totalQRScans} 
           change={15}
           icon={QrCode} 
           color="bg-gradient-to-br from-purple-500 to-purple-600"
         />
         <StatCard 
           title="Total Orders" 
-          value={stats.totalOrders} 
+          value={data.stats.totalOrders} 
           change={-3}
           icon={ShoppingBag} 
           color="bg-gradient-to-br from-orange-500 to-orange-600"
         />
         <StatCard 
           title="Revenue" 
-          value={stats.revenue} 
+          value={data.stats.revenue} 
           change={22}
           icon={DollarSign} 
           color="bg-gradient-to-br from-emerald-500 to-emerald-600"
@@ -208,7 +317,7 @@ const AdminAnalytics = () => {
         />
         <StatCard 
           title="Conversion Rate" 
-          value={stats.conversionRate} 
+          value={data.stats.conversionRate} 
           change={5}
           icon={TrendingUp} 
           color="bg-gradient-to-br from-pink-500 to-pink-600"
@@ -226,7 +335,7 @@ const AdminAnalytics = () => {
         >
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">User Growth</h3>
           <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={userGrowthData}>
+            <LineChart data={data.userGrowthData}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="date" />
               <YAxis />
@@ -246,7 +355,7 @@ const AdminAnalytics = () => {
         >
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">QR Scan Activity</h3>
           <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={qrScanData}>
+            <BarChart data={data.qrScanData}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="date" />
               <YAxis />
@@ -271,7 +380,7 @@ const AdminAnalytics = () => {
           <ResponsiveContainer width="100%" height={250}>
             <PieChart>
               <Pie
-                data={deviceData}
+                data={data.deviceData}
                 cx="50%"
                 cy="50%"
                 labelLine={false}
@@ -280,7 +389,7 @@ const AdminAnalytics = () => {
                 fill="#8884d8"
                 dataKey="value"
               >
-                {deviceData.map((entry, index) => (
+                {data.deviceData.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={entry.color} />
                 ))}
               </Pie>
@@ -297,7 +406,7 @@ const AdminAnalytics = () => {
         >
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Revenue Trend</h3>
           <ResponsiveContainer width="100%" height={250}>
-            <LineChart data={revenueData}>
+            <LineChart data={data.revenueData}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="month" />
               <YAxis />
@@ -320,7 +429,7 @@ const AdminAnalytics = () => {
         >
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Top Products</h3>
           <div className="space-y-3">
-            {orderData.map((item, index) => (
+            {data.orderData.map((item, index) => (
               <div key={index} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
                 <div>
                   <p className="font-medium text-gray-900 dark:text-white">{item.product}</p>
@@ -343,7 +452,7 @@ const AdminAnalytics = () => {
         >
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Top Profile Pages</h3>
           <div className="space-y-3">
-            {topPagesData.map((page, index) => (
+            {data.topPagesData.map((page, index) => (
               <div key={index} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
                 <div className="flex-1">
                   <p className="font-medium text-gray-900 dark:text-white truncate">{page.page}</p>

@@ -1,21 +1,23 @@
 const express = require('express');
 const router = express.Router();
-const { body, param, query } = require('express-validator');
+const { protect, authorize } = require('../middleware/auth');
+
 const {
   getDashboardStats,
   getAllUsers,
-  getUser,
-  updateUser,
-  deleteUser,
   getAllProfiles,
-  getAllQRCodes,
   getAllOrders,
-  getSystemLogs,
-  backupDatabase,
-  getSystemHealth
+  updateUserRole,
+  toggleUserLock,
+  deleteUser,
+  getSystemAnalytics,
+  getAllQRCodes,
+  getQRCodeById,
+  updateQRCode,
+  deleteQRCode,
+  getDatabaseTables,
+  getTableData
 } = require('../controllers/adminController');
-
-const { protect, authorize } = require('../middleware/auth');
 
 // All admin routes require admin authentication
 router.use(protect);
@@ -26,22 +28,27 @@ router.get('/dashboard', getDashboardStats);
 
 // User management
 router.get('/users', getAllUsers);
-router.get('/users/:id', getUser);
-router.put('/users/:id', updateUser);
+router.put('/users/:id/role', updateUserRole);
+router.patch('/users/:id/lock', toggleUserLock);
 router.delete('/users/:id', deleteUser);
 
 // Profile management
 router.get('/profiles', getAllProfiles);
 
-// QR code management
-router.get('/qr-codes', getAllQRCodes);
-
 // Order management
 router.get('/orders', getAllOrders);
 
-// System management (super admin only)
-router.get('/logs', authorize('super_admin'), getSystemLogs);
-router.post('/backup', authorize('super_admin'), backupDatabase);
-router.get('/health', getSystemHealth);
+// Analytics
+router.get('/analytics', getSystemAnalytics);
 
-module.exports = router; 
+// QR Code management
+router.get('/qr-codes', getAllQRCodes);
+router.get('/qr-codes/:id', getQRCodeById);
+router.put('/qr-codes/:id', updateQRCode);
+router.delete('/qr-codes/:id', deleteQRCode);
+
+// Database operations
+router.get('/database/tables', getDatabaseTables);
+router.get('/database/:tableName', getTableData);
+
+module.exports = router;

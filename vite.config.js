@@ -33,10 +33,19 @@ export default defineConfig({
   ],
   server: {
     port: 3000,
-    open: true
+    open: true,
+    proxy: {
+      '/api': {
+        target: 'http://localhost:5002',
+        changeOrigin: true,
+        secure: false,
+        // Don't rewrite the path, just pass it through
+        // This ensures /api/auth/login goes to http://localhost:5002/api/auth/login
+      }
+    }
   },
   build: {
     outDir: 'dist',
     sourcemap: true
   }
-}) 
+})

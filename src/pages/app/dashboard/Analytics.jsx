@@ -18,6 +18,7 @@ import {
   Globe
 } from 'lucide-react'
 import { useAuth } from '../../../contexts/AuthContext'
+import { analyticsAPI } from '../../../services/api'
 import AccessDenied from '../../../components/common/AccessDenied'
 import { 
   LineChart, 
@@ -36,6 +37,7 @@ import {
   Area
 } from 'recharts'
 import { useAnalytics } from '../../../contexts/AnalyticsContext'
+import toast from 'react-hot-toast'
 
 const Analytics = () => {
   const { user, isTapOnnUser, hasPermission } = useAuth()
@@ -50,6 +52,7 @@ const Analytics = () => {
       />
     )
   }
+
   const [timeRange, setTimeRange] = useState('7d')
   const [isLoading, setIsLoading] = useState(true)
   const [data, setData] = useState({
@@ -62,8 +65,92 @@ const Analytics = () => {
   })
 
   useEffect(() => {
-    // Simulate loading analytics data
-    const timer = setTimeout(() => {
+    fetchAnalyticsData()
+  }, [timeRange])
+
+  const fetchAnalyticsData = async () => {
+    try {
+      setIsLoading(true)
+      
+      // Fetch analytics data from backend
+      const response = await analyticsAPI.getUserAnalytics({
+        period: timeRange,
+        include: 'overview,visits,clicks,devices,locations,time'
+      })
+
+      if (response.data.success) {
+        const analyticsData = response.data.data
+        
+        setData({
+          overview: {
+            totalViews: analyticsData.overview?.totalViews || 0,
+            totalClicks: analyticsData.overview?.totalClicks || 0,
+            totalLeads: analyticsData.overview?.totalLeads || 0,
+            conversionRate: analyticsData.overview?.conversionRate || 0,
+            averageTime: analyticsData.overview?.averageTime || '0m 0s',
+            bounceRate: analyticsData.overview?.bounceRate || 0
+          },
+          visitData: analyticsData.visits || [
+            { date: '2024-01-01', views: 45, clicks: 12 },
+            { date: '2024-01-02', views: 52, clicks: 18 },
+            { date: '2024-01-03', views: 38, clicks: 8 },
+            { date: '2024-01-04', views: 73, clicks: 25 },
+            { date: '2024-01-05', views: 89, clicks: 32 },
+            { date: '2024-01-06', views: 156, clicks: 67 },
+            { date: '2024-01-07', views: 198, clicks: 89 }
+          ],
+          clickData: analyticsData.clicks || [
+            { name: 'WhatsApp', clicks: 156, emoji: '📞', color: '#25D366' },
+            { name: 'LinkedIn', clicks: 89, emoji: '💼', color: '#0077B5' },
+            { name: 'Email', clicks: 67, emoji: '✉️', color: '#EA4335' },
+            { name: 'Instagram', clicks: 45, emoji: '📸', color: '#E4405F' },
+            { name: 'Website', clicks: 34, emoji: '🌐', color: '#666666' },
+            { name: 'Phone', clicks: 23, emoji: '📱', color: '#34C759' }
+          ],
+          deviceData: analyticsData.devices || [
+            { name: 'Mobile', value: 68, emoji: '📱' },
+            { name: 'Desktop', value: 25, emoji: '💻' },
+            { name: 'Tablet', value: 7, emoji: '📱' }
+          ],
+          locationData: analyticsData.locations || [
+            { country: 'India', city: 'Mumbai', views: 345, emoji: '🇮🇳' },
+            { country: 'USA', city: 'New York', views: 234, emoji: '🇺🇸' },
+            { country: 'UK', city: 'London', views: 156, emoji: '🇬🇧' },
+            { country: 'Canada', city: 'Toronto', views: 123, emoji: '🇨🇦' },
+            { country: 'Australia', city: 'Sydney', views: 89, emoji: '🇦🇺' }
+          ],
+          timeData: analyticsData.time || [
+            { hour: '00', views: 12 },
+            { hour: '01', views: 8 },
+            { hour: '02', views: 5 },
+            { hour: '03', views: 3 },
+            { hour: '04', views: 7 },
+            { hour: '05', views: 15 },
+            { hour: '06', views: 25 },
+            { hour: '07', views: 45 },
+            { hour: '08', views: 67 },
+            { hour: '09', views: 89 },
+            { hour: '10', views: 98 },
+            { hour: '11', views: 87 },
+            { hour: '12', views: 76 },
+            { hour: '13', views: 65 },
+            { hour: '14', views: 78 },
+            { hour: '15', views: 89 },
+            { hour: '16', views: 95 },
+            { hour: '17', views: 102 },
+            { hour: '18', views: 87 },
+            { hour: '19', views: 65 },
+            { hour: '20', views: 43 },
+            { hour: '21', views: 32 },
+            { hour: '22', views: 21 },
+            { hour: '23', views: 16 }
+          ]
+        })
+      }
+    } catch (error) {
+      console.error('Failed to fetch analytics data:', error)
+      
+      // Fallback to demo data if API fails
       setData({
         overview: {
           totalViews: 1247,
@@ -129,11 +216,12 @@ const Analytics = () => {
           { hour: '23', views: 16 }
         ]
       })
+      
+      toast.error('Using demo data - Backend connection failed')
+    } finally {
       setIsLoading(false)
-    }, 1000)
-
-    return () => clearTimeout(timer)
-  }, [timeRange])
+    }
+  }
 
   const timeRanges = [
     { label: 'Last 7 days', value: '7d', emoji: '📅' },
@@ -268,11 +356,7 @@ const Analytics = () => {
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            onClick={() => {
-              setIsLoading(true)
-              setTimeout(() => setIsLoading(false), 1000)
-              trackEvent('analytics_refresh', { timeRange })
-            }}
+            onClick={fetchAnalyticsData}
             className="p-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors"
           >
             <RefreshCw className="w-5 h-5" />

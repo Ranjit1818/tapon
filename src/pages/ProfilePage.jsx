@@ -28,6 +28,30 @@ const ProfilePage = () => {
 
   useEffect(() => {
     // Simulate loading profile data
+    useEffect(() => {
+      const token = localStorage.getItem("token");
+  
+      if (!token) {
+        setError("You are not logged in");
+        setLoading(false);
+        return;
+      }
+  
+      axios
+        .get("http://localhost:5000/api/profiles", {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        .then((res) => {
+          setProfile(res.data); // ✅ Real API response
+          setLoading(false);
+        })
+        .catch((err) => {
+          console.error(err);
+          setError("Failed to load profile");
+          setLoading(false);
+        });
+    }, [username]);
+    
     setTimeout(() => {
       setProfile({
         name: 'John Doe',
@@ -77,6 +101,8 @@ const ProfilePage = () => {
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
   }
+
+  
 
   const handleContact = (type, value) => {
     switch (type) {

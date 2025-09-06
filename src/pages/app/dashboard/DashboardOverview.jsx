@@ -21,7 +21,9 @@ import {
 } from 'lucide-react'
 import { useAuth } from '../../../contexts/AuthContext'
 import { useAnalytics } from '../../../contexts/AnalyticsContext'
+import { analyticsAPI, profileAPI } from '../../../services/api'
 import CountUp from 'react-countup'
+import toast from 'react-hot-toast'
 
 const DashboardOverview = () => {
   const { user, isTapOnnUser, hasPermission } = useAuth()
@@ -36,10 +38,55 @@ const DashboardOverview = () => {
   })
   const [recentActivity, setRecentActivity] = useState([])
   const [isLoading, setIsLoading] = useState(true)
+  const [profile, setProfile] = useState(null)
 
   useEffect(() => {
-    // Simulate loading stats with animation
-    const timer = setTimeout(() => {
+    fetchDashboardData()
+  }, [])
+
+  const fetchDashboardData = async () => {
+    try {
+      setIsLoading(true)
+      
+      // Fetch user profile
+      const profileResponse = await profileAPI.getProfile()
+      if (profileResponse.data.success && profileResponse.data.data.length > 0) {
+        setProfile(profileResponse.data.data[0])
+      }
+
+      // Fetch analytics data
+      const analyticsResponse = await analyticsAPI.getUserAnalytics({
+        period: '30d',
+        include: 'profile_views,whatsapp_clicks,leads,qr_scans,nfc_taps,social_clicks'
+      })
+
+      if (analyticsResponse.data.success) {
+        const analyticsData = analyticsResponse.data.data
+        
+        setStats({
+          profileViews: analyticsData.profileViews || 0,
+          whatsappClicks: analyticsData.whatsappClicks || 0,
+          totalLeads: analyticsData.totalLeads || 0,
+          qrScans: analyticsData.qrScans || 0,
+          nfcTaps: analyticsData.nfcTaps || 0,
+          socialClicks: analyticsData.socialClicks || 0
+        })
+
+        // Set recent activity from analytics
+        if (analyticsData.recentActivity) {
+          setRecentActivity(analyticsData.recentActivity.map(activity => ({
+            type: activity.type,
+            message: getActivityMessage(activity.type),
+            time: formatTimeAgo(activity.timestamp),
+            emoji: getActivityEmoji(activity.type),
+            color: getActivityColor(activity.type)
+          })))
+        }
+      }
+    } catch (error) {
+      console.error('Failed to fetch dashboard data:', error)
+      
+      // Fallback to demo data if API fails
       setStats({
         profileViews: 1247,
         whatsappClicks: 45,
@@ -87,11 +134,64 @@ const DashboardOverview = () => {
         }
       ])
       
+      toast.error('Using demo data - Backend connection failed')
+    } finally {
       setIsLoading(false)
-    }, 1000)
+    }
+  }
 
-    return () => clearTimeout(timer)
-  }, [])
+  const getActivityMessage = (type) => {
+    const messages = {
+      'profile_view': 'Someone viewed your profile',
+      'whatsapp_click': 'WhatsApp contact clicked',
+      'qr_scan': 'QR code scanned',
+      'lead_captured': 'New lead captured',
+      'nfc_tap': 'NFC card tapped',
+      'social_click': 'Social media link clicked',
+      'email_click': 'Email link clicked',
+      'phone_click': 'Phone number clicked'
+    }
+    return messages[type] || 'Activity recorded'
+  }
+
+  const getActivityEmoji = (type) => {
+    const emojis = {
+      'profile_view': '👀',
+      'whatsapp_click': '📞',
+      'qr_scan': '📎',
+      'lead_captured': '🎯',
+      'nfc_tap': '💳',
+      'social_click': '📱',
+      'email_click': '✉️',
+      'phone_click': '📞'
+    }
+    return emojis[type] || '📊'
+  }
+
+  const getActivityColor = (type) => {
+    const colors = {
+      'profile_view': 'bg-blue-500',
+      'whatsapp_click': 'bg-green-500',
+      'qr_scan': 'bg-purple-500',
+      'lead_captured': 'bg-orange-500',
+      'nfc_tap': 'bg-indigo-500',
+      'social_click': 'bg-pink-500',
+      'email_click': 'bg-gray-500',
+      'phone_click': 'bg-teal-500'
+    }
+    return colors[type] || 'bg-gray-500'
+  }
+
+  const formatTimeAgo = (timestamp) => {
+    const now = new Date()
+    const time = new Date(timestamp)
+    const diffInMinutes = Math.floor((now - time) / (1000 * 60))
+    
+    if (diffInMinutes < 1) return 'Just now'
+    if (diffInMinutes < 60) return `${diffInMinutes} minutes ago`
+    if (diffInMinutes < 1440) return `${Math.floor(diffInMinutes / 60)} hours ago`
+    return `${Math.floor(diffInMinutes / 1440)} days ago`
+  }
 
   const statCards = [
     {
@@ -235,10 +335,11 @@ const DashboardOverview = () => {
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
+            onClick={fetchDashboardData}
             className="bg-gradient-to-r from-primary-500 to-accent-500 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center space-x-2"
           >
             <Zap className="w-4 h-4" />
-            <span>Live Data</span>
+            <span>Refresh Data</span>
           </motion.button>
         </motion.div>
       </motion.div>
@@ -433,10 +534,10 @@ const DashboardOverview = () => {
           </h2>
           <div className="flex items-center space-x-3">
             <span className="text-sm text-gray-500 dark:text-gray-400">
-              Last updated: 2 mins ago
+              Last updated: {profile ? formatTimeAgo(profile.updatedAt) : 'Never'}
             </span>
             <Link
-              to={`/profile/${user?.username || 'demo'}`}
+              to={`/profile/${profile?.username || user?.username || 'demo'}`}
               target="_blank"
               className="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors flex items-center space-x-2"
             >
@@ -450,39 +551,52 @@ const DashboardOverview = () => {
           <div className="flex items-center space-x-4 mb-4">
             <div className="w-16 h-16 bg-gradient-to-br from-primary-500 to-accent-500 rounded-full flex items-center justify-center">
               <span className="text-white font-bold text-xl">
-                {user?.name?.charAt(0)?.toUpperCase() || 'U'}
+                {profile?.displayName?.charAt(0)?.toUpperCase() || user?.name?.charAt(0)?.toUpperCase() || 'U'}
               </span>
             </div>
             <div>
               <h3 className="text-lg font-bold text-gray-900 dark:text-white">
-                {user?.name || 'Your Name'}
+                {profile?.displayName || user?.name || 'Your Name'}
               </h3>
               <p className="text-gray-600 dark:text-gray-400">
-                {user?.position || 'Your Position'} at {user?.company || 'Your Company'}
+                {profile?.jobTitle || user?.position || 'Your Position'} at {profile?.company || user?.company || 'Your Company'}
               </p>
               <p className="text-sm text-gray-500 dark:text-gray-500">
-                📍 {user?.location || 'Your Location'}
+                📍 {profile?.location || user?.location || 'Your Location'}
               </p>
             </div>
           </div>
           
           <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
-            {user?.bio || 'Add your bio to tell people about yourself and what you do. This will appear on your public profile.'}
+            {profile?.bio || user?.bio || 'Add your bio to tell people about yourself and what you do. This will appear on your public profile.'}
           </p>
           
           <div className="mt-4 flex flex-wrap gap-2">
-            <span className="bg-primary-100 dark:bg-primary-900 text-primary-700 dark:text-primary-300 px-2 py-1 rounded-full text-xs">
-              📞 WhatsApp
-            </span>
-            <span className="bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 px-2 py-1 rounded-full text-xs">
-              💼 LinkedIn
-            </span>
-            <span className="bg-pink-100 dark:bg-pink-900 text-pink-700 dark:text-pink-300 px-2 py-1 rounded-full text-xs">
-              📸 Instagram
-            </span>
-            <span className="bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 px-2 py-1 rounded-full text-xs">
-              ✉️ Email
-            </span>
+            {profile?.socialLinks?.whatsapp && (
+              <span className="bg-primary-100 dark:bg-primary-900 text-primary-700 dark:text-primary-300 px-2 py-1 rounded-full text-xs">
+                📞 WhatsApp
+              </span>
+            )}
+            {profile?.socialLinks?.linkedin && (
+              <span className="bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 px-2 py-1 rounded-full text-xs">
+                💼 LinkedIn
+              </span>
+            )}
+            {profile?.socialLinks?.instagram && (
+              <span className="bg-pink-100 dark:bg-pink-900 text-pink-700 dark:text-pink-300 px-2 py-1 rounded-full text-xs">
+                📸 Instagram
+              </span>
+            )}
+            {profile?.contactInfo?.email && (
+              <span className="bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 px-2 py-1 rounded-full text-xs">
+                ✉️ Email
+              </span>
+            )}
+            {!profile?.socialLinks?.whatsapp && !profile?.socialLinks?.linkedin && !profile?.socialLinks?.instagram && !profile?.contactInfo?.email && (
+              <span className="bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 px-2 py-1 rounded-full text-xs">
+                Add social links to your profile
+              </span>
+            )}
           </div>
         </div>
       </motion.div>

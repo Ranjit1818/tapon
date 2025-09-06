@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { 
   User, 
@@ -19,31 +19,34 @@ import {
   Link as LinkIcon
 } from 'lucide-react'
 import { useAuth } from '../../../contexts/AuthContext'
+import { profileAPI, uploadAPI } from '../../../services/api'
 import toast from 'react-hot-toast'
 
 const ProfileManagement = () => {
-  const { user, updateProfile } = useAuth()
+  const { user } = useAuth()
   const [activeTab, setActiveTab] = useState('basic')
   const [isLoading, setIsLoading] = useState(false)
+  const [isLoadingProfile, setIsLoadingProfile] = useState(true)
+  const [profile, setProfile] = useState(null)
   const [profileData, setProfileData] = useState({
-    name: user?.name || '',
-    title: user?.position || '',
-    company: user?.company || '',
-    bio: user?.bio || '',
-    email: user?.email || '',
-    phone: user?.phone || '',
-    location: user?.location || '',
-    website: user?.website || '',
-    profileImage: user?.profileImage || '',
+    displayName: '',
+    jobTitle: '',
+    company: '',
+    bio: '',
+    email: '',
+    phone: '',
+    location: '',
+    website: '',
+    avatar: '',
     socialLinks: {
-      whatsapp: user?.socialLinks?.whatsapp || '',
-      linkedin: user?.socialLinks?.linkedin || '',
-      instagram: user?.socialLinks?.instagram || '',
-      twitter: user?.socialLinks?.twitter || '',
-      facebook: user?.socialLinks?.facebook || '',
-      youtube: user?.socialLinks?.youtube || ''
+      whatsapp: '',
+      linkedin: '',
+      instagram: '',
+      twitter: '',
+      facebook: '',
+      youtube: ''
     },
-    customLinks: user?.customLinks || []
+    customLinks: []
   })
 
   const tabs = [
@@ -104,6 +107,64 @@ const ProfileManagement = () => {
     }
   ]
 
+  // Fetch profile data on component mount
+  useEffect(() => {
+    fetchProfile()
+  }, [])
+
+  const fetchProfile = async () => {
+    try {
+      setIsLoadingProfile(true)
+      const response = await profileAPI.getProfile()
+      
+      if (response.data.success && response.data.data.length > 0) {
+        const profileData = response.data.data[0]
+        setProfile(profileData)
+        
+        // Update form data with fetched profile
+        setProfileData({
+          displayName: profileData.displayName || '',
+          jobTitle: profileData.jobTitle || '',
+          company: profileData.company || '',
+          bio: profileData.bio || '',
+          email: profileData.contactInfo?.email || '',
+          phone: profileData.contactInfo?.phone || '',
+          location: profileData.location || '',
+          website: profileData.website || '',
+          avatar: profileData.avatar || '',
+          socialLinks: {
+            whatsapp: profileData.socialLinks?.whatsapp || '',
+            linkedin: profileData.socialLinks?.linkedin || '',
+            instagram: profileData.socialLinks?.instagram || '',
+            twitter: profileData.socialLinks?.twitter || '',
+            facebook: profileData.socialLinks?.facebook || '',
+            youtube: profileData.socialLinks?.youtube || ''
+          },
+          customLinks: profileData.customLinks || []
+        })
+      } else {
+        // No profile exists, create one with user data
+        setProfileData(prev => ({
+          ...prev,
+          displayName: user?.name || '',
+          email: user?.email || ''
+        }))
+      }
+    } catch (error) {
+      console.error('Failed to fetch profile:', error)
+      toast.error('Failed to load profile data')
+      
+      // Fallback to user data
+      setProfileData(prev => ({
+        ...prev,
+        displayName: user?.name || '',
+        email: user?.email || ''
+      }))
+    } finally {
+      setIsLoadingProfile(false)
+    }
+  }
+
   const handleInputChange = (field, value) => {
     if (field.includes('.')) {
       const [parent, child] = field.split('.')
@@ -148,28 +209,112 @@ const ProfileManagement = () => {
   const handleSave = async () => {
     setIsLoading(true)
     try {
-      await updateProfile(profileData)
-      toast.success('✅ Profile updated successfully!')
+      if (profile) {
+        // Update existing profile
+        const updateData = {
+          displayName: profileData.displayName,
+          jobTitle: profileData.jobTitle,
+          company: profileData.company,
+          bio: profileData.bio,
+          location: profileData.location,
+          website: profileData.website,
+          avatar: profileData.avatar,
+          socialLinks: profileData.socialLinks,
+          customLinks: profileData.customLinks,
+          contactInfo: {
+            email: profileData.email,
+            phone: profileData.phone
+          }
+        }
+        
+        await profileAPI.updateProfile(profile._id, updateData)
+        toast.success('✅ Profile updated successfully!')
+        
+        // Refresh profile data
+        await fetchProfile()
+      } else {
+        // Create new profile
+        const createData = {
+          displayName: profileData.displayName,
+          jobTitle: profileData.jobTitle,
+          company: profileData.company,
+          bio: profileData.bio,
+          location: profileData.location,
+          website: profileData.website,
+          avatar: profileData.avatar,
+          socialLinks: profileData.socialLinks,
+          customLinks: profileData.customLinks,
+          contactInfo: {
+            email: profileData.email,
+            phone: profileData.phone
+          }
+        }
+        
+        const response = await profileAPI.createProfile(createData)
+        if (response.data.success) {
+          setProfile(response.data.data)
+          toast.success('✅ Profile created successfully!')
+        }
+      }
     } catch (error) {
-      toast.error('❌ Failed to update profile')
+      console.error('Failed to save profile:', error)
+      toast.error('❌ Failed to save profile')
     } finally {
       setIsLoading(false)
     }
   }
 
-  const handleImageUpload = (event) => {
+  const handleImageUpload = async (event) => {
     const file = event.target.files[0]
     if (file) {
-      const reader = new FileReader()
-      reader.onload = (e) => {
-        setProfileData(prev => ({
-          ...prev,
-          profileImage: e.target.result
-        }))
-        toast.success('📸 Profile image updated!')
+      try {
+        setIsLoading(true)
+        
+        // Upload image to backend
+        const response = await uploadAPI.uploadImage(file, 'profile')
+        
+        if (response.data.success) {
+          setProfileData(prev => ({
+            ...prev,
+            avatar: response.data.data.url
+          }))
+          toast.success('📸 Profile image uploaded successfully!')
+        }
+      } catch (error) {
+        console.error('Failed to upload image:', error)
+        toast.error('❌ Failed to upload image')
+        
+        // Fallback to local preview
+        const reader = new FileReader()
+        reader.onload = (e) => {
+          setProfileData(prev => ({
+            ...prev,
+            avatar: e.target.result
+          }))
+          toast.success('📸 Profile image updated! (Local preview)')
+        }
+        reader.readAsDataURL(file)
+      } finally {
+        setIsLoading(false)
       }
-      reader.readAsDataURL(file)
     }
+  }
+
+  if (isLoadingProfile) {
+    return (
+      <div className="space-y-6">
+        <div className="animate-pulse">
+          <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-1/3 mb-4"></div>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-2 space-y-4">
+              <div className="h-64 bg-gray-200 dark:bg-gray-700 rounded"></div>
+              <div className="h-32 bg-gray-200 dark:bg-gray-700 rounded"></div>
+            </div>
+            <div className="h-96 bg-gray-200 dark:bg-gray-700 rounded"></div>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -199,7 +344,7 @@ const ProfileManagement = () => {
           <motion.button
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            onClick={() => window.open(`/profile/${user?.username || 'demo'}`, '_blank')}
+            onClick={() => window.open(`/profile/${profile?.username || user?.username || 'demo'}`, '_blank')}
             className="px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors flex items-center space-x-2"
           >
             <Eye className="w-4 h-4" />
@@ -283,15 +428,15 @@ const ProfileManagement = () => {
                 <div className="flex items-center space-x-4">
                   <div className="relative">
                     <div className="w-20 h-20 bg-gradient-to-br from-primary-500 to-accent-500 rounded-full flex items-center justify-center overflow-hidden">
-                      {profileData.profileImage ? (
+                      {profileData.avatar ? (
                         <img 
-                          src={profileData.profileImage} 
+                          src={profileData.avatar} 
                           alt="Profile" 
                           className="w-full h-full object-cover"
                         />
                       ) : (
                         <span className="text-white font-bold text-2xl">
-                          {profileData.name?.charAt(0)?.toUpperCase() || 'U'}
+                          {profileData.displayName?.charAt(0)?.toUpperCase() || 'U'}
                         </span>
                       )}
                     </div>
@@ -316,14 +461,14 @@ const ProfileManagement = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      Full Name *
+                      Display Name *
                     </label>
                     <input
                       type="text"
-                      value={profileData.name}
-                      onChange={(e) => handleInputChange('name', e.target.value)}
+                      value={profileData.displayName}
+                      onChange={(e) => handleInputChange('displayName', e.target.value)}
                       className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-800"
-                      placeholder="Your full name"
+                      placeholder="Your display name"
                     />
                   </div>
                   
@@ -333,8 +478,8 @@ const ProfileManagement = () => {
                     </label>
                     <input
                       type="text"
-                      value={profileData.title}
-                      onChange={(e) => handleInputChange('title', e.target.value)}
+                      value={profileData.jobTitle}
+                      onChange={(e) => handleInputChange('jobTitle', e.target.value)}
                       className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-800"
                       placeholder="e.g. Marketing Manager"
                     />
@@ -589,26 +734,26 @@ const ProfileManagement = () => {
             {/* Mock mobile profile preview */}
             <div className="text-center">
               <div className="w-20 h-20 bg-gradient-to-br from-primary-500 to-accent-500 rounded-full flex items-center justify-center mx-auto mb-4 overflow-hidden">
-                {profileData.profileImage ? (
+                {profileData.avatar ? (
                   <img 
-                    src={profileData.profileImage} 
+                    src={profileData.avatar} 
                     alt="Profile" 
                     className="w-full h-full object-cover"
                   />
                 ) : (
                   <span className="text-white font-bold text-xl">
-                    {profileData.name?.charAt(0)?.toUpperCase() || 'U'}
+                    {profileData.displayName?.charAt(0)?.toUpperCase() || 'U'}
                   </span>
                 )}
               </div>
               
               <h4 className="text-lg font-bold text-gray-900 dark:text-white mb-1">
-                {profileData.name || 'Your Name'}
+                {profileData.displayName || 'Your Name'}
               </h4>
               
-              {profileData.title && (
+              {profileData.jobTitle && (
                 <p className="text-primary-600 dark:text-primary-400 font-medium mb-1">
-                  {profileData.title}
+                  {profileData.jobTitle}
                 </p>
               )}
               
@@ -651,7 +796,7 @@ const ProfileManagement = () => {
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              onClick={() => window.open(`/profile/${user?.username || 'demo'}`, '_blank')}
+              onClick={() => window.open(`/profile/${profile?.username || user?.username || 'demo'}`, '_blank')}
               className="w-full bg-primary-500 text-white py-2 rounded-lg hover:bg-primary-600 transition-colors flex items-center justify-center space-x-2"
             >
               <Eye className="w-4 h-4" />

@@ -1,450 +1,304 @@
-# 🚀 TapOnn Backend - Complete Setup Guide
+# TapOnn Backend API
 
-## 📋 Overview
+A complete backend API for the TapOnn digital profile platform built with Node.js, Express, and MongoDB.
 
-This is the complete backend for the TapOnn digital profile platform built with:
-- **Node.js** + **Express.js**
-- **MongoDB** with **Mongoose**
-- **JWT Authentication** with role-based permissions
-- **Cloudinary** for image storage
-- **QR Code** generation and management
-- **Analytics** tracking
-- **Order Management** for NFC/Review cards
-- **Email** notifications
-- **Stripe** payment processing
+## 🚀 Features
 
-## 🛠️ Installation & Setup
+- **User Authentication & Authorization**: JWT-based auth with role-based access control
+- **Profile Management**: Digital profile creation and management
+- **QR Code Generation**: Dynamic QR code creation and management
+- **Order Management**: Complete order processing system
+- **Analytics Tracking**: Comprehensive user and profile analytics
+- **Admin Dashboard**: Full admin panel with user management
+- **File Upload**: Image upload support with Cloudinary integration
+- **Security**: Rate limiting, CORS, Helmet, input validation
+- **Database**: MongoDB with Mongoose ODM
 
-### 1. Install Dependencies
-```bash
-cd backend_tapon
-npm install
-```
+## 📋 Prerequisites
 
-### 2. Environment Configuration
-Create a `.env` file in the root directory with these variables:
+- Node.js (v16 or higher)
+- npm or yarn
+- MongoDB database (local or cloud)
+- Git
 
-```env
-# Environment
-NODE_ENV=development
+## 🛠️ Installation
 
-# Server Configuration
-PORT=5000
-API_URL=http://localhost:5000
-FRONTEND_URL=http://localhost:3000
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd letsconnect/backend_tapon
+   ```
 
-# Database
-MONGO_URI=mongodb://localhost:27017/taponn
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
 
-# JWT Configuration
-JWT_SECRET=your-super-secret-jwt-key-here-make-it-long-and-random
-JWT_EXPIRE=30d
+3. **Environment Configuration**
+   
+   The backend will work with default configuration, but you can create a `.env` file for customization:
+   
+   ```bash
+   # Copy the example environment file
+   cp .env.example .env
+   
+   # Or create manually with these variables:
+   NODE_ENV=development
+   PORT=5000
+   
+   # MongoDB Configuration
+   MONGO_URI=mongodb+srv://username:password@cluster.mongodb.net/
+   
+   # JWT Configuration
+   JWT_SECRET=your-super-secret-jwt-key
+   JWT_EXPIRE=30d
+   JWT_COOKIE_EXPIRE=30
+   
+   # Frontend URL for CORS
+   FRONTEND_URL=http://localhost:5173
+   
+   # Email Configuration (optional)
+   EMAIL_SERVER=smtp.gmail.com
+   EMAIL_PORT=587
+   EMAIL_USER=your-email@gmail.com
+   EMAIL_PASS=your-app-password
+   
+   # Cloudinary Configuration (optional)
+   CLOUDINARY_CLOUD_NAME=your-cloud-name
+   CLOUDINARY_API_KEY=your-api-key
+   CLOUDINARY_API_SECRET=your-api-secret
+   
+   # Stripe Configuration (optional)
+   STRIPE_SECRET_KEY=your-stripe-secret-key
+   STRIPE_WEBHOOK_SECRET=your-stripe-webhook-secret
+   ```
 
-# Cloudinary Configuration
-CLOUDINARY_CLOUD_NAME=your-cloudinary-cloud-name
-CLOUDINARY_API_KEY=your-cloudinary-api-key
-CLOUDINARY_API_SECRET=your-cloudinary-api-secret
+4. **Database Setup**
+   
+   The backend will automatically connect to MongoDB. If you don't have a database:
+   
+   - **Local MongoDB**: Install MongoDB locally
+   - **Cloud MongoDB**: Use MongoDB Atlas (free tier available)
+   - **Default Connection**: Uses the provided MongoDB Atlas cluster
 
-# Email Configuration
-EMAIL_HOST=smtp.gmail.com
-EMAIL_PORT=587
-EMAIL_USER=your-email@gmail.com
-EMAIL_PASS=your-app-password
-EMAIL_FROM=noreply@taponn.com
+5. **Start the server**
+   ```bash
+   # Development mode with auto-restart
+   npm run dev
+   
+   # Production mode
+   npm start
+   
+   # Test the API
+   npm run test
+   ```
 
-# Stripe Configuration
-STRIPE_SECRET_KEY=sk_test_your-stripe-secret-key
-STRIPE_WEBHOOK_SECRET=whsec_your-webhook-secret
-```
-
-### 3. MongoDB Setup
-- **Local**: Install MongoDB locally or use MongoDB Atlas
-- **Atlas**: Create a free cluster at [MongoDB Atlas](https://cloud.mongodb.com)
-- Update `MONGO_URI` in your `.env` file
-
-### 4. Cloudinary Setup
-1. Create account at [Cloudinary](https://cloudinary.com)
-2. Get your credentials from dashboard
-3. Update Cloudinary variables in `.env`
-
-### 5. Start the Server
-```bash
-# Development
-npm run dev
-
-# Production
-npm start
-```
-
-## 📁 Remaining Files to Create
-
-### Controllers (`controllers/` directory)
-You need to create these controller files:
-
-#### `authController.js`
-```javascript
-const User = require('../models/User');
-const Profile = require('../models/Profile');
-const Analytics = require('../models/Analytics');
-const ErrorResponse = require('../utils/errorResponse');
-const { validationResult } = require('express-validator');
-const sendEmail = require('../utils/sendEmail');
-const crypto = require('crypto');
-
-// @desc    Register user
-// @route   POST /api/auth/register
-// @access  Public
-const register = async (req, res, next) => {
-  try {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({
-        success: false,
-        message: 'Validation failed',
-        errors: errors.array()
-      });
-    }
-
-    const { name, email, password } = req.body;
-
-    // Check if user exists
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return next(new ErrorResponse('User already exists with this email', 400));
-    }
-
-    // Create user
-    const user = await User.create({
-      name,
-      email,
-      password
-    });
-
-    // Create default profile
-    const profile = await Profile.create({
-      user: user._id,
-      displayName: name
-    });
-
-    // Record analytics event
-    await Analytics.recordEvent({
-      user: user._id,
-      event: {
-        type: 'user_registration',
-        category: 'acquisition',
-        action: 'register'
-      },
-      metadata: {
-        ipAddress: req.ip
-      }
-    });
-
-    sendTokenResponse(user, 201, res);
-  } catch (error) {
-    next(error);
-  }
-};
-
-// @desc    Login user
-// @route   POST /api/auth/login
-// @access  Public
-const login = async (req, res, next) => {
-  try {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({
-        success: false,
-        message: 'Validation failed',
-        errors: errors.array()
-      });
-    }
-
-    const { email, password } = req.body;
-
-    // Check for user (include password for comparison)
-    const user = await User.findOne({ email }).select('+password');
-
-    if (!user) {
-      return next(new ErrorResponse('Invalid credentials', 401));
-    }
-
-    // Check if user is locked
-    if (user.isLocked) {
-      return next(new ErrorResponse('Account temporarily locked due to too many failed login attempts', 423));
-    }
-
-    // Check password
-    const isMatch = await user.comparePassword(password);
-
-    if (!isMatch) {
-      // Increment login attempts
-      await user.incLoginAttempts();
-      return next(new ErrorResponse('Invalid credentials', 401));
-    }
-
-    // Reset login attempts and update last login
-    await user.resetLoginAttempts();
-    await user.updateLastLogin();
-
-    // Record analytics event
-    await Analytics.recordEvent({
-      user: user._id,
-      event: {
-        type: 'user_login',
-        category: 'engagement',
-        action: 'login'
-      },
-      metadata: {
-        ipAddress: req.ip
-      }
-    });
-
-    sendTokenResponse(user, 200, res);
-  } catch (error) {
-    next(error);
-  }
-};
-
-// Helper function to send token response
-const sendTokenResponse = (user, statusCode, res) => {
-  const token = user.generateAuthToken();
-
-  const options = {
-    expires: new Date(
-      Date.now() + process.env.JWT_COOKIE_EXPIRE * 24 * 60 * 60 * 1000
-    ),
-    httpOnly: true
-  };
-
-  if (process.env.NODE_ENV === 'production') {
-    options.secure = true;
-  }
-
-  res
-    .status(statusCode)
-    .cookie('token', token, options)
-    .json({
-      success: true,
-      token,
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        permissions: user.permissions
-      }
-    });
-};
-
-// Add more auth controller methods...
-module.exports = {
-  register,
-  login,
-  // ... other methods
-};
-```
-
-#### Other Controllers Needed:
-- `profileController.js` - Profile management
-- `qrController.js` - QR code operations
-- `orderController.js` - Order processing
-- `analyticsController.js` - Analytics data
-- `adminController.js` - Admin operations
-- `uploadController.js` - File uploads
-
-### Utilities (`utils/` directory)
-
-#### `sendEmail.js`
-```javascript
-const nodemailer = require('nodemailer');
-
-const sendEmail = async (options) => {
-  const transporter = nodemailer.createTransporter({
-    host: process.env.EMAIL_HOST,
-    port: process.env.EMAIL_PORT,
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS
-    }
-  });
-
-  const message = {
-    from: `${process.env.EMAIL_FROM_NAME} <${process.env.EMAIL_FROM}>`,
-    to: options.email,
-    subject: options.subject,
-    text: options.message,
-    html: options.html
-  };
-
-  const info = await transporter.sendMail(message);
-  console.log('Message sent: %s', info.messageId);
-};
-
-module.exports = sendEmail;
-```
-
-#### Other Utilities Needed:
-- `cloudinary.js` - Image upload service
-- `qrGenerator.js` - QR code generation
-- `analytics.js` - Analytics helpers
-- `validators.js` - Custom validators
-- `emailTemplates.js` - Email templates
-
-### Configuration (`config/` directory)
-- `cloudinary.js` - Cloudinary configuration
-- `stripe.js` - Stripe configuration
-- `email.js` - Email service configuration
-
-## 🔧 API Endpoints
+## 🌐 API Endpoints
 
 ### Authentication
-- `POST /api/auth/register` - Register new user
-- `POST /api/auth/login` - Login user
+- `POST /api/auth/register` - User registration
+- `POST /api/auth/login` - User login
+- `POST /api/auth/logout` - User logout
 - `GET /api/auth/me` - Get current user
 - `PUT /api/auth/update-details` - Update user details
 - `PUT /api/auth/update-password` - Update password
-- `POST /api/auth/forgot-password` - Forgot password
-- `PUT /api/auth/reset-password/:token` - Reset password
 
 ### Profiles
-- `GET /api/profiles` - Get profiles
+- `GET /api/profiles` - Get user profiles
 - `POST /api/profiles` - Create profile
-- `GET /api/profiles/:id` - Get profile
+- `GET /api/profiles/:id` - Get profile by ID
 - `PUT /api/profiles/:id` - Update profile
 - `DELETE /api/profiles/:id` - Delete profile
-- `GET /api/profiles/username/:username` - Get profile by username
 
 ### QR Codes
-- `GET /api/qr` - Get QR codes
+- `GET /api/qr` - Get user QR codes
 - `POST /api/qr` - Create QR code
-- `GET /api/qr/:id` - Get QR code
+- `GET /api/qr/:id` - Get QR code by ID
 - `PUT /api/qr/:id` - Update QR code
 - `DELETE /api/qr/:id` - Delete QR code
-- `GET /api/qr/:id/download` - Download QR code
-- `GET /api/qr/scan/:qrId` - Scan QR code
 
 ### Orders
-- `GET /api/orders` - Get orders
+- `GET /api/orders` - Get user orders
 - `POST /api/orders` - Create order
-- `GET /api/orders/:orderId` - Get order
-- `PUT /api/orders/:orderId` - Update order
-- `PATCH /api/orders/:orderId/cancel` - Cancel order
+- `GET /api/orders/:id` - Get order by ID
+- `PUT /api/orders/:id` - Update order
 
 ### Analytics
-- `POST /api/analytics/event` - Record event
 - `GET /api/analytics/user` - Get user analytics
-- `GET /api/analytics/profile/:profileId` - Get profile analytics
-- `GET /api/analytics/qr/:qrId` - Get QR analytics
+- `POST /api/analytics/events` - Record analytics event
+- `GET /api/analytics/profile/:id` - Get profile analytics
 
-### Admin
-- `GET /api/admin/dashboard` - Dashboard stats
-- `GET /api/admin/users` - All users
-- `GET /api/admin/profiles` - All profiles
-- `GET /api/admin/orders` - All orders
+### Admin (Admin only)
+- `GET /api/admin/dashboard` - Admin dashboard stats
+- `GET /api/admin/users` - Get all users
+- `GET /api/admin/profiles` - Get all profiles
+- `GET /api/admin/orders` - Get all orders
+- `GET /api/admin/analytics` - Get system analytics
+- `GET /api/admin/qr-codes` - Get all QR codes
 
-### Upload
-- `POST /api/upload/profile-image` - Upload profile image
-- `POST /api/upload/qr-logo` - Upload QR logo
-- `DELETE /api/upload/:publicId` - Delete image
+### Health Check
+- `GET /api/health` - API health status
+- `GET /` - API information
 
-## 🗃️ Database Models
+## 🔧 Configuration
 
-The following models are already created:
-- **User** - User authentication and management
-- **Profile** - Digital profiles
-- **QRCode** - QR code generation and tracking
-- **Order** - NFC/Review card orders
-- **Analytics** - Event tracking
+The backend uses a centralized configuration system in `config/config.js` that provides:
 
-## 🔐 Authentication & Permissions
+- **Fallback values** for all environment variables
+- **Consistent configuration** across all modules
+- **Easy customization** without environment file requirements
 
-### User Roles
-- **user** - Basic user permissions
-- **admin** - Admin permissions
-- **super_admin** - Full system access
+### Default Configuration
 
-### Permissions
-- `profile_view` - View profiles
-- `profile_edit` - Edit profiles
-- `qr_generate` - Generate QR codes
-- `qr_manage` - Manage QR codes
-- `card_purchase` - Purchase cards
-- `card_manage` - Manage card inventory
-- `user_manage` - Manage users
-- `analytics` - View analytics
-- `admin_panel` - Access admin panel
-
-## 🚀 Deployment
-
-### Environment Variables for Production
-```env
-NODE_ENV=production
-PORT=5000
-MONGO_URI=mongodb+srv://username:password@cluster.mongodb.net/taponn
-JWT_SECRET=your-production-jwt-secret
-FRONTEND_URL=https://yourdomain.com
-# ... other production variables
+```javascript
+{
+  NODE_ENV: 'development',
+  PORT: 5000,
+  MONGO_URI: 'mongodb+srv://...',
+  JWT_SECRET: 'fallback-jwt-secret-change-in-production',
+  JWT_EXPIRE: '30d',
+  FRONTEND_URL: 'http://localhost:5173',
+  // ... more defaults
+}
 ```
 
-### AWS Deployment
-1. Use AWS App Runner or Elastic Beanstalk
-2. Set environment variables in AWS console
-3. Configure MongoDB Atlas for production
-4. Set up Cloudinary for image storage
-5. Configure Stripe for payments
+## 🗄️ Database Models
 
-## 📊 Monitoring & Analytics
+### User
+- Authentication details
+- Role-based permissions
+- Account status and security
 
-- **Error Tracking**: Integrate Sentry for error monitoring
-- **Performance**: Use New Relic or similar
-- **Logs**: Implement structured logging with Winston
-- **Health Checks**: `/api/health` endpoint for monitoring
+### Profile
+- Digital profile information
+- Social links and customization
+- Design settings
 
-## 🔧 Development Commands
+### QRCode
+- QR code data and settings
+- Analytics tracking
+- User associations
 
+### Order
+- Order details and status
+- Payment information
+- User associations
+
+### Analytics
+- Event tracking
+- User behavior data
+- Performance metrics
+
+## 🔒 Security Features
+
+- **JWT Authentication**: Secure token-based authentication
+- **Role-Based Access Control**: Admin, super_admin, and user roles
+- **Rate Limiting**: Prevents abuse and DDoS attacks
+- **Input Validation**: Express-validator for request validation
+- **CORS Protection**: Configurable cross-origin resource sharing
+- **Helmet Security**: HTTP security headers
+- **Password Hashing**: Bcrypt with configurable rounds
+
+## 📊 Monitoring & Health
+
+- **Health Check Endpoint**: `/api/health`
+- **Database Connection Status**: Real-time MongoDB status
+- **Request Logging**: Morgan HTTP request logger
+- **Error Handling**: Comprehensive error handling middleware
+- **Graceful Shutdown**: Proper cleanup on server termination
+
+## 🚀 Development
+
+### Scripts
 ```bash
-# Install dependencies
-npm install
-
-# Start development server
-npm run dev
-
-# Run tests
-npm test
-
-# Seed database with sample data
-npm run seed
-
-# Start production server
-npm start
+npm run dev          # Start development server with nodemon
+npm start            # Start production server
+npm test             # Run tests
+npm run seed         # Seed database with sample data
+npm run setup        # Setup database and initial data
 ```
 
-## 📝 Notes
+### File Structure
+```
+backend_tapon/
+├── config/          # Configuration files
+├── controllers/     # Route controllers
+├── middleware/      # Custom middleware
+├── models/          # Mongoose models
+├── routes/          # API routes
+├── utils/           # Utility functions
+├── uploads/         # File upload directory
+├── server.js        # Main server file
+└── package.json     # Dependencies
+```
 
-1. **Security**: All routes implement proper authentication and authorization
-2. **Validation**: Input validation using express-validator
-3. **Error Handling**: Centralized error handling with custom error responses
-4. **Rate Limiting**: Implemented to prevent abuse
-5. **CORS**: Configured for frontend integration
-6. **File Upload**: Handled via Cloudinary with size and type restrictions
-7. **Analytics**: Event tracking for user behavior analysis
-8. **Email**: Automated emails for registration, password reset, etc.
+## 🌍 Environment Variables
+
+All environment variables are optional and have sensible defaults:
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `NODE_ENV` | `development` | Environment mode |
+| `PORT` | `5000` | Server port |
+| `MONGO_URI` | MongoDB Atlas | Database connection string |
+| `JWT_SECRET` | Fallback secret | JWT signing secret |
+| `JWT_EXPIRE` | `30d` | JWT expiration time |
+| `FRONTEND_URL` | `http://localhost:5173` | Frontend URL for CORS |
+
+## 🔧 Troubleshooting
+
+### Common Issues
+
+1. **Port Already in Use**
+   ```bash
+   # Kill process using port 5000
+   netstat -ano | findstr :5000
+   taskkill /PID <PID> /F
+   ```
+
+2. **Database Connection Failed**
+   - Check MongoDB URI
+   - Verify network connectivity
+   - Check MongoDB service status
+
+3. **JWT Errors**
+   - Verify JWT_SECRET is set
+   - Check token expiration
+   - Validate token format
+
+### Debug Mode
+
+Enable debug logging:
+```bash
+DEBUG=true npm run dev
+```
+
+## 📝 API Documentation
+
+For detailed API documentation, visit:
+- **Swagger UI**: `http://localhost:5000/api-docs` (if enabled)
+- **Health Check**: `http://localhost:5000/api/health`
+- **API Info**: `http://localhost:5000/`
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests if applicable
+5. Submit a pull request
+
+## 📄 License
+
+This project is licensed under the MIT License.
 
 ## 🆘 Support
 
-For issues or questions:
-1. Check the logs in development mode
-2. Verify environment variables are set correctly
-3. Ensure MongoDB connection is working
-4. Check Cloudinary credentials for image uploads
-5. Verify Stripe configuration for payments
+For support and questions:
+- Create an issue in the repository
+- Check the troubleshooting section
+- Review the configuration options
 
-## 🎯 Next Steps
+---
 
-After creating the remaining controller and utility files:
-1. Test all API endpoints
-2. Set up database indexes for performance
-3. Implement comprehensive logging
-4. Add automated tests
-5. Set up CI/CD pipeline
-6. Configure monitoring and alerts 
+**Note**: This backend is designed to work out-of-the-box with sensible defaults. No environment configuration is required for basic functionality. 

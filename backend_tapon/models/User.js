@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const config = require('../config/config');
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -15,48 +16,45 @@ const userSchema = new mongoose.Schema({
     unique: true,
     lowercase: true,
     trim: true,
-    match: [
-      /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/,
-      'Please provide a valid email'
-    ]
+    match: [/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/, 'Please provide a valid email']
   },
   password: {
     type: String,
     required: [true, 'Password is required'],
     minlength: [6, 'Password must be at least 6 characters'],
-    select: false // Don't include password in queries by default
+    select: false
   },
   role: {
     type: String,
     enum: ['user', 'admin', 'super_admin'],
     default: 'user'
   },
-  permissions: [{
-    type: String,
-    enum: [
-      'profile_view',
-      'profile_edit',
-      'qr_generate',
-      'qr_manage',
-      'card_purchase',
-      'card_manage',
-      'user_manage',
-      'analytics',
-      'admin_panel'
-    ]
-  }],
-  status: {
-    type: String,
-    enum: ['active', 'inactive', 'suspended', 'pending'],
-    default: 'active'
+  permissions: {
+    type: [String],
+    default: []
   },
-  avatar: {
+  isLocked: {
+    type: Boolean,
+    default: false
+  },
+  loginAttempts: {
+    type: Number,
+    default: 0
+  },
+  lockUntil: {
+    type: Date,
+    default: null
+  },
+  lastLogin: {
+    type: Date,
+    default: null
+  },
+  resetPasswordToken: {
     type: String,
     default: null
   },
-  phone: {
-    type: String,
-    trim: true,
+  resetPasswordExpire: {
+    type: Date,
     default: null
   },
   emailVerified: {
@@ -67,67 +65,9 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: null
   },
-  passwordResetToken: {
-    type: String,
-    default: null
-  },
-  passwordResetExpires: {
+  emailVerificationExpire: {
     type: Date,
     default: null
-  },
-  lastLogin: {
-    type: Date,
-    default: null
-  },
-  loginAttempts: {
-    type: Number,
-    default: 0
-  },
-  lockUntil: {
-    type: Date,
-    default: null
-  },
-  subscription: {
-    plan: {
-      type: String,
-      enum: ['free', 'basic', 'premium', 'enterprise'],
-      default: 'free'
-    },
-    status: {
-      type: String,
-      enum: ['active', 'cancelled', 'expired'],
-      default: 'active'
-    },
-    startDate: {
-      type: Date,
-      default: Date.now
-    },
-    endDate: {
-      type: Date,
-      default: null
-    }
-  },
-  preferences: {
-    notifications: {
-      email: { type: Boolean, default: true },
-      push: { type: Boolean, default: true },
-      marketing: { type: Boolean, default: false }
-    },
-    privacy: {
-      profilePublic: { type: Boolean, default: true },
-      showEmail: { type: Boolean, default: false },
-      showPhone: { type: Boolean, default: false }
-    },
-    theme: {
-      type: String,
-      enum: ['light', 'dark', 'auto'],
-      default: 'light'
-    }
-  },
-  analytics: {
-    profileViews: { type: Number, default: 0 },
-    qrScans: { type: Number, default: 0 },
-    lastActivity: { type: Date, default: Date.now }
   }
 }, {
   timestamps: true,
@@ -135,13 +75,7 @@ const userSchema = new mongoose.Schema({
   toObject: { virtuals: true }
 });
 
-// Indexes for performance
-userSchema.index({ email: 1 });
-userSchema.index({ role: 1 });
-userSchema.index({ status: 1 });
-userSchema.index({ 'subscription.plan': 1 });
-
-// Virtual for user profile
+// Virtual for profile
 userSchema.virtual('profile', {
   ref: 'Profile',
   localField: '_id',
@@ -149,33 +83,33 @@ userSchema.virtual('profile', {
   justOne: true
 });
 
-// Virtual for user orders
-userSchema.virtual('orders', {
-  ref: 'Order',
-  localField: '_id',
-  foreignField: 'user'
-});
-
-// Virtual for user QR codes
+// Virtual for QR codes
 userSchema.virtual('qrCodes', {
   ref: 'QRCode',
   localField: '_id',
   foreignField: 'user'
 });
 
-// Check if user is locked
-userSchema.virtual('isLocked').get(function() {
-  return !!(this.lockUntil && this.lockUntil > Date.now());
+// Virtual for orders
+userSchema.virtual('orders', {
+  ref: 'Order',
+  localField: '_id',
+  foreignField: 'user'
 });
+
+// Indexes
+userSchema.index({ email: 1 });
+userSchema.index({ role: 1 });
+userSchema.index({ isLocked: 1 });
 
 // Pre-save middleware to hash password
 userSchema.pre('save', async function(next) {
-  // Only hash password if it's been modified
-  if (!this.isModified('password')) return next();
+  if (!this.isModified('password')) {
+    return next();
+  }
 
   try {
-    // Hash password with salt rounds of 12
-    const salt = await bcrypt.genSalt(12);
+    const salt = await bcrypt.genSalt(config.BCRYPT_ROUNDS);
     this.password = await bcrypt.hash(this.password, salt);
     next();
   } catch (error) {
@@ -183,88 +117,58 @@ userSchema.pre('save', async function(next) {
   }
 });
 
-// Pre-save middleware to set permissions based on role
-userSchema.pre('save', function(next) {
-  if (this.isModified('role')) {
-    switch (this.role) {
-      case 'super_admin':
-        this.permissions = [
-          'profile_view', 'profile_edit', 'qr_generate', 'qr_manage',
-          'card_purchase', 'card_manage', 'user_manage', 'analytics', 'admin_panel'
-        ];
-        break;
-      case 'admin':
-        this.permissions = [
-          'profile_view', 'profile_edit', 'qr_generate', 'qr_manage',
-          'card_manage', 'analytics', 'admin_panel'
-        ];
-        break;
-      case 'user':
-      default:
-        this.permissions = ['profile_view', 'profile_edit', 'card_purchase'];
-        break;
-    }
-  }
-  next();
-});
-
 // Method to compare password
 userSchema.methods.comparePassword = async function(candidatePassword) {
-  if (!this.password) return false;
   return await bcrypt.compare(candidatePassword, this.password);
 };
 
 // Method to generate JWT token
 userSchema.methods.generateAuthToken = function() {
-  const payload = {
-    id: this._id,
-    email: this.email,
-    role: this.role,
-    permissions: this.permissions
-  };
-
-  return jwt.sign(payload, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRE || '30d'
-  });
-};
-
-// Method to check permission
-userSchema.methods.hasPermission = function(permission) {
-  return this.permissions.includes(permission);
+  return jwt.sign(
+    { 
+      id: this._id,
+      email: this.email,
+      role: this.role
+    },
+    config.JWT_SECRET,
+    { expiresIn: config.JWT_EXPIRE }
+  );
 };
 
 // Method to increment login attempts
-userSchema.methods.incLoginAttempts = function() {
+userSchema.methods.incLoginAttempts = async function() {
   // If we have a previous lock that has expired, restart at 1
   if (this.lockUntil && this.lockUntil < Date.now()) {
-    return this.updateOne({
+    return await this.updateOne({
       $unset: { lockUntil: 1 },
       $set: { loginAttempts: 1 }
     });
   }
-
+  
   const updates = { $inc: { loginAttempts: 1 } };
-
-  // Lock account after 5 failed attempts for 2 hours
+  
+  // Lock account after 5 failed attempts
   if (this.loginAttempts + 1 >= 5 && !this.isLocked) {
-    updates.$set = {
-      lockUntil: Date.now() + 2 * 60 * 60 * 1000 // 2 hours
+    updates.$set = { 
+      lockUntil: Date.now() + 2 * 60 * 60 * 1000, // 2 hours
+      isLocked: true
     };
   }
-
-  return this.updateOne(updates);
+  
+  return await this.updateOne(updates);
 };
 
 // Method to reset login attempts
-userSchema.methods.resetLoginAttempts = function() {
-  return this.updateOne({
-    $unset: { loginAttempts: 1, lockUntil: 1 }
+userSchema.methods.resetLoginAttempts = async function() {
+  return await this.updateOne({
+    $unset: { loginAttempts: 1, lockUntil: 1 },
+    $set: { isLocked: false }
   });
 };
 
 // Method to update last login
-userSchema.methods.updateLastLogin = function() {
-  return this.updateOne({
+userSchema.methods.updateLastLogin = async function() {
+  return await this.updateOne({
     $set: { lastLogin: new Date() }
   });
 };
@@ -276,12 +180,7 @@ userSchema.statics.findByEmail = function(email) {
 
 // Static method to find active users
 userSchema.statics.findActive = function() {
-  return this.find({ status: 'active' });
-};
-
-// Static method to find admins
-userSchema.statics.findAdmins = function() {
-  return this.find({ role: { $in: ['admin', 'super_admin'] } });
+  return this.find({ isLocked: false });
 };
 
 module.exports = mongoose.model('User', userSchema); 

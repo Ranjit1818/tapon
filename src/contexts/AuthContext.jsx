@@ -1,5 +1,5 @@
-import { createContext, useContext, useEffect, useState } from 'react'
-import { useQuery, useMutation, useQueryClient } from 'react-query'
+import { createContext, useContext, useEffect, useMemo, useState, useCallback } from 'react'
+import { useQueryClient } from 'react-query'
 import axios from 'axios'
 import toast from 'react-hot-toast'
 
@@ -18,223 +18,329 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true)
   const queryClient = useQueryClient()
 
-  // API base URL - Using mock mode when backend is not available
-  const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
+  // Env
+  // We need to decide whether to use the proxy or direct URL
+  // If we're in development and using the Vite dev server, we should use '/api'
+  // If we're using the direct URL from .env, we should use that
+  const isDevServer = window.location.port === '3000' || window.location.port === '3001'
+  const API_BASE_URL = isDevServer ? '/api' : (import.meta.env.VITE_API_URL || '/api')
   const DEMO_MODE = import.meta.env.VITE_DEMO_MODE === 'true'
 
-  // Create axios instance with auth header
-  const api = axios.create({
-    baseURL: API_BASE_URL,
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  })
+  // Create axios instance ONCE
+  const api = useMemo(() => {
+    // Ensure the API_BASE_URL doesn't end with a slash to avoid path issues
+    const baseURL = API_BASE_URL.endsWith('/') ? API_BASE_URL.slice(0, -1) : API_BASE_URL
+    console.log('Creating API instance with baseURL:', baseURL)
+    console.log('Is using dev server proxy:', isDevServer)
+    return axios.create({
+      baseURL: baseURL,
+      headers: { 'Content-Type': 'application/json' },
+    })
+  }, [API_BASE_URL, isDevServer])
 
-  // Add auth token to requests
-  api.interceptors.request.use((config) => {
-    const token = localStorage.getItem('taponn-token')
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`
-    }
-    return config
-  })
-
-  // Handle auth errors
-  api.interceptors.response.use(
-    (response) => response,
-    (error) => {
-      if (error.response?.status === 401) {
-        logout()
-        toast.error('Session expired. Please login again.')
-      }
-      return Promise.reject(error)
-    }
-  )
-
-  // Check if user is authenticated on mount
+  // Attach token to each request
   useEffect(() => {
-    const token = localStorage.getItem('taponn-token')
-    if (token) {
-      checkAuth()
-    } else {
-      setLoading(false)
-    }
-  }, [])
-
-  const checkAuth = async () => {
-    try {
-      const response = await api.get('/auth/me')
-      setUser(response.data.user)
-    } catch (error) {
-      localStorage.removeItem('taponn-token')
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const login = async (credentials) => {
-    try {
-      // Demo mode - allow any email/password combination
-      if (DEMO_MODE || !navigator.onLine) {
-        // Check if it's admin credentials
-        const isAdmin = credentials.email.includes('admin') || credentials.email.includes('taponn')
-        const demoUser = {
-          id: isAdmin ? 'admin-user-123' : 'demo-user-123',
-          name: credentials.email.split('@')[0] || 'Demo User',
-          email: credentials.email,
-          profileImage: null,
-          role: isAdmin ? 'admin' : 'user',
-          permissions: isAdmin ? ['qr_generate', 'card_manage', 'user_manage', 'analytics'] : ['profile_view', 'card_purchase']
-        }
-        const demoToken = 'demo-token-' + Date.now()
-        
-        localStorage.setItem('taponn-token', demoToken)
-        setUser(demoUser)
-        
-        toast.success('Welcome back! (Demo Mode)')
-        return { success: true }
+    const reqId = api.interceptors.request.use((config) => {
+      const token = localStorage.getItem('taponn-token')
+      if (token) {
+        // Make sure the token is properly formatted
+        const formattedToken = token.startsWith('Bearer ') ? token : `Bearer ${token}`
+        config.headers.Authorization = formattedToken
+        console.log('Adding token to request:', config.url)
+        console.log('Authorization header:', formattedToken)
+        console.log('Full request config:', {
+          url: config.url,
+          baseURL: config.baseURL,
+          method: config.method,
+          headers: config.headers
+        })
+      } else {
+        console.log('No token found for request:', config.url)
       }
-      
-      const response = await api.post('/auth/login', credentials)
-      const { token, user } = response.data
-      
-      localStorage.setItem('taponn-token', token)
-      setUser(user)
-      
-      toast.success('Welcome back!')
-      return { success: true }
-    } catch (error) {
-      // Fallback to demo mode if backend is not available
-      if (error.code === 'ERR_NETWORK' || error.response?.status >= 500) {
-        const isAdmin = credentials.email.includes('admin') || credentials.email.includes('taponn')
-        const demoUser = {
-          id: isAdmin ? 'admin-user-123' : 'demo-user-123',
-          name: credentials.email.split('@')[0] || 'Demo User',
-          email: credentials.email,
-          profileImage: null,
-          role: isAdmin ? 'admin' : 'user',
-          permissions: isAdmin ? ['qr_generate', 'card_manage', 'user_manage', 'analytics'] : ['profile_view', 'card_purchase']
-        }
-        const demoToken = 'demo-token-' + Date.now()
-        
-        localStorage.setItem('taponn-token', demoToken)
-        setUser(demoUser)
-        
-        toast.success('Welcome back! (Demo Mode - Backend Offline)')
-        return { success: true }
-      }
-      
-      const message = error.response?.data?.message || 'Login failed'
-      toast.error(message)
-      return { success: false, error: message }
-    }
-  }
+      return config
+    })
+    return () => api.interceptors.request.eject(reqId)
+  }, [api])
 
-  const register = async (userData) => {
-    try {
-      // Demo mode - allow any registration
-      if (DEMO_MODE || !navigator.onLine) {
-        const isAdmin = userData.email.includes('admin') || userData.email.includes('taponn')
-        const demoUser = {
-          id: isAdmin ? 'admin-user-' + Date.now() : 'demo-user-' + Date.now(),
-          name: userData.name,
-          email: userData.email,
-          phone: userData.phone || null,
-          company: userData.company || null,
-          position: userData.position || null,
-          profileImage: null,
-          role: isAdmin ? 'admin' : 'user',
-          permissions: isAdmin ? ['qr_generate', 'card_manage', 'user_manage', 'analytics'] : ['profile_view', 'card_purchase']
-        }
-        const demoToken = 'demo-token-' + Date.now()
-        
-        localStorage.setItem('taponn-token', demoToken)
-        setUser(demoUser)
-        
-        toast.success('Account created successfully! (Demo Mode)')
-        return { success: true }
-      }
-      
-      const response = await api.post('/auth/register', userData)
-      const { token, user } = response.data
-      
-      localStorage.setItem('taponn-token', token)
-      setUser(user)
-      
-      toast.success('Account created successfully!')
-      return { success: true }
-    } catch (error) {
-      // Fallback to demo mode if backend is not available
-      if (error.code === 'ERR_NETWORK' || error.response?.status >= 500) {
-        const isAdmin = userData.email.includes('admin') || userData.email.includes('taponn')
-        const demoUser = {
-          id: isAdmin ? 'admin-user-' + Date.now() : 'demo-user-' + Date.now(),
-          name: userData.name,
-          email: userData.email,
-          phone: userData.phone || null,
-          company: userData.company || null,
-          position: userData.position || null,
-          profileImage: null,
-          role: isAdmin ? 'admin' : 'user',
-          permissions: isAdmin ? ['qr_generate', 'card_manage', 'user_manage', 'analytics'] : ['profile_view', 'card_purchase']
-        }
-        const demoToken = 'demo-token-' + Date.now()
-        
-        localStorage.setItem('taponn-token', demoToken)
-        setUser(demoUser)
-        
-        toast.success('Account created successfully! (Demo Mode - Backend Offline)')
-        return { success: true }
-      }
-      
-      const message = error.response?.data?.message || 'Registration failed'
-      toast.error(message)
-      return { success: false, error: message }
-    }
-  }
-
-  const logout = () => {
+  // Stable logout (used by interceptor)
+  const logout = useCallback(() => {
     localStorage.removeItem('taponn-token')
+    delete api.defaults.headers.common['Authorization']
+
     setUser(null)
     queryClient.clear()
     toast.success('Logged out successfully')
+  }, [queryClient])
+
+  // Handle 401 globally
+  useEffect(() => {
+    const resId = api.interceptors.response.use(
+      (response) => {
+        console.log('Response success:', response.status, response.config?.url)
+        return response
+      },
+      (error) => {
+        console.log('Response error:', error.response?.status, error.config?.url)
+        console.log('Error response data:', error.response?.data)
+        console.log('Error config:', error.config)
+        
+        // Only handle 401 for non-login requests
+        if (error?.response?.status === 401 && !error.config.url.includes('/auth/login')) {
+          console.log('401 error detected, logging out')
+          logout()
+        }
+        
+        return Promise.reject(error)
+      }
+    )
+    return () => api.interceptors.response.eject(resId)
+  }, [api])
+
+  // Check auth on mount
+  useEffect(() => {
+    const token = localStorage.getItem('taponn-token')
+    if (!token) {
+      console.log('No token found in localStorage')
+      setLoading(false)
+      return
+    }
+    
+    // Set token in axios headers - make sure it's properly formatted
+    const formattedToken = token.startsWith('Bearer ') ? token : `Bearer ${token}`
+    api.defaults.headers.common['Authorization'] = formattedToken
+    console.log('Setting Authorization header on mount:', formattedToken)
+    console.log('Token from localStorage:', token)
+    
+    ;(async () => {
+      try {
+        console.log('Checking authentication with token:', token)
+        console.log('API base URL:', API_BASE_URL)
+        console.log('Current axios defaults:', api.defaults)
+        
+        // Try with both path formats to debug
+        console.log('Attempting auth check with path: auth/me')
+        try {
+          const res = await api.get('auth/me')
+          console.log('Auth check response:', res.data)
+          
+          const me = res?.data?.user ?? res?.data?.data ?? res?.data
+          if (me) {
+            setUser(me)
+            console.log('User authenticated:', me)
+          } else {
+            console.log('No user data returned from auth/me')
+            localStorage.removeItem('taponn-token')
+            delete api.defaults.headers.common['Authorization']
+          }
+        } catch (error) {
+          console.error('First auth check failed, trying alternate path')
+          console.error('Error details:', error.response?.data || error.message || error)
+          
+          // Try alternate path format
+          console.log('Attempting auth check with path: /auth/me')
+          const res = await api.get('/auth/me')
+          console.log('Auth check response (alternate path):', res.data)
+          
+          const me = res?.data?.user ?? res?.data?.data ?? res?.data
+          if (me) {
+            setUser(me)
+            console.log('User authenticated (alternate path):', me)
+          } else {
+            console.log('No user data returned from /auth/me')
+            localStorage.removeItem('taponn-token')
+            delete api.defaults.headers.common['Authorization']
+          }
+        }
+      } catch (error) {
+        console.error('Auth check error (all attempts failed):', error)
+        console.error('Error details:', error.response?.data || error.message || error)
+        console.error('Error status:', error.response?.status)
+        console.error('Error headers:', error.response?.headers)
+        localStorage.removeItem('taponn-token')
+        delete api.defaults.headers.common['Authorization']
+      } finally {
+        setLoading(false)
+      }
+    })()
+  }, [api, API_BASE_URL])
+
+  // Debug effect to track auth state changes
+  useEffect(() => {
+    console.log('Auth state changed:', { 
+      user: Boolean(user), 
+      token: Boolean(localStorage.getItem('taponn-token')),
+      isAuthenticated: Boolean(user)
+    })
+  }, [user])
+
+  // ---- Actions ----
+  const login = async (credentials) => {
+    try {
+      console.log("Login credentials:", credentials)
+      console.log("API base URL:", API_BASE_URL)
+  
+      const response = await api.post('auth/login', credentials)
+      console.log('Login response:', response.data)
+  
+      const token = response?.data?.token
+      const serverUser = response?.data?.user
+  
+      if (!token || !serverUser) {
+        throw new Error('Invalid login response: missing token or user')
+      }
+  
+      localStorage.setItem('taponn-token', token)
+      api.defaults.headers.common['Authorization'] = `Bearer ${token}`
+      setUser(serverUser)
+  
+      toast.success('Welcome back!')
+      return { success: true }
+  
+    } catch (error) {
+      console.error('Login Error:', error.response?.data || error.message)
+  
+      let message = 'Login failed. Please try again.'
+      if (error.response?.data) {
+        if (error.response.data.errors && error.response.data.errors.length > 0) {
+          message = error.response.data.errors.map(err => err.msg).join(', ')
+        } else if (error.response.data.message) {
+          message = error.response.data.message
+        }
+      }
+  
+      toast.error(message)
+      return { success: false, error: message }
+    }
+  }
+  
+  
+
+  const register = async (userData) => {
+    try {
+      if (DEMO_MODE || !navigator.onLine) {
+        const isAdmin = userData.email?.toLowerCase().includes('admin') || userData.email?.toLowerCase().includes('taponn')
+        const demoUser = {
+          _id: `${isAdmin ? 'admin-user' : 'demo-user'}-${Date.now()}`,
+          name: userData.name,
+          email: userData.email,
+          phone: userData.phone || null,
+          company: userData.company || null,
+          position: userData.position || null,
+          profileImage: null,
+          role: isAdmin ? 'admin' : 'user',
+          permissions: isAdmin
+            ? ['qr_generate', 'card_manage', 'user_manage', 'analytics']
+            : ['profile_view', 'card_purchase'],
+        }
+        const demoToken = 'demo-token-' + Date.now()
+        localStorage.setItem('taponn-token', demoToken)
+        setUser(demoUser)
+        toast.success('Account created successfully! (Demo Mode)')
+        return { success: true }
+      }
+
+      console.log("Register user data:", userData)
+      console.log("API base URL:", API_BASE_URL)
+      // Use the correct path format without a leading slash
+      // since the baseURL is already set correctly
+      const response = await api.post('auth/register', userData)
+      const token = response?.data?.token
+      const serverUser = response?.data?.user
+
+      if (!token || !serverUser) {
+        throw new Error('Invalid register response: missing token or user')
+      }
+
+      localStorage.setItem('taponn-token', token)
+      setUser(serverUser)
+      toast.success('Account created successfully!')
+      return { success: true }
+    } catch (error) {
+      if (error?.code === 'ERR_NETWORK' || (error?.response && error.response.status >= 500)) {
+        const isAdmin = userData.email?.toLowerCase().includes('admin') || userData.email?.toLowerCase().includes('taponn')
+        const demoUser = {
+          _id: `${isAdmin ? 'admin-user' : 'demo-user'}-${Date.now()}`,
+          name: userData.name,
+          email: userData.email,
+          phone: userData.phone || null,
+          company: userData.company || null,
+          position: userData.position || null,
+          profileImage: null,
+          role: isAdmin ? 'admin' : 'user',
+          permissions: isAdmin
+            ? ['qr_generate', 'card_manage', 'user_manage', 'analytics']
+            : ['profile_view', 'card_purchase'],
+        }
+        const demoToken = 'demo-token-' + Date.now()
+        localStorage.setItem('taponn-token', demoToken)
+        setUser(demoUser)
+        toast.success('Account created successfully! (Demo Mode - Backend Offline)')
+        return { success: true }
+      }
+
+      console.error('Registration Error:', error.response?.data || error.message);
+
+      let message = 'Registration failed. Please try again.';
+      if (error.response?.data) {
+        // Handle express-validator errors array
+        if (error.response.data.errors && error.response.data.errors.length > 0) {
+          message = error.response.data.errors.map(err => err.msg).join(', ');
+        } else if (error.response.data.message) {
+          // Handle other error messages from the backend
+          message = error.response.data.message;
+        }
+      }
+      toast.error(message)
+      return { success: false, error: message }
+    }
   }
 
   const updateProfile = async (profileData) => {
     try {
-      const response = await api.put('/auth/profile', profileData)
-      setUser(response.data.user)
+      const res = await api.put('/auth/update-details', profileData)
+      const nextUser = res?.data?.data ?? res?.data?.user ?? res?.data
+      setUser(nextUser)
       toast.success('Profile updated successfully!')
       return { success: true }
     } catch (error) {
-      const message = error.response?.data?.message || 'Profile update failed'
+      const message = error?.response?.data?.message || 'Profile update failed'
       toast.error(message)
       return { success: false, error: message }
     }
   }
 
   const hasPermission = (permission) => {
-    if (!user || !user.permissions) return false
-    return user.permissions.includes(permission)
+    return Boolean(user?.permissions?.includes(permission))
   }
 
+  // Debug authentication state
+  useEffect(() => {
+    console.log('Auth state updated:', { 
+      user: Boolean(user), 
+      token: Boolean(localStorage.getItem('taponn-token')),
+      isAuthenticated: Boolean(user)
+    })
+  }, [user])
+
   const value = {
+    // state
     user,
     loading,
+    isAuthenticated: Boolean(user),
+    userRole: user?.role || 'user',
+    isAdmin: user?.role === 'admin',
+    isTapOnnUser: Boolean(user),
+
+    // actions
     login,
     register,
     logout,
     updateProfile,
     hasPermission,
-    isAuthenticated: !!user,
-    isAdmin: user?.role === 'admin',
-    isTapOnnUser: user?.role === 'admin',
-    userRole: user?.role || 'user',
+
+    // api instance
+    api,
   }
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  )
-} 
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
+}

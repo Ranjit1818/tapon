@@ -30,7 +30,14 @@ const registerValidation = [
     .isLength({ min: 6, max: 128 })
     .withMessage('Password must be between 6 and 128 characters')
     .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/)
-    .withMessage('Password must contain at least one lowercase letter, one uppercase letter, and one number')
+    .withMessage('Password must contain at least one lowercase letter, one uppercase letter, and one number'),
+  body('confirmPassword')
+    .custom((value, { req }) => {
+      if (value !== req.body.password) {
+        throw new Error('Passwords do not match');
+      }
+      return true;
+    })
 ];
 
 const loginValidation = [
@@ -85,6 +92,7 @@ const resetPasswordValidation = [
 // Public routes
 router.post('/register', registerValidation, register);
 router.post('/login', loginValidation, login);
+router.post('/login', login);  
 router.post('/logout', logout);
 router.post('/forgot-password', forgotPasswordValidation, forgotPassword);
 router.put('/reset-password/:token', resetPasswordValidation, resetPassword);
@@ -105,4 +113,4 @@ router.get('/check', optionalAuth, (req, res) => {
   });
 });
 
-module.exports = router; 
+module.exports = router;

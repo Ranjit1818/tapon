@@ -1,0 +1,1 @@
+{"success":false,"message":"Please provide a valid email","errors":[{"type":"field","msg":"Please provide a valid email","path":"email","location":"body"},{"type":"field","msg":"Password is required","path":"password","location":"body"}]}

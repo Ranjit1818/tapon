@@ -23,6 +23,7 @@ import {
 } from 'lucide-react'
 import toast from 'react-hot-toast'
 
+
 const UserManagement = () => {
   const [users, setUsers] = useState([])
   const [filteredUsers, setFilteredUsers] = useState([])
@@ -42,9 +43,39 @@ const UserManagement = () => {
   }, [users, searchTerm, filterRole, filterStatus])
 
   const loadUsers = async () => {
-    setLoading(true)
-    // Simulate API call - replace with real API
-    setTimeout(() => {
+    try {
+      setLoading(true)
+      
+      // Fetch users from backend API
+      const response = await adminAPI.getUsers({
+        include: 'profiles,analytics,orders'
+      })
+
+      console.log(response.data.data)
+
+      if (response.data.success) {
+        const apiUsers = response.data.data.map(user => ({
+          id: user._id,
+          name: user.name || `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'Unknown User',
+          email: user.email,
+          role: user.role || 'user',
+          status: user.isActive ? 'active' : 'inactive',
+          createdAt: new Date(user.createdAt).toLocaleDateString(),
+          lastLogin: user.lastLoginAt ? new Date(user.lastLoginAt).toLocaleDateString() : 'Never',
+          phone: user.phone || '',
+          company: user.company || '',
+          location: user.location || '',
+          profileViews: user.analytics?.profileViews || 0,
+          qrScans: user.analytics?.qrScans || 0,
+          ordersCount: user.orders?.length || 0
+        }))
+        
+        setUsers(apiUsers)
+      }
+    } catch (error) {
+      console.error('Failed to fetch users:', error)
+      
+      // Fallback to demo data if API fails
       const mockUsers = [
         {
           id: 1,
@@ -108,8 +139,10 @@ const UserManagement = () => {
         }
       ]
       setUsers(mockUsers)
+      toast.error('Using demo data - Backend connection failed')
+    } finally {
       setLoading(false)
-    }, 1000)
+    }
   }
 
   const filterUsers = () => {
@@ -134,35 +167,44 @@ const UserManagement = () => {
     setFilteredUsers(filtered)
   }
 
-  const handleUserAction = (action, user) => {
-    switch (action) {
-      case 'view':
-        setSelectedUser(user)
-        setShowUserModal(true)
-        break
-      case 'edit':
-        toast.info(`Edit user: ${user.name}`)
-        break
-      case 'delete':
-        if (window.confirm(`Are you sure you want to delete ${user.name}?`)) {
-          setUsers(users.filter(u => u.id !== user.id))
-          toast.success(`User ${user.name} deleted`)
-        }
-        break
-      case 'activate':
-        setUsers(users.map(u => u.id === user.id ? {...u, status: 'active'} : u))
-        toast.success(`User ${user.name} activated`)
-        break
-      case 'deactivate':
-        setUsers(users.map(u => u.id === user.id ? {...u, status: 'inactive'} : u))
-        toast.success(`User ${user.name} deactivated`)
-        break
-      case 'makeAdmin':
-        setUsers(users.map(u => u.id === user.id ? {...u, role: 'admin'} : u))
-        toast.success(`${user.name} is now an admin`)
-        break
-      default:
-        break
+  const handleUserAction = async (action, user) => {
+    try {
+      switch (action) {
+        case 'view':
+          setSelectedUser(user)
+          setShowUserModal(true)
+          break
+        case 'edit':
+          toast.info(`Edit user: ${user.name}`)
+          break
+        case 'delete':
+          if (window.confirm(`Are you sure you want to delete ${user.name}?`)) {
+            await adminAPI.deleteUser(user.id)
+            setUsers(users.filter(u => u.id !== user.id))
+            toast.success(`User ${user.name} deleted`)
+          }
+          break
+        case 'activate':
+          await adminAPI.updateUser(user.id, { isActive: true })
+          setUsers(users.map(u => u.id === user.id ? {...u, status: 'active'} : u))
+          toast.success(`User ${user.name} activated`)
+          break
+        case 'deactivate':
+          await adminAPI.updateUser(user.id, { isActive: false })
+          setUsers(users.map(u => u.id === user.id ? {...u, status: 'inactive'} : u))
+          toast.success(`User ${user.name} deactivated`)
+          break
+        case 'makeAdmin':
+          await adminAPI.updateUser(user.id, { role: 'admin' })
+          setUsers(users.map(u => u.id === user.id ? {...u, role: 'admin'} : u))
+          toast.success(`${user.name} is now an admin`)
+          break
+        default:
+          break
+      }
+    } catch (error) {
+      console.error(`Failed to ${action} user:`, error)
+      toast.error(`Failed to ${action} user`)
     }
   }
 

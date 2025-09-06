@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Routes, Route, Link, useLocation, Navigate } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -32,14 +32,35 @@ import AppShop from './dashboard/Shop'
 import AppSettingsPage from './dashboard/SettingsPage'
 
 const AppDashboardPage = () => {
-  const { user, logout, isAuthenticated, hasPermission, isTapOnnUser } = useAuth()
+  const { user, logout, isAuthenticated, hasPermission, isTapOnnUser, loading } = useAuth()
   const location = useLocation()
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false)
 
-  if (!isAuthenticated) {
-    return <Navigate to="/app/login" replace />
+  // Enhanced authentication check
+  useEffect(() => {
+    console.log('Dashboard auth check:', { isAuthenticated, user, loading })
+    if (!isAuthenticated && !loading) {
+      console.log('User not authenticated, redirecting to login')
+    }
+  }, [isAuthenticated, loading, user])
+
+  // Show loading indicator while checking authentication
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-primary-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
+          <p className="mt-4 text-gray-600 dark:text-gray-400">Loading your dashboard...</p>
+        </div>
+      </div>
+    )
   }
+
+  // if (!isAuthenticated) {
+  //   console.log('Redirecting to login page')
+  //   return <Navigate to="/app/login" replace />
+  // }
 
   // Base navigation items available to all users
   const baseNavigation = [
@@ -458,4 +479,4 @@ const AppDashboardPage = () => {
   )
 }
 
-export default AppDashboardPage 
+export default AppDashboardPage

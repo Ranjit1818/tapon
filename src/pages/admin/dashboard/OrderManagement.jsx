@@ -25,7 +25,9 @@ import {
   Send,
   MessageSquare
 } from 'lucide-react'
+
 import toast from 'react-hot-toast'
+
 
 const OrderManagement = () => {
   const [orders, setOrders] = useState([])
@@ -46,9 +48,47 @@ const OrderManagement = () => {
   }, [orders, searchTerm, filterStatus, filterProduct])
 
   const loadOrders = async () => {
-    setLoading(true)
-    // Simulate API call - replace with real API
-    setTimeout(() => {
+    try {
+      setLoading(true)
+      
+      // Fetch orders from backend API
+      const response = await adminAPI.getAllOrders({
+        include: 'user,shipping'
+      })
+
+      if (response.data.success) {
+        const apiOrders = response.data.data.map(order => ({
+          id: order._id,
+          userId: order.user?._id,
+          userName: order.user?.name || `${order.user?.firstName || ''} ${order.user?.lastName || ''}`.trim() || 'Unknown User',
+          userEmail: order.user?.email || '',
+          userPhone: order.user?.phone || '',
+          product: order.product?.name || order.productName || 'Unknown Product',
+          quantity: order.quantity || 1,
+          price: order.price || 0,
+          total: order.total || 0,
+          status: order.status || 'pending',
+          paymentStatus: order.paymentStatus || 'pending',
+          paymentMethod: order.paymentMethod || 'unknown',
+          shippingAddress: order.shippingAddress || {
+            street: order.shipping?.street || '',
+            city: order.shipping?.city || '',
+            state: order.shipping?.state || '',
+            zipCode: order.shipping?.zipCode || '',
+            country: order.shipping?.country || ''
+          },
+          createdAt: new Date(order.createdAt).toLocaleDateString(),
+          updatedAt: new Date(order.updatedAt).toLocaleDateString(),
+          notes: order.notes || '',
+          trackingNumber: order.trackingNumber || null
+        }))
+        
+        setOrders(apiOrders)
+      }
+    } catch (error) {
+      console.error('Failed to fetch orders:', error)
+      
+      // Fallback to demo data if API fails
       const mockOrders = [
         {
           id: 'ORD-001',
@@ -152,8 +192,10 @@ const OrderManagement = () => {
         }
       ]
       setOrders(mockOrders)
+      toast.error('Using demo data - Backend connection failed')
+    } finally {
       setLoading(false)
-    }, 1000)
+    }
   }
 
   const filterOrders = () => {
@@ -179,22 +221,34 @@ const OrderManagement = () => {
     setFilteredOrders(filtered)
   }
 
-  const updateOrderStatus = (orderId, newStatus) => {
-    setOrders(orders.map(order => 
-      order.id === orderId 
-        ? { ...order, status: newStatus, updatedAt: new Date().toISOString().split('T')[0] }
-        : order
-    ))
-    toast.success(`Order ${orderId} status updated to ${newStatus}`)
+  const updateOrderStatus = async (orderId, newStatus) => {
+    try {
+      await adminAPI.updateOrder(orderId, { status: newStatus })
+      setOrders(orders.map(order => 
+        order.id === orderId 
+          ? { ...order, status: newStatus, updatedAt: new Date().toISOString().split('T')[0] }
+          : order
+      ))
+      toast.success(`Order ${orderId} status updated to ${newStatus}`)
+    } catch (error) {
+      console.error('Failed to update order status:', error)
+      toast.error('Failed to update order status')
+    }
   }
 
-  const addTrackingNumber = (orderId, trackingNumber) => {
-    setOrders(orders.map(order => 
-      order.id === orderId 
-        ? { ...order, trackingNumber, updatedAt: new Date().toISOString().split('T')[0] }
-        : order
-    ))
-    toast.success('Tracking number added')
+  const addTrackingNumber = async (orderId, trackingNumber) => {
+    try {
+      await adminAPI.updateOrder(orderId, { trackingNumber })
+      setOrders(orders.map(order => 
+        order.id === orderId 
+          ? { ...order, trackingNumber, updatedAt: new Date().toISOString().split('T')[0] }
+          : order
+      ))
+      toast.success('Tracking number added')
+    } catch (error) {
+      console.error('Failed to add tracking number:', error)
+      toast.error('Failed to add tracking number')
+    }
   }
 
   const exportOrders = () => {

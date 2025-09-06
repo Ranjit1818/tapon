@@ -1,14 +1,12 @@
+// routes/analyticsRoutes.js
 const express = require('express');
 const router = express.Router();
-const { param, query } = require('express-validator');
+const { query } = require('express-validator');
 const {
   recordEvent,
-  getUserAnalytics,
   getProfileAnalytics,
   getQRAnalytics,
-  getPlatformAnalytics,
-  getRealTimeAnalytics,
-  exportAnalytics
+  getAllAnalytics
 } = require('../controllers/analyticsController');
 
 const { protect, authorize, requirePermission, optionalAuth } = require('../middleware/auth');
@@ -33,28 +31,19 @@ const eventValidation = [
     .withMessage('Invalid event type')
 ];
 
-// Public routes
-router.post('/event', optionalAuth, recordEvent); // Record analytics event
+// Public route — Record analytics event
+router.post('/event', optionalAuth, recordEvent);
 
 // Protected routes
 router.use(protect);
-
-// User analytics
-router.get('/user', requirePermission('analytics'), timeRangeValidation, getUserAnalytics);
-router.get('/user/:userId', authorize('admin', 'super_admin'), timeRangeValidation, getUserAnalytics);
 
 // Profile analytics
 router.get('/profile/:profileId', timeRangeValidation, getProfileAnalytics);
 
 // QR code analytics
-router.get('/qr/:qrId', timeRangeValidation, getQRAnalytics);
+router.get('/qr/:qrCodeId', timeRangeValidation, getQRAnalytics);
 
-// Platform analytics (admin only)
-router.get('/platform', authorize('admin', 'super_admin'), timeRangeValidation, eventValidation, getPlatformAnalytics);
-router.get('/realtime', authorize('admin', 'super_admin'), getRealTimeAnalytics);
+// Get all analytics (admin only)
+router.get('/all', authorize('admin', 'super_admin'), timeRangeValidation, eventValidation, getAllAnalytics);
 
-// Export analytics
-router.get('/export', requirePermission('analytics'), timeRangeValidation, exportAnalytics);
-router.get('/export/:type', authorize('admin', 'super_admin'), timeRangeValidation, exportAnalytics);
-
-module.exports = router; 
+module.exports = router;

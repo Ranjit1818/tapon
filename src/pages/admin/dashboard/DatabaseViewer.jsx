@@ -23,6 +23,7 @@ import {
   Info
 } from 'lucide-react'
 import toast from 'react-hot-toast'
+import { adminAPI } from "../../../services/api";
 
 const DatabaseViewer = () => {
   const [activeTable, setActiveTable] = useState('users')
@@ -206,13 +207,106 @@ const DatabaseViewer = () => {
     filterData()
   }, [tableData, searchTerm])
 
-  const loadTableData = (tableName) => {
-    setLoading(true)
-    // Simulate API call
-    setTimeout(() => {
+  const loadTableData = async (tableName) => {
+    try {
+      setLoading(true)
+      
+      let response
+      switch (tableName) {
+        case 'users':
+          response = await adminAPI.getUsers({ include: 'profiles,analytics,orders' })
+          if (response.data.success) {
+            const apiUsers = response.data.data.map(user => ({
+              id: user._id,
+              name: user.name || `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'Unknown User',
+              email: user.email,
+              role: user.role || 'user',
+              status: user.isActive ? 'active' : 'inactive',
+              createdAt: user.createdAt,
+              lastLogin: user.lastLoginAt || 'Never'
+            }))
+            setTableData(apiUsers)
+          }
+          break
+        case 'profiles':
+          response = await adminAPI.getAllProfiles({ include: 'user,analytics' })
+          if (response.data.success) {
+            const apiProfiles = response.data.data.map(profile => ({
+              id: profile._id,
+              userId: profile.user?._id,
+              username: profile.username || 'unknown',
+              bio: profile.bio || '',
+              avatar: profile.avatar || '',
+              phone: profile.contactInfo?.phone || '',
+              company: profile.company || '',
+              website: profile.website || '',
+              socialLinks: JSON.stringify(profile.socialLinks || {}),
+              isPublic: profile.isPublic !== false,
+              views: profile.analytics?.profileViews || 0
+            }))
+            setTableData(apiProfiles)
+          }
+          break
+        case 'qrcodes':
+          response = await adminAPI.getAllQRCodes({ include: 'user,analytics' })
+          if (response.data.success) {
+            const apiQRCodes = response.data.data.map(qr => ({
+              id: qr._id,
+              userId: qr.user?._id,
+              type: qr.type || 'profile',
+              url: qr.url || qr.qrData || '',
+              qrData: qr.qrData || qr.url || '',
+              isActive: qr.isActive !== false,
+              scanCount: qr.analytics?.scanCount || qr.scanCount || 0,
+              createdAt: qr.createdAt
+            }))
+            setTableData(apiQRCodes)
+          }
+          break
+        case 'orders':
+          response = await adminAPI.getAllOrders({ include: 'user,shipping' })
+          if (response.data.success) {
+            const apiOrders = response.data.data.map(order => ({
+              id: order._id,
+              userId: order.user?._id,
+              product: order.product?.name || order.productName || 'Unknown Product',
+              quantity: order.quantity || 1,
+              price: order.price || 0,
+              total: order.total || 0,
+              status: order.status || 'pending',
+              paymentStatus: order.paymentStatus || 'pending',
+              paymentMethod: order.paymentMethod || 'unknown',
+              createdAt: order.createdAt
+            }))
+            setTableData(apiOrders)
+          }
+          break
+        case 'analytics':
+          response = await adminAPI.getAllAnalytics({ include: 'user,profile,qrCode' })
+          if (response.data.success) {
+            const apiAnalytics = response.data.data.map(analytics => ({
+              id: analytics._id,
+              userId: analytics.user?._id,
+              event: analytics.eventType,
+              data: JSON.stringify(analytics.metadata || {}),
+              timestamp: analytics.createdAt,
+              ipAddress: analytics.metadata?.ipAddress || ''
+            }))
+            setTableData(apiAnalytics)
+          }
+          break
+        default:
+          setTableData(mockData[tableName] || [])
+      }
+    } catch (error) {
+      console.error(`Failed to fetch ${tableName} data:`, error)
+      
+      // Fallback to demo data if API fails
       setTableData(mockData[tableName] || [])
+      toast.error(`Using demo data - Backend connection failed for ${tableName}`)
+    } finally {
       setLoading(false)
-    }, 500)
+    }
   }
 
   const filterData = () => {

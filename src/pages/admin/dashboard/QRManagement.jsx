@@ -16,6 +16,7 @@ import {
 } from 'lucide-react'
 import QRCodeDisplay from 'react-qr-code'
 import toast from 'react-hot-toast'
+import { adminAPI } from "../../../services/api";
 
 const QRManagement = () => {
   const [qrCodes, setQrCodes] = useState([])
@@ -34,9 +35,35 @@ const QRManagement = () => {
   }, [qrCodes, searchTerm, filterType])
 
   const loadQRCodes = async () => {
-    setLoading(true)
-    // Simulate API call - replace with real API
-    setTimeout(() => {
+    try {
+      setLoading(true)
+      
+      // Fetch QR codes from backend API
+      const response = await adminAPI.getAllQRCodes({
+        include: 'user,analytics'
+      })
+
+      if (response.data.success) {
+        const apiQRCodes = response.data.data.map(qr => ({
+          id: qr._id,
+          userId: qr.user?._id,
+          userName: qr.user?.name || `${qr.user?.firstName || ''} ${qr.user?.lastName || ''}`.trim() || 'Unknown User',
+          userEmail: qr.user?.email || '',
+          type: qr.type || 'profile',
+          url: qr.url || qr.qrData || '',
+          qrData: qr.qrData || qr.url || '',
+          createdAt: new Date(qr.createdAt).toLocaleDateString(),
+          lastScanned: qr.lastScanned ? new Date(qr.lastScanned).toLocaleDateString() : 'Never',
+          scanCount: qr.analytics?.scanCount || qr.scanCount || 0,
+          isActive: qr.isActive !== false
+        }))
+        
+        setQrCodes(apiQRCodes)
+      }
+    } catch (error) {
+      console.error('Failed to fetch QR codes:', error)
+      
+      // Fallback to demo data if API fails
       const mockQRCodes = [
         {
           id: 1,
@@ -92,8 +119,10 @@ const QRManagement = () => {
         }
       ]
       setQrCodes(mockQRCodes)
+      toast.error('Using demo data - Backend connection failed')
+    } finally {
       setLoading(false)
-    }, 1000)
+    }
   }
 
   const filterQRCodes = () => {
