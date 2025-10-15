@@ -105,6 +105,31 @@ const createOrder = async (req, res, next) => {
     // Add total amount to order
     req.body.totalAmount = totalAmount;
 
+    // Derive required top-level fields for Order model
+    const totalQuantity = req.body.items.reduce((sum, item) => sum + item.quantity, 0);
+    req.body.quantity = totalQuantity;
+
+    // If multiple product types in cart, default to 'nfc_card' as umbrella type
+    const uniqueTypes = Array.from(new Set(req.body.items.map(i => i.productType)));
+    req.body.productType = uniqueTypes.length === 1 ? uniqueTypes[0] : 'nfc_card';
+
+    // Map shipping address from payload to model shape
+    const addr = req.body.shipping?.address || {};
+    const customerName = req.body.customerInfo?.name || '';
+    const [firstName, ...restName] = customerName.split(' ');
+    req.body.shippingAddress = {
+      firstName: firstName || customerName || 'Customer',
+      lastName: restName.join(' ') || '',
+      company: '',
+      address1: addr.street || addr.address1 || '',
+      address2: addr.address2 || '',
+      city: addr.city || '',
+      state: addr.state || '',
+      postalCode: addr.zipCode || addr.postalCode || '',
+      country: addr.country || '',
+      phone: req.body.customerInfo?.phone || ''
+    };
+
     // Generate order number
     req.body.orderNumber = `TAP-${Date.now()}-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
 
@@ -123,7 +148,7 @@ const createOrder = async (req, res, next) => {
         orderId: order._id,
         orderNumber: order.orderNumber,
         totalAmount: order.totalAmount,
-        itemCount: order.items.length
+        itemCount: Array.isArray(req.body.items) ? req.body.items.length : 0
       }
     });
 

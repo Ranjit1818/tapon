@@ -92,7 +92,6 @@ const resetPasswordValidation = [
 // Public routes
 router.post('/register', registerValidation, register);
 router.post('/login', loginValidation, login);
-router.post('/login', login);  
 router.post('/logout', logout);
 router.post('/forgot-password', forgotPasswordValidation, forgotPassword);
 router.put('/reset-password/:token', resetPasswordValidation, resetPassword);
@@ -112,5 +111,6 @@ router.get('/check', optionalAuth, (req, res) => {
     user: req.user || null
   });
 });
+
 
 module.exports = router;

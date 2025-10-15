@@ -29,9 +29,14 @@ const userSchema = new mongoose.Schema({
     enum: ['user', 'admin', 'super_admin'],
     default: 'user'
   },
+  status: {
+    type: String,
+    enum: ['active', 'inactive', 'suspended'],
+    default: 'active'
+  },
   permissions: {
     type: [String],
-    default: []
+    default: ['profile_edit', 'profile_view', 'qr_generate']
   },
   isLocked: {
     type: Boolean,
@@ -148,12 +153,12 @@ userSchema.methods.incLoginAttempts = async function() {
   const updates = { $inc: { loginAttempts: 1 } };
   
   // Lock account after 5 failed attempts
-  if (this.loginAttempts + 1 >= 5 && !this.isLocked) {
-    updates.$set = { 
-      lockUntil: Date.now() + 2 * 60 * 60 * 1000, // 2 hours
-      isLocked: true
-    };
-  }
+ // if (this.loginAttempts + 1 >= 5 && !this.isLocked) {
+ //   updates.$set = { 
+  //    lockUntil: Date.now() + 2 * 60 * 60 * 1000, // 2 hours
+  //    isLocked: true
+ ///   };
+ // }
   
   return await this.updateOne(updates);
 };

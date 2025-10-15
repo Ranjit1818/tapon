@@ -33,6 +33,7 @@ const getProfiles = async (req, res, next) => {
 
     // Pagination result
     const pagination = {};
+    const endIndex = startIndex + limit;
 
     if (endIndex < total) {
       pagination.next = {
@@ -53,6 +54,59 @@ const getProfiles = async (req, res, next) => {
       count: profiles.length,
       pagination,
       data: profiles
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Get current user's profile
+// @route   GET /api/profiles/my
+// @access  Private
+const getMyProfile = async (req, res, next) => {
+  try {
+    const profile = await Profile.findOne({ user: req.user.id })
+      .populate('user', 'name email')
+      .populate('qrCodes');
+
+    if (!profile) {
+      return res.status(200).json({
+        success: true,
+        data: null,
+        message: 'No profile found for this user'
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: profile
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getPublicProfile = async (req, res, next) => {
+  try {
+    const { username } = req.params;
+    
+    const profile = await Profile.findOne({ 
+      username: username,
+      isPublic: true 
+    })
+      .populate('user', 'name email')
+      .select('-qrCodes'); // Don't include QR codes in public view
+
+    if (!profile) {
+      return res.status(404).json({
+        success: false,
+        message: 'Profile not found or not public'
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: profile
     });
   } catch (error) {
     next(error);
@@ -152,12 +206,20 @@ const createProfile = async (req, res, next) => {
     const profile = await Profile.create(req.body);
 
     // Create default QR code
-    await QRCode.create({
-      user: req.user.id,
-      profile: profile._id,
-      name: 'Default QR Code',
-      qrData: `${process.env.FRONTEND_URL}/profile/${profile.username || profile._id}`
-    });
+    try {
+      await QRCode.create({
+        user: req.user.id,
+        profile: profile._id,
+        name: `${profile.displayName || 'Profile'} QR Code`,
+        type: 'profile',
+        qrData: `${process.env.FRONTEND_URL || 'http://localhost:3000'}/p/${profile.username || profile._id}`,
+        isActive: true
+      });
+      console.log(`✅ Auto-generated QR code for profile: ${profile._id}`);
+    } catch (qrError) {
+      console.error('Failed to auto-generate QR code:', qrError);
+      // Don't fail profile creation if QR generation fails
+    }
 
     res.status(201).json({
       success: true,
@@ -404,6 +466,8 @@ const generateProfileQR = async (req, res, next) => {
 
 module.exports = {
   getProfiles,
+  getMyProfile,
+  getPublicProfile,
   getProfile,
   getProfileByUsername,
   createProfile,

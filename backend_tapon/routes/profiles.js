@@ -3,6 +3,8 @@ const router = express.Router();
 const { body, param } = require('express-validator');
 const {
   getProfiles,
+  getMyProfile,
+  getPublicProfile,
   getProfile,
   getProfileByUsername,
   createProfile,
@@ -146,6 +148,7 @@ const usernameValidation = [
 
 // Public routes
 router.get('/public', getProfiles); // Get all public profiles
+router.get('/public/:username', usernameValidation, getPublicProfile); // Get public profile by username
 router.get('/username/:username', usernameValidation, getProfileByUsername); // Get profile by username (public view)
 
 // Protected routes - require authentication
@@ -155,6 +158,9 @@ router.use(protect);
 router.route('/')
   .get(getProfiles) // Get user's profiles (admin can see all)
   .post(requirePermission('profile_edit'), profileValidation, createProfile);
+
+// Get current user's profile (must be before /:id route)
+router.get('/my', getMyProfile);
 
 router.route('/:id')
   .get(getProfile)

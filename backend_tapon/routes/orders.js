@@ -123,7 +123,7 @@ router.use(protect);
 // Order CRUD
 router.route('/')
   .get(getOrders) // Get user's orders (admin can see all)
-  .post(requirePermission('card_purchase'), orderValidation, createOrder);
+  .post(orderValidation, createOrder);
 
 router.route('/:orderId')
   .get(orderIdValidation, getOrder)

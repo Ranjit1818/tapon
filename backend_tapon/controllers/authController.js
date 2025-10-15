@@ -37,7 +37,8 @@ const register = async (req, res, next) => {
     const user = await User.create({
       name,
       email,
-      password
+      password,
+      permissions: ['profile_edit', 'profile_view', 'qr_generate']
     });
 
     // Create default profile

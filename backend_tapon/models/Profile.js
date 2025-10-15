@@ -24,6 +24,25 @@ const profileSchema = new mongoose.Schema({
     type: String,
     maxlength: [500, 'Bio cannot be more than 500 characters']
   },
+  jobTitle: {
+    type: String,
+    trim: true,
+    maxlength: [100, 'Job title cannot be more than 100 characters']
+  },
+  company: {
+    type: String,
+    trim: true,
+    maxlength: [100, 'Company name cannot be more than 100 characters']
+  },
+  location: {
+    type: String,
+    trim: true,
+    maxlength: [100, 'Location cannot be more than 100 characters']
+  },
+  website: {
+    type: String,
+    trim: true
+  },
   avatar: {
     type: String,
     default: null

@@ -6,7 +6,8 @@ const {
   recordEvent,
   getProfileAnalytics,
   getQRAnalytics,
-  getAllAnalytics
+  getAllAnalytics,
+  getUserAnalytics
 } = require('../controllers/analyticsController');
 
 const { protect, authorize, requirePermission, optionalAuth } = require('../middleware/auth');
@@ -37,6 +38,9 @@ router.post('/event', optionalAuth, recordEvent);
 // Protected routes
 router.use(protect);
 
+// User analytics
+router.get('/user', timeRangeValidation, getUserAnalytics);
+
 // Profile analytics
 router.get('/profile/:profileId', timeRangeValidation, getProfileAnalytics);
 
@@ -44,6 +48,8 @@ router.get('/profile/:profileId', timeRangeValidation, getProfileAnalytics);
 router.get('/qr/:qrCodeId', timeRangeValidation, getQRAnalytics);
 
 // Get all analytics (admin only)
-router.get('/all', authorize('admin', 'super_admin'), timeRangeValidation, eventValidation, getAllAnalytics);
+router.get('/all', timeRangeValidation, eventValidation, getAllAnalytics);
+
+
 
 module.exports = router;
