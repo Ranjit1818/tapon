@@ -64,6 +64,12 @@ export const profileAPI = {
   // Get user's profile
   getProfile: () => api.get('/profiles'),
   
+  // Get user's own profile (specific endpoint)
+  getMyProfile: () => api.get('/profiles/my'),
+  
+  // Get public profile by username
+  getPublicProfile: (username) => api.get(`/profiles/public/${username}`),
+  
   // Get profile by ID
   getProfileById: (id) => api.get(`/profiles/${id}`),
   
@@ -113,7 +119,10 @@ export const analyticsAPI = {
   getOverallAnalytics: (params) => api.get('/analytics/overall', { params }),
   
   // Record event
-  recordEvent: (data) => api.post('/analytics/events', data),
+  recordEvent: (data) => api.post('/analytics/event', data),
+  
+  // Track analytics event (alias for recordEvent)
+  trackEvent: (eventData) => api.post('/analytics/event', eventData),
 }
 
 // QR Code API calls
@@ -193,6 +202,9 @@ export const adminAPI = {
   // Get all orders
   getAllOrders: (params) => api.get('/admin/orders', { params }),
   
+  // Update order status (admin)
+  updateOrder: (id, data) => api.patch(`/admin/orders/${id}/status`, data),
+  
   // Get system analytics
   getSystemAnalytics: (params) => api.get('/admin/analytics', { params }),
   
@@ -216,6 +228,9 @@ export const adminAPI = {
   
   // Delete QR code
   deleteQRCode: (id) => api.delete(`/admin/qr-codes/${id}`),
+  
+  // Generate missing QR codes
+  generateMissingQRCodes: () => api.post('/admin/qr-codes/generate-missing'),
   
   // Get database tables
   getDatabaseTables: () => api.get('/admin/database/tables'),

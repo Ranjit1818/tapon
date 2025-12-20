@@ -7,6 +7,11 @@ const QRCode = require('./models/QRCode');
 mongoose.connect(config.MONGO_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
+}).then(() => {
+  console.log('✅ Connected to MongoDB');
+}).catch(err => {
+  console.error('❌ MongoDB connection error:', err);
+  process.exit(1);
 });
 
 async function generateMissingQRCodes() {
@@ -36,20 +41,29 @@ async function generateMissingQRCodes() {
       
       try {
         // Create QR code for this profile
+        const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+        const profileUrl = profile.username 
+          ? `${frontendUrl}/p/${profile.username}` 
+          : `${frontendUrl}/p/${profile._id}`;
+        
         const qrCode = await QRCode.create({
           user: profile.user._id,
           profile: profile._id,
           name: `${profile.displayName || profile.user.name} QR Code`,
           type: 'profile',
-          qrData: `${process.env.FRONTEND_URL || 'http://localhost:3000'}/p/${profile.username || profile._id}`,
+          qrData: profileUrl,
           isActive: true
         });
         
         console.log(`✅ Created QR code for ${profile.user.name} (${profile.user.email})`);
+        console.log(`   QR Data: ${profileUrl}`);
         qrCodesCreated++;
         
       } catch (error) {
         console.error(`❌ Failed to create QR code for ${profile.user.name}:`, error.message);
+        if (error.errors) {
+          console.error('   Validation errors:', error.errors);
+        }
       }
     }
     

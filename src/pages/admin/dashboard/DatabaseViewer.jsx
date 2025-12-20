@@ -34,44 +34,68 @@ const DatabaseViewer = () => {
   const [showQueryBuilder, setShowQueryBuilder] = useState(false)
   const [customQuery, setCustomQuery] = useState('')
   const [queryResult, setQueryResult] = useState(null)
-
-  const tables = [
+  const [tables, setTables] = useState([
     { 
       name: 'users', 
       icon: Users, 
       label: 'Users', 
       description: 'User accounts and profiles',
-      count: 156 
+      count: 0 
     },
     { 
       name: 'profiles', 
       icon: FileText, 
       label: 'Profiles', 
       description: 'User profile data',
-      count: 143 
+      count: 0 
     },
     { 
       name: 'qrcodes', 
       icon: QrCode, 
       label: 'QR Codes', 
       description: 'Generated QR codes',
-      count: 203 
+      count: 0 
     },
     { 
       name: 'orders', 
       icon: ShoppingBag, 
       label: 'Orders', 
       description: 'Card orders and purchases',
-      count: 89 
+      count: 0 
     },
     { 
       name: 'analytics', 
       icon: BarChart3, 
       label: 'Analytics', 
       description: 'Usage analytics and stats',
-      count: 1247 
+      count: 0 
     }
-  ]
+  ])
+
+  useEffect(() => {
+    loadTableCounts()
+  }, [])
+
+  const loadTableCounts = async () => {
+    try {
+      const response = await adminAPI.getDatabaseTables()
+      if (response.data.success) {
+        const tableData = response.data.data
+        setTables(prevTables => 
+          prevTables.map(table => {
+            const realData = tableData.find(t => t.name === table.name)
+            return {
+              ...table,
+              count: realData ? realData.count : 0
+            }
+          })
+        )
+      }
+    } catch (error) {
+      console.error('Failed to load table counts:', error)
+      toast.error('Failed to load database information')
+    }
+  }
 
   const mockData = {
     users: [

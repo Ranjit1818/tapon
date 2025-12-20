@@ -86,55 +86,19 @@ const DashboardOverview = () => {
     } catch (error) {
       console.error('Failed to fetch dashboard data:', error)
       
-      // Fallback to demo data if API fails
+      // Fallback to zero data if API fails
       setStats({
-        profileViews: 1247,
-        whatsappClicks: 45,
-        totalLeads: 30,
-        qrScans: 456,
-        nfcTaps: 234,
-        socialClicks: 189
+        profileViews: 0,
+        whatsappClicks: 0,
+        totalLeads: 0,
+        qrScans: 0,
+        nfcTaps: 0,
+        socialClicks: 0
       })
       
-      setRecentActivity([
-        {
-          type: 'profile_view',
-          message: 'Someone viewed your profile',
-          time: '2 minutes ago',
-          emoji: '👀',
-          color: 'bg-blue-500'
-        },
-        {
-          type: 'whatsapp_click',
-          message: 'WhatsApp contact clicked',
-          time: '15 minutes ago',
-          emoji: '📞',
-          color: 'bg-green-500'
-        },
-        {
-          type: 'qr_scan',
-          message: 'QR code scanned',
-          time: '1 hour ago',
-          emoji: '📎',
-          color: 'bg-purple-500'
-        },
-        {
-          type: 'lead_captured',
-          message: 'New lead captured',
-          time: '2 hours ago',
-          emoji: '🎯',
-          color: 'bg-orange-500'
-        },
-        {
-          type: 'nfc_tap',
-          message: 'NFC card tapped',
-          time: '4 hours ago',
-          emoji: '💳',
-          color: 'bg-indigo-500'
-        }
-      ])
+      setRecentActivity([])
       
-      toast.error('Using demo data - Backend connection failed')
+      toast.error('Analytics data unavailable - Backend connection failed')
     } finally {
       setIsLoading(false)
     }
@@ -248,14 +212,6 @@ const DashboardOverview = () => {
       emoji: '📊',
       href: '/app/dashboard/analytics',
       color: 'bg-green-500 hover:bg-green-600'
-    },
-    {
-      title: 'Generate QR',
-      description: 'Create QR codes',
-      icon: QrCode,
-      emoji: '📎',
-      href: '/app/dashboard/qr-generator',
-      color: 'bg-purple-500 hover:bg-purple-600'
     },
     {
       title: 'Shop Cards',

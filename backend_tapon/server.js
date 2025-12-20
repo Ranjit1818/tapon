@@ -105,7 +105,9 @@ if (process.env.NODE_ENV === 'development') {
 const initializeDatabase = async () => {
   try {
     await connectDB();
-    console.log('✅ MongoDB connected successfully');
+    if (process.env.NODE_ENV === 'development') {
+      console.log('✅ MongoDB connected successfully');
+    }
   } catch (error) {
     console.error('❌ Database connection failed:', error.message);
     process.exit(1);
@@ -163,14 +165,18 @@ app.use(errorHandler);
 
 // Graceful shutdown
 const gracefulShutdown = async () => {
-  console.log('🔄 Shutting down gracefully...');
+  if (process.env.NODE_ENV === 'development') {
+    console.log('🔄 Shutting down gracefully...');
+  }
   
   // Close MongoDB connection
   const mongoose = require('mongoose');
   await mongoose.connection.close();
-  console.log('✅ MongoDB connection closed.');
   
-  console.log('✅ Server shutdown complete.');
+  if (process.env.NODE_ENV === 'development') {
+    console.log('✅ MongoDB connection closed.');
+    console.log('✅ Server shutdown complete.');
+  }
   process.exit(0);
 };
 
@@ -180,7 +186,8 @@ process.on('SIGINT', gracefulShutdown);
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
-  console.log(`
+  if (process.env.NODE_ENV === 'development') {
+    console.log(`
 🚀 TapOnn Backend Server is running!
 ✅ THIS IS THE CORRECT SERVER (from backend_tapon)
 📍 Port: ${PORT}
@@ -188,7 +195,10 @@ app.listen(PORT, () => {
 🗄️ Database: MongoDB
 📊 Health Check: http://localhost:${PORT}/api/health
 📖 API Docs: http://localhost:${PORT}/
-  `);
+    `);
+  } else {
+    console.log(`🚀 TapOnn Backend Server running on port ${PORT} (${process.env.NODE_ENV})`);
+  }
 });
 
 module.exports = app; 

@@ -18,6 +18,7 @@ import {
   ExternalLink
 } from 'lucide-react'
 import { useAuth } from '../../../contexts/AuthContext'
+import { orderAPI } from '../../../services/api'
 import toast from 'react-hot-toast'
 
 const Shop = () => {
@@ -26,6 +27,17 @@ const Shop = () => {
   const [flippedCards, setFlippedCards] = useState(new Set())
   const [cart, setCart] = useState([])
   const [showCart, setShowCart] = useState(false)
+  const [showCheckout, setShowCheckout] = useState(false)
+  const [checkout, setCheckout] = useState({
+    fullName: user?.name || '',
+    email: user?.email || '',
+    phone: '',
+    street: '',
+    city: '',
+    state: '',
+    zipCode: '',
+    country: ''
+  })
 
   const categories = [
     { id: 'all', name: 'All Products', emoji: '🛍️' },
@@ -183,14 +195,56 @@ const Shop = () => {
   }
 
   const handleCheckout = () => {
-    const message = `Hi! I'd like to order:\n\n${cart.map(item => 
-      `• ${item.name} (x${item.quantity}) - $${(item.price * item.quantity).toFixed(2)}`
-    ).join('\n')}\n\nTotal: $${getTotalPrice().toFixed(2)}\n\nUser: ${user?.name || 'Guest'}\nEmail: ${user?.email || 'Not provided'}`
-    
-    const whatsappUrl = `https://wa.me/1234567890?text=${encodeURIComponent(message)}`
-    window.open(whatsappUrl, '_blank')
-    
-    toast.success('🚀 Redirecting to WhatsApp for order completion!')
+    if (cart.length === 0) return toast.error('Your cart is empty')
+    setShowCheckout(true)
+  }
+
+  const placeOrder = async () => {
+    try {
+      if (!checkout.fullName || !checkout.email || !checkout.street || !checkout.city || !checkout.state || !checkout.zipCode || !checkout.country) {
+        return toast.error('Please complete shipping details')
+      }
+      const items = cart.map(i => ({
+        productType: i.category === 'review' ? 'review_card' : 'nfc_card',
+        quantity: i.quantity,
+        unitPrice: i.price,
+        name: i.name,
+      }))
+      const totalAmount = Number(getTotalPrice().toFixed(2))
+      const payload = {
+        customerInfo: {
+          name: checkout.fullName,
+          email: checkout.email,
+          phone: checkout.phone || 'N/A'
+        },
+        items,
+        shipping: {
+          address: {
+            street: checkout.street,
+            city: checkout.city,
+            state: checkout.state,
+            zipCode: checkout.zipCode,
+            country: checkout.country
+          }
+        },
+        payment: {
+          method: 'bank_transfer'
+        },
+        notes: `Order via Shop | Contact: ${checkout.fullName} ${checkout.phone || ''}`
+      }
+      const res = await orderAPI.createOrder(payload)
+      if (res.data?.success) {
+        toast.success('✅ Order placed successfully')
+        setCart([])
+        setShowCheckout(false)
+        setShowCart(false)
+      } else {
+        toast.error(res.data?.message || 'Failed to place order')
+      }
+    } catch (e) {
+      console.error(e)
+      toast.error('Failed to place order')
+    }
   }
 
   const ProductCard = ({ product }) => {
@@ -551,8 +605,8 @@ const Shop = () => {
                       onClick={handleCheckout}
                       className="w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-3 rounded-lg font-medium hover:from-green-600 hover:to-green-700 transition-all flex items-center justify-center space-x-2"
                     >
-                      <MessageCircle className="w-5 h-5" />
-                      <span>Order via WhatsApp</span>
+                      <CreditCard className="w-5 h-5" />
+                      <span>Proceed to Checkout</span>
                     </motion.button>
                     
                     <p className="text-xs text-gray-500 dark:text-gray-400 text-center mt-2">
@@ -561,6 +615,56 @@ const Shop = () => {
                   </div>
                 </>
               )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Checkout Modal */}
+      <AnimatePresence>
+        {showCheckout && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
+            onClick={() => setShowCheckout(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-lg"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white">Checkout</h3>
+                <button onClick={() => setShowCheckout(false)} className="w-8 h-8 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center">
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+
+              <div className="grid grid-cols-1 gap-3">
+                <input value={checkout.fullName} onChange={e=>setCheckout({...checkout, fullName:e.target.value})} placeholder="Full Name" className="px-3 py-2 border rounded-lg bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600" />
+                <input value={checkout.email} onChange={e=>setCheckout({...checkout, email:e.target.value})} placeholder="Email" className="px-3 py-2 border rounded-lg bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600" />
+                <input value={checkout.phone} onChange={e=>setCheckout({...checkout, phone:e.target.value})} placeholder="Phone" className="px-3 py-2 border rounded-lg bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600" />
+                <input value={checkout.street} onChange={e=>setCheckout({...checkout, street:e.target.value})} placeholder="Street" className="px-3 py-2 border rounded-lg bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600" />
+                <div className="grid grid-cols-2 gap-3">
+                  <input value={checkout.city} onChange={e=>setCheckout({...checkout, city:e.target.value})} placeholder="City" className="px-3 py-2 border rounded-lg bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600" />
+                  <input value={checkout.state} onChange={e=>setCheckout({...checkout, state:e.target.value})} placeholder="State" className="px-3 py-2 border rounded-lg bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600" />
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <input value={checkout.zipCode} onChange={e=>setCheckout({...checkout, zipCode:e.target.value})} placeholder="ZIP Code" className="px-3 py-2 border rounded-lg bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600" />
+                  <input value={checkout.country} onChange={e=>setCheckout({...checkout, country:e.target.value})} placeholder="Country" className="px-3 py-2 border rounded-lg bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600" />
+                </div>
+              </div>
+
+              <div className="mt-4 flex items-center justify-between">
+                <div className="text-sm text-gray-600 dark:text-gray-400">Total</div>
+                <div className="text-lg font-bold text-gray-900 dark:text-white">${getTotalPrice().toFixed(2)}</div>
+              </div>
+
+              <button onClick={placeOrder} className="mt-4 w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg font-medium">Place Order (COD)</button>
             </motion.div>
           </motion.div>
         )}

@@ -70,7 +70,7 @@ const HomePage = () => {
   return (
     <>
       <Helmet>
-        <title>TapOnn - Digital Profile Platform | Share Instantly. Connect Effortlessly.</title>
+        <title>LetsConnect - Digital Profile Platform | Share Instantly. Connect Effortlessly.</title>
         <meta name="description" content="Transform your networking with TapOnn's NFC-based digital profile platform. Share instantly, connect effortlessly, and manage leads smartly." />
         <meta name="keywords" content="NFC, digital business card, lead management, smart sharing, professional networking, TapOnn" />
         <link rel="canonical" href="https://taponn.com" />

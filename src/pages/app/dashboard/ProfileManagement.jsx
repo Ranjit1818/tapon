@@ -115,10 +115,10 @@ const ProfileManagement = () => {
   const fetchProfile = async () => {
     try {
       setIsLoadingProfile(true)
-      const response = await profileAPI.getProfile()
+      const response = await profileAPI.getMyProfile()
       
-      if (response.data.success && response.data.data.length > 0) {
-        const profileData = response.data.data[0]
+      if (response.data.success && response.data.data) {
+        const profileData = response.data.data
         setProfile(profileData)
         
         // Update form data with fetched profile

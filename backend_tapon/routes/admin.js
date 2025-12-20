@@ -16,7 +16,9 @@ const {
   updateQRCode,
   deleteQRCode,
   getDatabaseTables,
-  getTableData
+  getTableData,
+  generateMissingQRCodes,
+  updateOrderStatusAdmin
 } = require('../controllers/adminController');
 
 // All admin routes require admin authentication
@@ -37,6 +39,7 @@ router.get('/profiles', getAllProfiles);
 
 // Order management
 router.get('/orders', getAllOrders);
+router.patch('/orders/:id/status', updateOrderStatusAdmin);
 
 // Analytics
 router.get('/analytics', getSystemAnalytics);
@@ -46,6 +49,7 @@ router.get('/qr-codes', getAllQRCodes);
 router.get('/qr-codes/:id', getQRCodeById);
 router.put('/qr-codes/:id', updateQRCode);
 router.delete('/qr-codes/:id', deleteQRCode);
+router.post('/qr-codes/generate-missing', generateMissingQRCodes);
 
 // Database operations
 router.get('/database/tables', getDatabaseTables);

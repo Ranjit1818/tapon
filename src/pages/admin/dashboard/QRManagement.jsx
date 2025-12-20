@@ -15,6 +15,7 @@ import {
   RefreshCw
 } from 'lucide-react'
 import QRCodeDisplay from 'react-qr-code'
+import QRCode from 'qrcode'
 import toast from 'react-hot-toast'
 import { adminAPI } from "../../../services/api";
 
@@ -25,14 +26,26 @@ const QRManagement = () => {
   const [searchTerm, setSearchTerm] = useState('')
   const [filterType, setFilterType] = useState('all')
   const [selectedQR, setSelectedQR] = useState(null)
+  const [users, setUsers] = useState([])
+  const [userIdToUsername, setUserIdToUsername] = useState({})
+  const [userProfileMap, setUserProfileMap] = useState({}) // userId -> profileId
+  const [qrCodesByUser, setQrCodesByUser] = useState({}) // userId -> qrCode data
 
   useEffect(() => {
     loadQRCodes()
+    loadUsersForQR()
   }, [])
 
   useEffect(() => {
     filterQRCodes()
   }, [qrCodes, searchTerm, filterType])
+  
+  useEffect(() => {
+    // Reload QR codes when qrCodesByUser changes to update the user QR display
+    if (Object.keys(qrCodesByUser).length > 0) {
+      // QR codes are already loaded, just trigger a re-render
+    }
+  }, [qrCodesByUser])
 
   const loadQRCodes = async () => {
     try {
@@ -40,28 +53,45 @@ const QRManagement = () => {
       
       // Fetch QR codes from backend API
       const response = await adminAPI.getAllQRCodes({
-        include: 'user,analytics'
+        include: 'user,analytics',
+        limit: 1000
       })
 
       if (response.data.success) {
-        const apiQRCodes = response.data.data.map(qr => ({
-          id: qr._id,
-          userId: qr.user?._id,
-          userName: qr.user?.name || `${qr.user?.firstName || ''} ${qr.user?.lastName || ''}`.trim() || 'Unknown User',
-          userEmail: qr.user?.email || '',
-          type: qr.type || 'profile',
-          url: qr.url || qr.qrData || '',
-          qrData: qr.qrData || qr.url || '',
-          createdAt: new Date(qr.createdAt).toLocaleDateString(),
-          lastScanned: qr.lastScanned ? new Date(qr.lastScanned).toLocaleDateString() : 'Never',
-          scanCount: qr.analytics?.scanCount || qr.scanCount || 0,
-          isActive: qr.isActive !== false
-        }))
+        const apiQRCodes = response.data.data
+          .filter(qr => qr && qr._id) // Filter out any invalid entries
+          .map(qr => ({
+            id: qr._id,
+            userId: qr.user?._id || qr.user || null,
+            userName: qr.user?.name || qr.profile?.displayName || 'Unknown User',
+            userEmail: qr.user?.email || '',
+            type: qr.type || 'profile',
+            url: qr.url || qr.qrData || '',
+            qrData: qr.qrData || qr.url || '',
+            createdAt: qr.createdAt ? new Date(qr.createdAt).toLocaleDateString() : 'N/A',
+            lastScanned: qr.lastScanned ? new Date(qr.lastScanned).toLocaleDateString() : 'Never',
+            scanCount: qr.analytics?.scanCount || qr.scanCount || 0,
+            isActive: qr.isActive !== false
+          }))
         
+        console.log(`✅ Loaded ${apiQRCodes.length} QR codes from API`)
         setQrCodes(apiQRCodes)
+        
+        // Create a map of userId -> QR code for quick lookup
+        const qrMap = {}
+        apiQRCodes.forEach(qr => {
+          if (qr.userId) {
+            qrMap[qr.userId] = qr
+          }
+        })
+        setQrCodesByUser(qrMap)
+      } else {
+        console.error('API returned error:', response.data.message)
+        toast.error('Failed to load QR codes')
       }
     } catch (error) {
       console.error('Failed to fetch QR codes:', error)
+      toast.error('Failed to load QR codes')
       
       // Fallback to demo data if API fails
       const mockQRCodes = [
@@ -125,6 +155,216 @@ const QRManagement = () => {
     }
   }
 
+  const loadUsersForQR = async () => {
+    try {
+      const usersRes = await adminAPI.getUsers({ limit: 1000 })
+      if (usersRes.data?.success) {
+        const apiUsers = usersRes.data.data.map(u => ({
+          id: u._id,
+          name: u.name || `${u.firstName || ''} ${u.lastName || ''}`.trim() || 'Unknown User',
+          email: u.email
+        }))
+        setUsers(apiUsers)
+      }
+
+      const profilesRes = await adminAPI.getAllProfiles({ limit: 1000 })
+      if (profilesRes.data?.success) {
+        const usernameMap = {}
+        const profileMap = {}
+        for (const p of profilesRes.data.data) {
+          if (p.user?._id) {
+            if (p.username) usernameMap[p.user._id] = p.username
+            profileMap[p.user._id] = p._id // Map userId to profileId
+          }
+        }
+        setUserIdToUsername(usernameMap)
+        setUserProfileMap(profileMap)
+      }
+    } catch (e) {
+      console.error('Failed to load users/profiles for QR:', e)
+    }
+  }
+
+  const getProfileUrl = (userId) => {
+    // First check if user has a username
+    const username = userIdToUsername[userId]
+    if (username) {
+      const origin = typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000'
+      return `${origin}/p/${username}`
+    }
+    
+    // If no username, check if we have a QR code with profile ID
+    const qrCode = qrCodesByUser[userId]
+    if (qrCode && qrCode.qrData) {
+      return qrCode.qrData
+    }
+    
+    // If we have a profile ID, use that
+    const profileId = userProfileMap[userId]
+    if (profileId) {
+      const origin = typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000'
+      return `${origin}/p/${profileId}`
+    }
+    
+    return ''
+  }
+
+  const downloadQrSvg = (domId, filenameBase) => {
+    const svg = document.getElementById(domId)
+    if (!svg) return toast.error('QR not ready')
+    const serializer = new XMLSerializer()
+    const source = serializer.serializeToString(svg)
+    const blob = new Blob([source], { type: 'image/svg+xml;charset=utf-8' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `${filenameBase}.svg`
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    URL.revokeObjectURL(url)
+    toast.success('QR downloaded')
+  }
+
+  const printQrSvg = (domId, title = 'TapOnn QR Code', subtitle = 'Digital Profile') => {
+    const svg = document.getElementById(domId)
+    if (!svg) return toast.error('QR not ready')
+    const serializer = new XMLSerializer()
+    const svgData = serializer.serializeToString(svg)
+
+    const printWindow = window.open('', '_blank', 'noopener,noreferrer')
+    if (!printWindow) return toast.error('Popup blocked. Allow popups to print.')
+
+    printWindow.document.open()
+    printWindow.document.write(`
+      <html>
+        <head>
+          <title>${title}</title>
+          <meta charset="utf-8" />
+          <style>
+            @page { size: A4; margin: 20mm; }
+            html, body { height: 100%; }
+            body { font-family: Arial, sans-serif; color: #111; }
+            .wrap { max-width: 700px; margin: 0 auto; }
+            .heading { text-align: center; margin-bottom: 12mm; }
+            .brand { font-size: 12px; letter-spacing: 2px; color: #2563eb; text-transform: uppercase; }
+            .title { font-size: 28px; font-weight: 700; margin: 6px 0 2px; }
+            .subtitle { font-size: 14px; color: #6b7280; }
+            .card { border: 1px solid #e5e7eb; border-radius: 12px; padding: 16mm; }
+            .qr { display: flex; justify-content: center; margin: 6mm 0 8mm; }
+            .qr svg { width: 80mm; height: 80mm; }
+            .meta { text-align: center; font-size: 12px; color: #6b7280; }
+            .meta p { margin: 2mm 0; }
+            .footer { margin-top: 10mm; text-align: center; font-size: 11px; color: #9ca3af; }
+            .link { color: #2563eb; word-break: break-all; }
+          </style>
+        </head>
+        <body>
+          <div class="wrap">
+            <div class="heading">
+              <div class="brand">TapOnn</div>
+              <div class="title">${title}</div>
+              <div class="subtitle">${subtitle}</div>
+            </div>
+            <div class="card">
+              <div class="qr">${svgData}</div>
+              <div class="meta">
+                <p>Scan to view the digital profile</p>
+                <p>Generated on: ${new Date().toLocaleString()}</p>
+              </div>
+            </div>
+            <div class="footer">© ${new Date().getFullYear()} TapOnn.com • Smart Digital Profiles</div>
+          </div>
+          <script>
+            window.onload = () => { setTimeout(() => { window.print(); window.close(); }, 150); };
+          </script>
+        </body>
+      </html>
+    `)
+    printWindow.document.close()
+    toast.success('Print preview opened')
+  }
+
+  // --- PDF download (no extra build-time deps; loads jsPDF at runtime) ---
+  const ensureJsPDF = async () => {
+    if (window.jspdf && window.jspdf.jsPDF) return window.jspdf.jsPDF
+    await new Promise((resolve, reject) => {
+      const s = document.createElement('script')
+      s.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js'
+      s.onload = resolve
+      s.onerror = reject
+      document.head.appendChild(s)
+    })
+    return window.jspdf.jsPDF
+  }
+
+  const svgToCanvas = (svgElement, sizePx = 512) => new Promise((resolve, reject) => {
+    try {
+      const serializer = new XMLSerializer()
+      const svgData = serializer.serializeToString(svgElement)
+      const img = new Image()
+      img.crossOrigin = 'anonymous'
+      img.onload = () => {
+        const canvas = document.createElement('canvas')
+        canvas.width = sizePx
+        canvas.height = sizePx
+        const ctx = canvas.getContext('2d')
+        ctx.fillStyle = '#ffffff'
+        ctx.fillRect(0, 0, sizePx, sizePx)
+        ctx.drawImage(img, 0, 0, sizePx, sizePx)
+        resolve(canvas)
+      }
+      img.onerror = reject
+      img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svgData)
+    } catch (e) { reject(e) }
+  })
+
+  const downloadQrPdf = async (domId, filenameBase, userName = 'User', urlText = '') => {
+    const svg = document.getElementById(domId)
+    if (!svg) return toast.error('QR not ready')
+    try {
+      const jsPDF = await ensureJsPDF()
+      const canvas = await svgToCanvas(svg, 800)
+      const imgData = canvas.toDataURL('image/png')
+      // A4 Portrait in mm
+      const doc = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait' })
+      // Margins and layout
+      const margin = 15
+      const pageWidth = doc.internal.pageSize.getWidth()
+      let y = margin
+      doc.setTextColor(37, 99, 235)
+      doc.setFontSize(11)
+      doc.text('TapOnn', pageWidth / 2, y, { align: 'center' })
+      y += 6
+      doc.setTextColor(0, 0, 0)
+      doc.setFontSize(20)
+      doc.text('Digital Profile QR Code', pageWidth / 2, y, { align: 'center' })
+      y += 8
+      doc.setFontSize(12)
+      doc.setTextColor(107, 114, 128)
+      doc.text(userName, pageWidth / 2, y, { align: 'center' })
+      y += 10
+      // QR image centered
+      const qrSize = 120
+      const x = (pageWidth - qrSize) / 2
+      doc.addImage(imgData, 'PNG', x, y, qrSize, qrSize)
+      y += qrSize + 10
+      doc.setTextColor(107, 114, 128)
+      doc.setFontSize(10)
+      if (urlText) doc.textWithLink(urlText, pageWidth / 2, y, { align: 'center', url: urlText })
+      y += 8
+      doc.text(`Generated on: ${new Date().toLocaleString()}`, pageWidth / 2, y, { align: 'center' })
+      y += 10
+      doc.setFontSize(9)
+      doc.text(`© ${new Date().getFullYear()} TapOnn.com • Smart Digital Profiles`, pageWidth / 2, y, { align: 'center' })
+      doc.save(`${filenameBase}.pdf`)
+      toast.success('PDF downloaded')
+    } catch (e) {
+      console.error(e)
+      toast.error('Failed to create PDF')
+    }
+  }
+
   const filterQRCodes = () => {
     let filtered = qrCodes
 
@@ -166,31 +406,42 @@ const QRManagement = () => {
     }
   }
 
-  const downloadQRCode = (qr) => {
-    // Create a canvas and draw the QR code
-    const canvas = document.createElement('canvas')
-    const ctx = canvas.getContext('2d')
-    canvas.width = 256
-    canvas.height = 256
-    
-    // This is a simplified version - in real implementation you'd render the actual QR code
-    ctx.fillStyle = '#ffffff'
-    ctx.fillRect(0, 0, 256, 256)
-    ctx.fillStyle = '#000000'
-    ctx.font = '12px Arial'
-    ctx.fillText('QR Code', 100, 128)
-    
-    // Convert to blob and download
-    canvas.toBlob((blob) => {
-      const url = URL.createObjectURL(blob)
-      const a = document.createElement('a')
-      a.href = url
-      a.download = `qr-${qr.userName.replace(/\s+/g, '-').toLowerCase()}-${qr.type}.png`
-      a.click()
-      URL.revokeObjectURL(url)
-    })
-    
-    toast.success('QR code downloaded')
+  const downloadQRCode = async (qr) => {
+    try {
+      // Use the backend API to get the QR code image
+      const response = await adminAPI.getQRCodeById(qr._id)
+      if (response.data?.success) {
+        const qrData = response.data.data.qrData
+        
+        // Create QR code using qrcode library
+        const canvas = document.createElement('canvas')
+        await QRCode.toCanvas(canvas, qrData, {
+          width: 256,
+          margin: 2,
+          color: {
+            dark: '#000000',
+            light: '#FFFFFF'
+          }
+        })
+        
+        // Convert to blob and download
+        canvas.toBlob((blob) => {
+          const url = URL.createObjectURL(blob)
+          const a = document.createElement('a')
+          a.href = url
+          a.download = `qr-${qr.userName?.replace(/\s+/g, '-').toLowerCase() || 'user'}-${qr.type || 'profile'}.png`
+          a.click()
+          URL.revokeObjectURL(url)
+        })
+        
+        toast.success('QR code downloaded')
+      } else {
+        toast.error('Failed to download QR code')
+      }
+    } catch (error) {
+      console.error('Download error:', error)
+      toast.error('Failed to download QR code')
+    }
   }
 
   const regenerateQRCode = (qr) => {
@@ -210,6 +461,30 @@ const QRManagement = () => {
         : q
     ))
     toast.success(`QR code ${qr.isActive ? 'deactivated' : 'activated'}`)
+  }
+
+  const handleGenerateMissingQRCodes = async () => {
+    try {
+      toast.loading('Generating missing QR codes...', { id: 'generate-qr' })
+      const response = await adminAPI.generateMissingQRCodes()
+      if (response.data.success) {
+        const { qrCodesCreated, qrCodesSkipped, totalProfiles, errors } = response.data.data
+        toast.success(
+          `Generated ${qrCodesCreated} QR codes. ${qrCodesSkipped} already existed out of ${totalProfiles} profiles.${errors && errors.length > 0 ? ` ${errors.length} errors occurred.` : ''}`,
+          { id: 'generate-qr', duration: 5000 }
+        )
+        // Reload QR codes and users to show newly generated ones
+        await Promise.all([
+          loadQRCodes(),
+          loadUsersForQR()
+        ])
+      } else {
+        toast.error('Failed to generate missing QR codes', { id: 'generate-qr' })
+      }
+    } catch (error) {
+      console.error('Failed to generate missing QR codes:', error)
+      toast.error(error.response?.data?.message || 'Failed to generate missing QR codes', { id: 'generate-qr' })
+    }
   }
 
   const exportQRReport = () => {
@@ -270,6 +545,13 @@ const QRManagement = () => {
         
         <div className="mt-4 lg:mt-0 flex items-center space-x-3">
           <button
+            onClick={handleGenerateMissingQRCodes}
+            className="flex items-center space-x-2 px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-colors"
+          >
+            <QrCode className="w-4 h-4" />
+            <span>Generate Missing QR Codes</span>
+          </button>
+          <button
             onClick={exportQRReport}
             className="flex items-center space-x-2 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
           >
@@ -283,6 +565,72 @@ const QRManagement = () => {
             <RefreshCw className="w-4 h-4" />
             <span>Refresh</span>
           </button>
+        </div>
+      </div>
+
+      {/* User Profile QR Codes */}
+      <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-gray-700">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">User Profile QR Codes</h2>
+          <span className="text-sm text-gray-500 dark:text-gray-400">{users.length} users</span>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {users.map(u => {
+            const url = getProfileUrl(u.id)
+            const hasUrl = !!url
+            const hasUsername = !!userIdToUsername[u.id]
+            const qrCode = qrCodesByUser[u.id]
+            const domId = `user-qr-${u.id}`
+            const filename = (u.name || 'user').toLowerCase().replace(/[^a-z0-9]+/g, '-') + '-qr'
+            return (
+              <div key={u.id} className="card p-4 flex flex-col items-center">
+                <div className="text-center mb-3">
+                  <div className="text-sm font-medium text-gray-900 dark:text-white">{u.name}</div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400">{u.email}</div>
+                  {!hasUsername && (
+                    <div className="text-xs text-yellow-600 dark:text-yellow-400 mt-1">No username</div>
+                  )}
+                </div>
+                <div className="bg-white p-2 rounded mb-3">
+                  {hasUrl ? (
+                    <QRCodeDisplay id={domId} value={url} size={128} level="M" />
+                  ) : (
+                    <div className="w-[128px] h-[128px] flex flex-col items-center justify-center text-xs text-gray-400 border-2 border-dashed border-gray-300 rounded">
+                      <QrCode className="w-8 h-8 mb-1 opacity-50" />
+                      <span>No QR Code</span>
+                      <span className="text-[10px] mt-1">Generate Missing</span>
+                    </div>
+                  )}
+                </div>
+                <div className="w-full flex items-center justify-center space-x-2">
+                  {hasUrl ? (
+                    <>
+                      <button
+                        onClick={() => downloadQrSvg(domId, filename)}
+                        className="inline-flex items-center px-3 py-1.5 bg-blue-600 text-white rounded hover:bg-blue-700 text-xs"
+                      >
+                        <Download className="w-3 h-3 mr-1" /> SVG
+                      </button>
+                      <button
+                        onClick={() => downloadQrPdf(domId, filename, u.name, url)}
+                        className="inline-flex items-center px-3 py-1.5 bg-gray-700 text-white rounded hover:bg-gray-800 text-xs"
+                      >
+                        <span className="mr-1">⬇️</span> PDF
+                      </button>
+                    </>
+                  ) : (
+                    <button
+                      onClick={handleGenerateMissingQRCodes}
+                      className="inline-flex items-center px-3 py-1.5 bg-purple-600 text-white rounded hover:bg-purple-700 text-xs"
+                    >
+                      <QrCode className="w-3 h-3 mr-1" />
+                      Generate QR
+                    </button>
+                  )}
+                </div>
+              </div>
+            )
+          })}
         </div>
       </div>
 

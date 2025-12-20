@@ -568,22 +568,31 @@ const getSystemAnalytics = async (req, res, next) => {
 // @access  Private (Admin only)
 const getAllQRCodes = async (req, res, next) => {
   try {
-    const { page = 1, limit = 10, search, type, status } = req.query;
+    const { page = 1, limit = 1000, search, type, status } = req.query;
     const skip = (page - 1) * limit;
 
     const matchQuery = {};
     if (search) {
       matchQuery.$or = [
         { name: { $regex: search, $options: 'i' } },
-        { 'user.name': { $regex: search, $options: 'i' } }
+        { 'user.name': { $regex: search, $options: 'i' } },
+        { 'user.email': { $regex: search, $options: 'i' } }
       ];
     }
     if (type) matchQuery.type = type;
     if (status) matchQuery.isActive = status === 'active';
 
     const qrCodes = await QRCode.find(matchQuery)
-      .populate('user', 'name email')
-      .populate('profile', 'displayName username')
+      .populate({
+        path: 'user',
+        select: 'name email',
+        options: { lean: true }
+      })
+      .populate({
+        path: 'profile',
+        select: 'displayName username',
+        options: { lean: true }
+      })
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(parseInt(limit));
@@ -601,6 +610,7 @@ const getAllQRCodes = async (req, res, next) => {
       }
     });
   } catch (error) {
+    console.error('Error in getAllQRCodes:', error);
     next(error);
   }
 };
@@ -761,6 +771,168 @@ const getTableData = async (req, res, next) => {
   }
 };
 
+// @desc    Generate missing QR codes for all profiles (admin only)
+// @route   POST /api/admin/qr-codes/generate-missing
+// @access  Private (Admin only)
+const generateMissingQRCodes = async (req, res, next) => {
+  try {
+    // Check if user is admin
+    if (req.user.role !== 'admin' && req.user.role !== 'super_admin') {
+      return next(new ErrorResponse('Access denied. Admin role required.', 403));
+    }
+
+    const profiles = await Profile.find({}).populate('user', 'name email');
+    
+    let qrCodesCreated = 0;
+    let qrCodesSkipped = 0;
+    const errors = [];
+
+    for (const profile of profiles) {
+      // Skip if profile doesn't have a user
+      if (!profile.user || !profile.user._id) {
+        errors.push({
+          profileId: profile._id,
+          error: 'Profile has no associated user'
+        });
+        continue;
+      }
+
+      // Check if QR code already exists for this profile
+      const existingQR = await QRCode.findOne({ 
+        user: profile.user._id, 
+        profile: profile._id 
+      });
+      
+      if (existingQR) {
+        qrCodesSkipped++;
+        continue;
+      }
+      
+      try {
+        // Create QR code for this profile
+        const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+        const profileUrl = profile.username 
+          ? `${frontendUrl}/p/${profile.username}` 
+          : `${frontendUrl}/p/${profile._id}`;
+        
+        const qrCode = await QRCode.create({
+          user: profile.user._id,
+          profile: profile._id,
+          name: `${profile.displayName || profile.user?.name || 'Profile'} QR Code`,
+          type: 'profile',
+          qrData: profileUrl,
+          isActive: true
+        });
+        
+        qrCodesCreated++;
+        
+        if (process.env.NODE_ENV === 'development') {
+          console.log(`✅ Created QR code for ${profile.user?.name || 'User'} (${profile.user?.email || 'N/A'})`);
+        }
+      } catch (error) {
+        const errorDetails = {
+          profileId: profile._id,
+          userId: profile.user?._id,
+          userName: profile.user?.name,
+          error: error.message
+        };
+        
+        if (error.errors) {
+          errorDetails.validationErrors = error.errors;
+        }
+        
+        errors.push(errorDetails);
+        
+        console.error(`❌ Failed to create QR code for profile ${profile._id}:`, error.message);
+        if (error.errors) {
+          console.error('Validation errors:', JSON.stringify(error.errors, null, 2));
+        }
+      }
+    }
+    
+    res.status(200).json({
+      success: true,
+      data: {
+        qrCodesCreated,
+        qrCodesSkipped,
+        totalProfiles: profiles.length,
+        errors: errors.length > 0 ? errors : undefined
+      },
+      message: `Generated ${qrCodesCreated} QR codes. ${qrCodesSkipped} already existed.${errors.length > 0 ? ` ${errors.length} errors occurred.` : ''}`
+    });
+  } catch (error) {
+    console.error('Error in generateMissingQRCodes:', error);
+    next(error);
+  }
+};
+
+// @desc    Update order status (admin only)
+// @route   PATCH /api/admin/orders/:id/status
+// @access  Private (Admin only)
+const updateOrderStatusAdmin = async (req, res, next) => {
+  try {
+    // Check if user is admin
+    if (req.user.role !== 'admin' && req.user.role !== 'super_admin') {
+      return next(new ErrorResponse('Access denied. Admin role required.', 403));
+    }
+
+    const order = await Order.findById(req.params.id);
+
+    if (!order) {
+      return next(new ErrorResponse(`Order not found with id of ${req.params.id}`, 404));
+    }
+
+    const oldStatus = order.status;
+    const newStatus = req.body.status;
+    
+    if (!['pending', 'processing', 'shipped', 'delivered', 'cancelled'].includes(newStatus)) {
+      return next(new ErrorResponse('Invalid order status', 400));
+    }
+
+    order.status = newStatus;
+    
+    // Update tracking number if provided
+    if (req.body.trackingNumber) {
+      order.trackingNumber = req.body.trackingNumber;
+    }
+
+    // Add note if provided
+    if (req.body.note) {
+      order.notes = order.notes || [];
+      order.notes.push({
+        message: req.body.note,
+        addedBy: req.user.id,
+        addedAt: Date.now()
+      });
+    }
+
+    await order.save();
+
+    // Record analytics event
+    await Analytics.recordEvent({
+      user: req.user.id,
+      event: {
+        type: 'order_status_updated',
+        category: 'commerce',
+        action: 'update_status'
+      },
+      metadata: {
+        orderId: order._id,
+        orderNumber: order.orderNumber,
+        oldStatus,
+        newStatus: order.status
+      }
+    });
+
+    res.status(200).json({
+      success: true,
+      data: order
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   getDashboardStats,
   getAllUsers,
@@ -775,7 +947,9 @@ module.exports = {
   updateQRCode,
   deleteQRCode,
   getDatabaseTables,
-  getTableData
+  getTableData,
+  generateMissingQRCodes,
+  updateOrderStatusAdmin
 };
 
 

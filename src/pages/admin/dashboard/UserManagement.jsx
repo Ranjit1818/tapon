@@ -22,6 +22,8 @@ import {
   AlertTriangle
 } from 'lucide-react'
 import toast from 'react-hot-toast'
+import { adminAPI } from '../../../services/api'
+import QRCodeDisplay from 'react-qr-code'
 
 
 const UserManagement = () => {
@@ -33,6 +35,7 @@ const UserManagement = () => {
   const [filterStatus, setFilterStatus] = useState('all')
   const [selectedUser, setSelectedUser] = useState(null)
   const [showUserModal, setShowUserModal] = useState(false)
+  const [userIdToUsername, setUserIdToUsername] = useState({})
 
   useEffect(() => {
     loadUsers()
@@ -71,6 +74,22 @@ const UserManagement = () => {
         }))
         
         setUsers(apiUsers)
+
+        // Fetch profiles to map userId -> username for QR links
+        try {
+          const profilesRes = await adminAPI.getAllProfiles({ limit: 1000 })
+          if (profilesRes.data?.success) {
+            const map = {}
+            for (const p of profilesRes.data.data) {
+              if (p.user?._id && p.username) {
+                map[p.user._id] = p.username
+              }
+            }
+            setUserIdToUsername(map)
+          }
+        } catch (e) {
+          console.error('Failed to load usernames for QR:', e)
+        }
       }
     } catch (error) {
       console.error('Failed to fetch users:', error)
@@ -165,6 +184,31 @@ const UserManagement = () => {
     }
 
     setFilteredUsers(filtered)
+  }
+
+  const getProfileUrl = (userId) => {
+    const username = userIdToUsername[userId]
+    if (!username) return ''
+    const origin = typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000'
+    return `${origin}/p/${username}`
+  }
+
+  const downloadQrSvg = (user) => {
+    const svg = document.getElementById(`qr-${user.id}`)
+    if (!svg) return toast.error('QR not ready')
+    const serializer = new XMLSerializer()
+    const source = serializer.serializeToString(svg)
+    const blob = new Blob([source], { type: 'image/svg+xml;charset=utf-8' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    const safeName = (user.name || 'user').toLowerCase().replace(/[^a-z0-9]+/g, '-')
+    link.download = `${safeName}-qr.svg`
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    URL.revokeObjectURL(url)
+    toast.success('QR downloaded')
   }
 
   const handleUserAction = async (action, user) => {
@@ -519,6 +563,9 @@ const UserManagement = () => {
                     Company
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    QR Code
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                     Activity
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
@@ -572,6 +619,28 @@ const UserManagement = () => {
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm text-gray-900 dark:text-white">{user.company || '-'}</div>
                       <div className="text-sm text-gray-500 dark:text-gray-400">{user.location || '-'}</div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                      {(() => {
+                        const url = getProfileUrl(user.id)
+                        if (!url) return <span className="text-gray-400">No username</span>
+                        return (
+                          <div className="flex items-center space-x-3">
+                            <div className="p-1 bg-white rounded">
+                              <QRCodeDisplay id={`qr-${user.id}`} value={url} size={64} level="M" />
+                            </div>
+                            <div className="flex flex-col">
+                              <span className="text-xs break-all max-w-[220px]">{url}</span>
+                              <button
+                                onClick={() => downloadQrSvg(user)}
+                                className="inline-flex items-center mt-1 px-2 py-1 bg-blue-500 text-white rounded text-xs hover:bg-blue-600"
+                              >
+                                <Download className="w-3 h-3 mr-1" /> Download
+                              </button>
+                            </div>
+                          </div>
+                        )
+                      })()}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                       <div>Views: {user.profileViews}</div>

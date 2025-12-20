@@ -127,6 +127,8 @@ const AppDashboardPage = () => {
   const handleLogout = () => {
     logout()
     toast.success('👋 See you later!')
+    // Force redirect to login page
+    window.location.href = '/app/login'
   }
 
   const getGreeting = () => {

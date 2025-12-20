@@ -207,17 +207,49 @@ const createProfile = async (req, res, next) => {
 
     // Create default QR code
     try {
-      await QRCode.create({
-        user: req.user.id,
-        profile: profile._id,
-        name: `${profile.displayName || 'Profile'} QR Code`,
-        type: 'profile',
-        qrData: `${process.env.FRONTEND_URL || 'http://localhost:3000'}/p/${profile.username || profile._id}`,
-        isActive: true
+      // Check if QR code already exists
+      const existingQR = await QRCode.findOne({ 
+        user: req.user.id, 
+        profile: profile._id 
       });
-      console.log(`✅ Auto-generated QR code for profile: ${profile._id}`);
+      
+      if (!existingQR) {
+        const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+        const profileUrl = profile.username 
+          ? `${frontendUrl}/p/${profile.username}` 
+          : `${frontendUrl}/p/${profile._id}`;
+        
+        const qrCode = await QRCode.create({
+          user: req.user.id,
+          profile: profile._id,
+          name: `${profile.displayName || 'Profile'} QR Code`,
+          type: 'profile',
+          qrData: profileUrl,
+          isActive: true
+        });
+        
+        if (process.env.NODE_ENV === 'development') {
+          console.log(`✅ Auto-generated QR code for profile: ${profile._id}`, {
+            qrCodeId: qrCode._id,
+            qrData: profileUrl
+          });
+        }
+      } else {
+        if (process.env.NODE_ENV === 'development') {
+          console.log(`⏭️  QR code already exists for profile: ${profile._id}`);
+        }
+      }
     } catch (qrError) {
-      console.error('Failed to auto-generate QR code:', qrError);
+      // Log error but don't fail profile creation
+      console.error('❌ Failed to auto-generate QR code:', qrError.message);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('QR Error details:', {
+          message: qrError.message,
+          stack: qrError.stack,
+          profileId: profile._id,
+          userId: req.user.id
+        });
+      }
       // Don't fail profile creation if QR generation fails
     }
 
@@ -250,6 +282,37 @@ const updateProfile = async (req, res, next) => {
       new: true,
       runValidators: true
     });
+
+    // If username was added/updated, update QR code data
+    if (req.body.username && profile.username) {
+      try {
+        const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+        const profileUrl = `${frontendUrl}/p/${profile.username}`;
+        
+        // Update existing QR code or create if doesn't exist
+        const existingQR = await QRCode.findOne({ 
+          user: req.user.id, 
+          profile: profile._id 
+        });
+        
+        if (existingQR) {
+          existingQR.qrData = profileUrl;
+          await existingQR.save();
+        } else {
+          // Create QR code if it doesn't exist
+          await QRCode.create({
+            user: req.user.id,
+            profile: profile._id,
+            name: `${profile.displayName || 'Profile'} QR Code`,
+            type: 'profile',
+            qrData: profileUrl,
+            isActive: true
+          });
+        }
+      } catch (qrError) {
+        console.error('Failed to update QR code after profile update:', qrError.message);
+      }
+    }
 
     res.status(200).json({
       success: true,

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
 import { motion } from 'framer-motion'
+import axios from 'axios'
 import { 
   Phone,
   Mail,
@@ -24,76 +25,55 @@ const ProfilePage = () => {
   const { username } = useParams()
   const [profile, setProfile] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
   const [copied, setCopied] = useState(false)
 
   useEffect(() => {
-    // Simulate loading profile data
-    useEffect(() => {
-      const token = localStorage.getItem("token");
-  
-      if (!token) {
-        setError("You are not logged in");
-        setLoading(false);
-        return;
-      }
-  
-      axios
-        .get("http://localhost:5000/api/profiles", {
-          headers: { Authorization: `Bearer ${token}` },
-        })
-        .then((res) => {
-          setProfile(res.data); // ✅ Real API response
-          setLoading(false);
-        })
-        .catch((err) => {
-          console.error(err);
-          setError("Failed to load profile");
-          setLoading(false);
-        });
-    }, [username]);
-    
-    setTimeout(() => {
-      setProfile({
-        name: 'John Doe',
-        title: 'Digital Marketing Specialist',
-        company: 'TechCorp Solutions',
-        bio: 'Passionate digital marketer with 8+ years of experience helping businesses grow through innovative marketing strategies. Specialized in social media marketing, SEO, and lead generation.',
-        avatar: 'JD',
-        email: 'john.doe@techcorp.com',
-        phone: '+1 (555) 123-4567',
-        location: 'Mumbai, India',
-        website: 'https://techcorp.com',
-        social: {
-          linkedin: 'https://linkedin.com/in/johndoe',
-          twitter: 'https://twitter.com/johndoe',
-          instagram: 'https://instagram.com/johndoe',
-          facebook: 'https://facebook.com/johndoe'
-        },
-        links: [
-          {
-            title: 'Portfolio',
-            url: 'https://johndoe.portfolio.com',
-            icon: Globe
-          },
-          {
-            title: 'Blog',
-            url: 'https://johndoe.blog.com',
-            icon: Globe
-          },
-          {
-            title: 'Services',
-            url: 'https://johndoe.services.com',
-            icon: Globe
-          }
-        ],
-        stats: {
-          profileViews: 1247,
-          connections: 892,
-          leads: 156
+    const fetchProfile = async () => {
+      try {
+        setLoading(true)
+        const response = await axios.get(`http://localhost:5000/api/profiles/public/${username}`)
+        
+        if (response.data.success) {
+          const profileData = response.data.data
+          setProfile({
+            name: profileData.displayName || profileData.user?.name || 'Unknown',
+            title: profileData.jobTitle || 'Professional',
+            company: profileData.company || 'Company',
+            bio: profileData.bio || 'No bio available',
+            avatar: profileData.displayName?.charAt(0) || 'U',
+            email: profileData.contactInfo?.email || profileData.user?.email || '',
+            phone: profileData.contactInfo?.phone || '',
+            location: profileData.location || '',
+            website: profileData.website || '',
+            social: {
+              linkedin: profileData.socialLinks?.linkedin || '',
+              twitter: profileData.socialLinks?.twitter || '',
+              instagram: profileData.socialLinks?.instagram || '',
+              facebook: profileData.socialLinks?.facebook || '',
+              youtube: profileData.socialLinks?.youtube || ''
+            },
+            links: profileData.customLinks || [],
+            stats: {
+              profileViews: 0,
+              connections: 0,
+              leads: 0
+            }
+          })
+        } else {
+          setError('Profile not found')
         }
-      })
-      setLoading(false)
-    }, 1000)
+      } catch (err) {
+        console.error('Error fetching profile:', err)
+        setError('Failed to load profile')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    if (username) {
+      fetchProfile()
+    }
   }, [username])
 
   const handleCopyLink = () => {
@@ -131,15 +111,15 @@ const ProfilePage = () => {
     )
   }
 
-  if (!profile) {
+  if (error || !profile) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-accent-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-            Profile Not Found
+            {error || 'Profile Not Found'}
           </h1>
           <p className="text-gray-600 dark:text-gray-400">
-            The profile you're looking for doesn't exist.
+            {error ? 'There was an error loading the profile.' : 'The profile you\'re looking for doesn\'t exist.'}
           </p>
         </div>
       </div>
@@ -240,32 +220,36 @@ const ProfilePage = () => {
             </h3>
             
             <div className="grid grid-cols-2 gap-3">
-              {Object.entries(profile.social).map(([platform, url]) => {
-                const icons = {
-                  linkedin: Linkedin,
-                  twitter: Twitter,
-                  instagram: Instagram,
-                  facebook: Facebook
-                }
-                const Icon = icons[platform]
-                const colors = {
-                  linkedin: 'bg-blue-600 hover:bg-blue-700',
-                  twitter: 'bg-blue-400 hover:bg-blue-500',
-                  instagram: 'bg-pink-500 hover:bg-pink-600',
-                  facebook: 'bg-blue-800 hover:bg-blue-900'
-                }
-                
-                return (
-                  <button
-                    key={platform}
-                    onClick={() => handleContact('social', url)}
-                    className={`flex items-center justify-center space-x-2 p-3 text-white rounded-lg transition-colors ${colors[platform]}`}
-                  >
-                    <Icon className="w-5 h-5" />
-                    <span className="capitalize">{platform}</span>
-                  </button>
-                )
-              })}
+              {Object.entries(profile.social)
+                .filter(([platform, url]) => url && url.trim() !== '')
+                .map(([platform, url]) => {
+                  const icons = {
+                    linkedin: Linkedin,
+                    twitter: Twitter,
+                    instagram: Instagram,
+                    facebook: Facebook,
+                    youtube: Youtube
+                  }
+                  const Icon = icons[platform]
+                  const colors = {
+                    linkedin: 'bg-blue-600 hover:bg-blue-700',
+                    twitter: 'bg-blue-400 hover:bg-blue-500',
+                    instagram: 'bg-pink-500 hover:bg-pink-600',
+                    facebook: 'bg-blue-800 hover:bg-blue-900',
+                    youtube: 'bg-red-600 hover:bg-red-700'
+                  }
+                  
+                  return (
+                    <button
+                      key={platform}
+                      onClick={() => handleContact('social', url)}
+                      className={`flex items-center justify-center space-x-2 p-3 text-white rounded-lg transition-colors ${colors[platform]}`}
+                    >
+                      <Icon className="w-5 h-5" />
+                      <span className="capitalize">{platform}</span>
+                    </button>
+                  )
+                })}
             </div>
           </motion.div>
 

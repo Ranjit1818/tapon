@@ -1,5 +1,6 @@
 const User = require('../models/User');
 const Profile = require('../models/Profile');
+const QRCode = require('../models/QRCode');
 const Analytics = require('../models/Analytics');
 const ErrorResponse = require('../utils/errorResponse');
 const { validationResult } = require('express-validator');
@@ -11,9 +12,11 @@ const config = require('../config/config');
 // @route   POST /api/auth/register
 // @access  Public
 const register = async (req, res, next) => {
+  if (process.env.NODE_ENV === 'development') {
     console.log("📩 Incoming registration request:");
-    console.log("Headers:", req.headers);  // Optional, to check content type, token, etc.
-    console.log("Body:", req.body); 
+    console.log("Headers:", req.headers);
+    console.log("Body:", req.body);
+  }
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -47,6 +50,60 @@ const register = async (req, res, next) => {
       displayName: name
     });
 
+    // Create default QR code for the profile - MUST SUCCEED
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+    const profileUrl = profile.username 
+      ? `${frontendUrl}/p/${profile.username}` 
+      : `${frontendUrl}/p/${profile._id}`;
+    
+    try {
+      // Check if QR code already exists (shouldn't happen, but just in case)
+      const existingQR = await QRCode.findOne({ 
+        user: user._id, 
+        profile: profile._id 
+      });
+      
+      if (!existingQR) {
+        const qrCode = await QRCode.create({
+          user: user._id,
+          profile: profile._id,
+          name: `${name} QR Code`,
+          type: 'profile',
+          qrData: profileUrl,
+          isActive: true
+        });
+        
+        console.log(`✅ Auto-generated QR code for new user: ${name} (${email})`);
+        console.log(`   Profile ID: ${profile._id}, QR Code ID: ${qrCode._id}`);
+      } else {
+        console.log(`⚠️  QR code already exists for user: ${name} (${email})`);
+      }
+    } catch (qrError) {
+      // Log error but don't fail registration
+      console.error('❌ CRITICAL: Failed to auto-generate QR code during registration!');
+      console.error('User:', name, email);
+      console.error('Profile ID:', profile._id);
+      console.error('Error:', qrError.message);
+      console.error('Error stack:', qrError.stack);
+      if (qrError.errors) {
+        console.error('Validation errors:', JSON.stringify(qrError.errors, null, 2));
+      }
+      // Try to create QR code again with minimal data
+      try {
+        await QRCode.create({
+          user: user._id,
+          profile: profile._id,
+          name: `${name} QR Code`,
+          type: 'profile',
+          qrData: profileUrl,
+          isActive: true
+        });
+        console.log(`✅ Retry successful: QR code created for ${name}`);
+      } catch (retryError) {
+        console.error('❌ Retry also failed:', retryError.message);
+      }
+    }
+
     // Record analytics event
     await Analytics.recordEvent({
       user: user._id,
@@ -70,7 +127,9 @@ const register = async (req, res, next) => {
 // @route   POST /api/auth/login
 // @access  Public
 const login = async (req, res, next) => {
-  console.log("Request body in login:", req.body); // 
+  if (process.env.NODE_ENV === 'development') {
+    console.log("Request body in login:", req.body);
+  } 
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {

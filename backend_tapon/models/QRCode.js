@@ -17,6 +17,11 @@ const qrCodeSchema = new mongoose.Schema({
     trim: true,
     maxlength: [100, 'QR code name cannot be more than 100 characters']
   },
+  type: {
+    type: String,
+    enum: ['profile', 'contact', 'whatsapp', 'email', 'phone', 'linkedin', 'instagram', 'facebook', 'twitter', 'website', 'wifi', 'text', 'url', 'custom'],
+    default: 'profile'
+  },
   qrData: {
     type: String,
     required: [true, 'QR data is required']

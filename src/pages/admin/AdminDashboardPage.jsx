@@ -31,6 +31,7 @@ import {
   AlertTriangle
 } from 'lucide-react'
 import toast from 'react-hot-toast'
+import { adminAPI } from '../../services/api'
 
 // Admin Components
 import AdminUserManagement from './dashboard/UserManagement'
@@ -64,16 +65,22 @@ const AdminDashboardPage = () => {
   }, [])
 
   const loadDashboardStats = async () => {
-    // Simulate loading stats (replace with actual API calls)
-    setTimeout(() => {
-      setStats({
-        totalUsers: 156,
-        totalOrders: 89,
-        pendingOrders: 12,
-        totalQRCodes: 203,
-        todayRevenue: 2450
-      })
-    }, 1000)
+    try {
+      const response = await adminAPI.getDashboardStats()
+      if (response.data.success) {
+        const data = response.data.data
+        setStats({
+          totalUsers: data.summary.totalUsers,
+          totalOrders: data.summary.totalOrders,
+          pendingOrders: data.recentOrders?.filter(order => order.status === 'pending').length || 0,
+          totalQRCodes: data.summary.totalQRCodes,
+          todayRevenue: data.summary.totalRevenue
+        })
+      }
+    } catch (error) {
+      console.error('Failed to load dashboard stats:', error)
+      toast.error('Failed to load dashboard statistics')
+    }
   }
 
   const navigation = [

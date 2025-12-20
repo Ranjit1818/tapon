@@ -27,6 +27,7 @@ import {
 } from 'lucide-react'
 
 import toast from 'react-hot-toast'
+import { adminAPI } from '../../../services/api'
 
 
 const OrderManagement = () => {
@@ -88,111 +89,8 @@ const OrderManagement = () => {
     } catch (error) {
       console.error('Failed to fetch orders:', error)
       
-      // Fallback to demo data if API fails
-      const mockOrders = [
-        {
-          id: 'ORD-001',
-          userId: 1,
-          userName: 'John Doe',
-          userEmail: 'john@example.com',
-          userPhone: '+1234567890',
-          product: 'NFC Card',
-          quantity: 2,
-          price: 49.99,
-          total: 99.98,
-          status: 'pending',
-          paymentStatus: 'paid',
-          paymentMethod: 'stripe',
-          shippingAddress: {
-            street: '123 Main St',
-            city: 'New York',
-            state: 'NY',
-            zipCode: '10001',
-            country: 'USA'
-          },
-          createdAt: '2024-01-20',
-          updatedAt: '2024-01-20',
-          notes: 'Customer requested express shipping',
-          trackingNumber: null
-        },
-        {
-          id: 'ORD-002',
-          userId: 2,
-          userName: 'Sarah Johnson',
-          userEmail: 'sarah@company.com',
-          userPhone: '+1234567891',
-          product: 'Review Card',
-          quantity: 1,
-          price: 29.99,
-          total: 29.99,
-          status: 'processing',
-          paymentStatus: 'paid',
-          paymentMethod: 'paypal',
-          shippingAddress: {
-            street: '456 Oak Ave',
-            city: 'Los Angeles',
-            state: 'CA',
-            zipCode: '90210',
-            country: 'USA'
-          },
-          createdAt: '2024-01-19',
-          updatedAt: '2024-01-20',
-          notes: '',
-          trackingNumber: 'TRK123456789'
-        },
-        {
-          id: 'ORD-003',
-          userId: 3,
-          userName: 'Mike Chen',
-          userEmail: 'mike@startup.com',
-          userPhone: '+1234567892',
-          product: 'NFC Card',
-          quantity: 5,
-          price: 49.99,
-          total: 199.95,
-          status: 'shipped',
-          paymentStatus: 'paid',
-          paymentMethod: 'stripe',
-          shippingAddress: {
-            street: '789 Pine St',
-            city: 'Austin',
-            state: 'TX',
-            zipCode: '78701',
-            country: 'USA'
-          },
-          createdAt: '2024-01-18',
-          updatedAt: '2024-01-19',
-          notes: 'Bulk order discount applied',
-          trackingNumber: 'TRK987654321'
-        },
-        {
-          id: 'ORD-004',
-          userId: 4,
-          userName: 'Lisa Wang',
-          userEmail: 'lisa@design.com',
-          userPhone: '+1234567893',
-          product: 'Custom Card',
-          quantity: 1,
-          price: 79.99,
-          total: 79.99,
-          status: 'delivered',
-          paymentStatus: 'paid',
-          paymentMethod: 'stripe',
-          shippingAddress: {
-            street: '321 Elm St',
-            city: 'Seattle',
-            state: 'WA',
-            zipCode: '98101',
-            country: 'USA'
-          },
-          createdAt: '2024-01-15',
-          updatedAt: '2024-01-18',
-          notes: 'Custom design approved',
-          trackingNumber: 'TRK456789123'
-        }
-      ]
-      setOrders(mockOrders)
-      toast.error('Using demo data - Backend connection failed')
+      // Zero-state on failure
+      setOrders([])
     } finally {
       setLoading(false)
     }
@@ -223,31 +121,63 @@ const OrderManagement = () => {
 
   const updateOrderStatus = async (orderId, newStatus) => {
     try {
-      await adminAPI.updateOrder(orderId, { status: newStatus })
-      setOrders(orders.map(order => 
-        order.id === orderId 
-          ? { ...order, status: newStatus, updatedAt: new Date().toISOString().split('T')[0] }
-          : order
-      ))
-      toast.success(`Order ${orderId} status updated to ${newStatus}`)
+      const response = await adminAPI.updateOrder(orderId, { status: newStatus })
+      if (response.data.success) {
+        setOrders(orders.map(order => 
+          order.id === orderId 
+            ? { 
+                ...order, 
+                status: newStatus, 
+                updatedAt: new Date().toISOString().split('T')[0],
+                trackingNumber: response.data.data.trackingNumber || order.trackingNumber
+              }
+            : order
+        ))
+        // Update selected order if it's the one being updated
+        if (selectedOrder && selectedOrder.id === orderId) {
+          setSelectedOrder({
+            ...selectedOrder,
+            status: newStatus,
+            trackingNumber: response.data.data.trackingNumber || selectedOrder.trackingNumber
+          })
+        }
+        toast.success(`Order status updated to ${newStatus}`)
+      } else {
+        toast.error('Failed to update order status')
+      }
     } catch (error) {
       console.error('Failed to update order status:', error)
-      toast.error('Failed to update order status')
+      toast.error(error.response?.data?.message || 'Failed to update order status')
     }
   }
 
   const addTrackingNumber = async (orderId, trackingNumber) => {
+    if (!trackingNumber || trackingNumber.trim() === '') {
+      toast.error('Please enter a tracking number')
+      return
+    }
     try {
-      await adminAPI.updateOrder(orderId, { trackingNumber })
-      setOrders(orders.map(order => 
-        order.id === orderId 
-          ? { ...order, trackingNumber, updatedAt: new Date().toISOString().split('T')[0] }
-          : order
-      ))
-      toast.success('Tracking number added')
+      const response = await adminAPI.updateOrder(orderId, { trackingNumber: trackingNumber.trim() })
+      if (response.data.success) {
+        setOrders(orders.map(order => 
+          order.id === orderId 
+            ? { ...order, trackingNumber: trackingNumber.trim(), updatedAt: new Date().toISOString().split('T')[0] }
+            : order
+        ))
+        // Update selected order if it's the one being updated
+        if (selectedOrder && selectedOrder.id === orderId) {
+          setSelectedOrder({
+            ...selectedOrder,
+            trackingNumber: trackingNumber.trim()
+          })
+        }
+        toast.success('Tracking number added successfully')
+      } else {
+        toast.error('Failed to add tracking number')
+      }
     } catch (error) {
       console.error('Failed to add tracking number:', error)
-      toast.error('Failed to add tracking number')
+      toast.error(error.response?.data?.message || 'Failed to add tracking number')
     }
   }
 

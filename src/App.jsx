@@ -20,7 +20,7 @@ import ProductDetailPage from './pages/ProductDetailPage'
 import AboutPage from './pages/AboutPage'
 import ContactPage from './pages/ContactPage'
 import DashboardPage from './pages/DashboardPage'
-import ProfilePage from './pages/ProfilePage'
+import PublicProfilePage from './pages/PublicProfilePage'
 import NotFoundPage from './pages/NotFoundPage'
 
 // App Section Pages
@@ -120,16 +120,8 @@ function App() {
                   <ScrollToTop />
                 </>
               } />
-              <Route path="/profile/:username" element={
-                <>
-                  <Navbar />
-                  <main className="flex-1">
-                    <ProfilePage />
-                  </main>
-                  <Footer />
-                  <ScrollToTop />
-                </>
-              } />
+              <Route path="/profile/:username" element={<PublicProfilePage />} />
+              <Route path="/p/:username" element={<PublicProfilePage />} />
               <Route path="*" element={
                 <>
                   <Navbar />

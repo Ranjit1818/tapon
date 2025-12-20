@@ -36,11 +36,11 @@ export default defineConfig({
     open: true,
     proxy: {
       '/api': {
-        target: 'http://localhost:5002',
+        target: 'http://localhost:5000',
         changeOrigin: true,
         secure: false,
         // Don't rewrite the path, just pass it through
-        // This ensures /api/auth/login goes to http://localhost:5002/api/auth/login
+        // This ensures /api/auth/login goes to http://localhost:5000/api/auth/login
       }
     }
   },
