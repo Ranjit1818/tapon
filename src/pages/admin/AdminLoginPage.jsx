@@ -2,12 +2,12 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
 import { motion } from 'framer-motion'
-import { 
-  Shield, 
-  Lock, 
-  Mail, 
-  Eye, 
-  EyeOff, 
+import {
+  Shield,
+  Lock,
+  Mail,
+  Eye,
+  EyeOff,
   AlertCircle,
   Crown,
   Database,
@@ -30,17 +30,17 @@ const AdminLoginPage = () => {
 
   const validateForm = () => {
     const newErrors = {}
-    
+
     if (!formData.email) {
       newErrors.email = 'Admin email is required'
-    } else if (!formData.email.includes('admin') && !formData.email.includes('taponn')) {
+    } else if (!formData.email.includes('admin') && !formData.email.includes('connectionunlimited')) {
       newErrors.email = 'Only admin emails are allowed'
     }
-    
+
     if (!formData.password) {
       newErrors.password = 'Password is required'
     }
-    
+
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
   }
@@ -55,16 +55,16 @@ const AdminLoginPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    
+
     if (!validateForm()) return
-    
+
     setIsLoading(true)
-    
+
     try {
       const result = await login(formData)
-      
+
       if (result.success) {
-        toast.success('Welcome to TapOnn Admin Dashboard! 👑')
+        toast.success('Welcome to Connection Unlimited Admin Dashboard! 👑')
         navigate('/admin/dashboard')
       } else {
         toast.error(result.error || 'Admin login failed')
@@ -79,8 +79,8 @@ const AdminLoginPage = () => {
   return (
     <>
       <Helmet>
-        <title>TapOnn Admin Login | Administrative Access</title>
-        <meta name="description" content="Secure admin login for TapOnn administrative dashboard" />
+        <title>Connection Unlimited Admin Login | Administrative Access</title>
+        <meta name="description" content="Secure admin login for Connection Unlimited administrative dashboard" />
       </Helmet>
 
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 flex items-center justify-center p-4">
@@ -103,7 +103,7 @@ const AdminLoginPage = () => {
             <div className="w-20 h-20 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full mx-auto mb-4 flex items-center justify-center">
               <Crown className="w-10 h-10 text-white" />
             </div>
-            <h1 className="text-3xl font-bold text-white mb-2">TapOnn Admin</h1>
+            <h1 className="text-3xl font-bold text-white mb-2">Connection Unlimited Admin</h1>
             <p className="text-gray-300">Administrative Dashboard Access</p>
           </motion.div>
 
@@ -157,12 +157,11 @@ const AdminLoginPage = () => {
                     name="email"
                     value={formData.email}
                     onChange={handleInputChange}
-                    className={`w-full pl-10 pr-4 py-3 bg-white/10 border rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all ${
-                      errors.email 
-                        ? 'border-red-500 bg-red-900/20' 
+                    className={`w-full pl-10 pr-4 py-3 bg-white/10 border rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all ${errors.email
+                        ? 'border-red-500 bg-red-900/20'
                         : 'border-white/30'
-                    }`}
-                    placeholder="admin@taponn.com"
+                      }`}
+                    placeholder="admin@connectionunlimited.com"
                   />
                   <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                 </div>
@@ -189,11 +188,10 @@ const AdminLoginPage = () => {
                     name="password"
                     value={formData.password}
                     onChange={handleInputChange}
-                    className={`w-full pl-10 pr-12 py-3 bg-white/10 border rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all ${
-                      errors.password 
-                        ? 'border-red-500 bg-red-900/20' 
+                    className={`w-full pl-10 pr-12 py-3 bg-white/10 border rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all ${errors.password
+                        ? 'border-red-500 bg-red-900/20'
                         : 'border-white/30'
-                    }`}
+                      }`}
                     placeholder="Enter admin password"
                   />
                   <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -248,7 +246,7 @@ const AdminLoginPage = () => {
                   👑 <strong>Demo Admin Access</strong>
                 </p>
                 <div className="text-xs text-yellow-200 bg-yellow-500/20 rounded px-2 py-1 inline-block">
-                  Email: <code>admin@taponn.com</code> / Password: <code>admin123</code>
+                  Email: <code>admin@connectionunlimited.com</code> / Password: <code>admin123</code>
                 </div>
               </div>
             </motion.div>
@@ -262,8 +260,8 @@ const AdminLoginPage = () => {
             >
               <p className="text-gray-300 text-sm">
                 Regular user access?{' '}
-                <Link 
-                  to="/app/login" 
+                <Link
+                  to="/app/login"
                   className="text-yellow-400 hover:text-yellow-300 font-medium transition-colors"
                 >
                   User Login

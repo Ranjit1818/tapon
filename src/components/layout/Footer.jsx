@@ -1,10 +1,10 @@
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { 
-  Facebook, 
-  Twitter, 
-  Instagram, 
-  Linkedin, 
+import {
+  Facebook,
+  Twitter,
+  Instagram,
+  Linkedin,
   Youtube,
   Mail,
   Phone,
@@ -44,11 +44,11 @@ const Footer = () => {
   }
 
   const socialLinks = [
-    { name: 'Facebook', icon: Facebook, href: 'https://facebook.com/taponn' },
-    { name: 'Twitter', icon: Twitter, href: 'https://twitter.com/taponn' },
-    { name: 'Instagram', icon: Instagram, href: 'https://instagram.com/taponn' },
-    { name: 'LinkedIn', icon: Linkedin, href: 'https://linkedin.com/company/taponn' },
-    { name: 'YouTube', icon: Youtube, href: 'https://youtube.com/taponn' },
+    { name: 'Facebook', icon: Facebook, href: 'https://facebook.com/connectionunlimited' },
+    { name: 'Twitter', icon: Twitter, href: 'https://twitter.com/connectionunlimited' },
+    { name: 'Instagram', icon: Instagram, href: 'https://instagram.com/connectionunlimited' },
+    { name: 'LinkedIn', icon: Linkedin, href: 'https://linkedin.com/company/connectionunlimited' },
+    { name: 'YouTube', icon: Youtube, href: 'https://youtube.com/connectionunlimited' },
   ]
 
   return (
@@ -67,13 +67,13 @@ const Footer = () => {
             >
               <Link to="/" className="flex items-center space-x-2">
                 <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-accent-500 rounded-lg flex items-center justify-center">
-                  <span className="text-white font-bold text-xl">T</span>
+                  <span className="text-white font-bold text-xl">C</span>
                 </div>
-                <span className="text-xl font-bold">TapOnn</span>
+                <span className="text-xl font-bold">Connection Unlimited</span>
               </Link>
-              
+
               <p className="text-gray-400 max-w-md">
-                Share Instantly. Connect Effortlessly. Transform your networking experience 
+                Share Instantly. Connect Effortlessly. Transform your networking experience
                 with our NFC-based digital profile platform.
               </p>
 
@@ -81,7 +81,7 @@ const Footer = () => {
               <div className="space-y-2">
                 <div className="flex items-center space-x-2 text-gray-400">
                   <Mail size={16} />
-                  <span>hello@taponn.com</span>
+                  <span>hello@connectionunlimited.com</span>
                 </div>
                 <div className="flex items-center space-x-2 text-gray-400">
                   <Phone size={16} />
@@ -148,7 +148,7 @@ const Footer = () => {
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             {/* Copyright */}
             <div className="flex items-center space-x-2 text-gray-400">
-              <span>&copy; {currentYear} TapOnn. All rights reserved.</span>
+              <span>&copy; {currentYear} Connection Unlimited. All rights reserved.</span>
             </div>
 
             {/* Eco-friendly Message */}
@@ -188,12 +188,12 @@ const Footer = () => {
       >
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h3 className="text-2xl font-bold mb-2">
-            Stay Updated with TapOnn
+            Stay Updated with Connection Unlimited
           </h3>
           <p className="text-primary-100 mb-6">
             Get the latest updates on new features, tips, and industry insights.
           </p>
-          
+
           <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
             <input
               type="email"

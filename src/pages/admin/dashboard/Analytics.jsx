@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { 
+import {
   BarChart3,
   TrendingUp,
   Users,
@@ -44,7 +44,7 @@ const AdminAnalytics = () => {
   const fetchAnalyticsData = async () => {
     try {
       setLoading(true)
-      
+
       // Fetch admin analytics data from backend
       const response = await adminAPI.getSystemAnalytics({
         period: timeRange,
@@ -53,7 +53,7 @@ const AdminAnalytics = () => {
 
       if (response.data.success) {
         const analyticsData = response.data.data
-        
+
         setData({
           stats: {
             totalUsers: analyticsData.overview?.totalUsers || 0,
@@ -108,7 +108,7 @@ const AdminAnalytics = () => {
       }
     } catch (error) {
       console.error('Failed to fetch admin analytics:', error)
-      
+
       // Fallback to demo data if API fails
       setData({
         stats: {
@@ -161,7 +161,7 @@ const AdminAnalytics = () => {
           { month: 'Jan', revenue: 2450, orders: 49 }
         ]
       })
-      
+
       toast.error('Using demo data - Backend connection failed')
     } finally {
       setLoading(false)
@@ -187,7 +187,7 @@ const AdminAnalytics = () => {
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = `taponn-analytics-${timeRange}.json`
+    a.download = `connectionunlimited-analytics-${timeRange}.json`
     a.click()
   }
 
@@ -243,10 +243,10 @@ const AdminAnalytics = () => {
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Analytics Dashboard</h1>
           <p className="text-gray-600 dark:text-gray-400">
-            Comprehensive analytics and insights for TapOnn platform
+            Comprehensive analytics and insights for Connection Unlimited platform
           </p>
         </div>
-        
+
         <div className="mt-4 lg:mt-0 flex items-center space-x-3">
           <select
             value={timeRange}
@@ -279,47 +279,47 @@ const AdminAnalytics = () => {
 
       {/* Key Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6">
-        <StatCard 
-          title="Total Users" 
-          value={data.stats.totalUsers} 
+        <StatCard
+          title="Total Users"
+          value={data.stats.totalUsers}
           change={12}
-          icon={Users} 
+          icon={Users}
           color="bg-gradient-to-br from-blue-500 to-blue-600"
         />
-        <StatCard 
-          title="Active Users" 
-          value={data.stats.activeUsers} 
+        <StatCard
+          title="Active Users"
+          value={data.stats.activeUsers}
           change={8}
-          icon={TrendingUp} 
+          icon={TrendingUp}
           color="bg-gradient-to-br from-green-500 to-green-600"
         />
-        <StatCard 
-          title="QR Scans" 
-          value={data.stats.totalQRScans} 
+        <StatCard
+          title="QR Scans"
+          value={data.stats.totalQRScans}
           change={15}
-          icon={QrCode} 
+          icon={QrCode}
           color="bg-gradient-to-br from-purple-500 to-purple-600"
         />
-        <StatCard 
-          title="Total Orders" 
-          value={data.stats.totalOrders} 
+        <StatCard
+          title="Total Orders"
+          value={data.stats.totalOrders}
           change={-3}
-          icon={ShoppingBag} 
+          icon={ShoppingBag}
           color="bg-gradient-to-br from-orange-500 to-orange-600"
         />
-        <StatCard 
-          title="Revenue" 
-          value={data.stats.revenue} 
+        <StatCard
+          title="Revenue"
+          value={data.stats.revenue}
           change={22}
-          icon={DollarSign} 
+          icon={DollarSign}
           color="bg-gradient-to-br from-emerald-500 to-emerald-600"
           suffix="$"
         />
-        <StatCard 
-          title="Conversion Rate" 
-          value={data.stats.conversionRate} 
+        <StatCard
+          title="Conversion Rate"
+          value={data.stats.conversionRate}
           change={5}
-          icon={TrendingUp} 
+          icon={TrendingUp}
           color="bg-gradient-to-br from-pink-500 to-pink-600"
           suffix="%"
         />
@@ -459,10 +459,9 @@ const AdminAnalytics = () => {
                   <p className="text-sm text-gray-600 dark:text-gray-400">{page.views} views</p>
                 </div>
                 <div className="text-right">
-                  <p className={`text-sm font-medium ${
-                    page.bounceRate < 0.3 ? 'text-green-600' : 
-                    page.bounceRate < 0.4 ? 'text-yellow-600' : 'text-red-600'
-                  }`}>
+                  <p className={`text-sm font-medium ${page.bounceRate < 0.3 ? 'text-green-600' :
+                      page.bounceRate < 0.4 ? 'text-yellow-600' : 'text-red-600'
+                    }`}>
                     {(page.bounceRate * 100).toFixed(0)}% bounce
                   </p>
                 </div>

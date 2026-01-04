@@ -43,22 +43,22 @@ function App() {
         <AnalyticsProvider>
           <div className="App min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
             <Helmet>
-              <title>TapOnn - Digital Profile Platform | Share Instantly. Connect Effortlessly.</title>
-              <meta name="description" content="TapOnn is a revolutionary digital profile platform for NFC-based smart sharing and lead management. Transform your networking experience with instant sharing and effortless connections." />
-              <meta name="keywords" content="NFC, digital business card, lead management, smart sharing, professional networking, TapOnn" />
-              <link rel="canonical" href="https://taponn.com" />
+              <title>Connection Unlimited - Digital Profile Platform | Share Instantly. Connect Effortlessly.</title>
+              <meta name="description" content="Connection Unlimited is a revolutionary digital profile platform for NFC-based smart sharing and lead management. Transform your networking experience with instant sharing and effortless connections." />
+              <meta name="keywords" content="NFC, digital business card, lead management, smart sharing, professional networking, Connection Unlimited" />
+              <link rel="canonical" href="https://connectionunlimited.com" />
             </Helmet>
-            
-            <Routes>
-                      {/* App Section Routes */}
-        <Route path="/app/register" element={<AppRegisterPage />} />
-        <Route path="/app/login" element={<AppLoginPage />} />
-        <Route path="/app/*" element={<AppDashboardPage />} />
 
-        {/* Admin Routes */}
-        <Route path="/admin/login" element={<AdminLoginPage />} />
-        <Route path="/admin/*" element={<AdminDashboardPage />} />
-              
+            <Routes>
+              {/* App Section Routes */}
+              <Route path="/app/register" element={<AppRegisterPage />} />
+              <Route path="/app/login" element={<AppLoginPage />} />
+              <Route path="/app/*" element={<AppDashboardPage />} />
+
+              {/* Admin Routes */}
+              <Route path="/admin/login" element={<AdminLoginPage />} />
+              <Route path="/admin/*" element={<AdminDashboardPage />} />
+
               {/* Main Website Routes with Layout */}
               <Route path="/" element={
                 <>

@@ -3,9 +3,9 @@ import { Link } from 'react-router-dom'
 import { motion, useInView } from 'framer-motion'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { 
-  Smartphone, 
-  Download, 
+import {
+  Smartphone,
+  Download,
   QrCode,
   ArrowRight,
   Star,
@@ -57,7 +57,7 @@ const AppSection = () => {
   ]
 
   return (
-    <section 
+    <section
       ref={sectionRef}
       className="py-20 bg-gradient-to-br from-primary-50 via-white to-accent-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 relative overflow-hidden"
     >
@@ -71,18 +71,18 @@ const AppSection = () => {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Section Header */}
-        <motion.div 
+        <motion.div
           className="text-center mb-16"
           initial={{ opacity: 0, y: 50 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.8 }}
         >
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-6">
-            TapOnn{' '}
+            Connection Unlimited{' '}
             <span className="gradient-text">Mobile App</span>
           </h2>
           <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
-            Take your digital networking anywhere with our powerful mobile app. 
+            Take your digital networking anywhere with our powerful mobile app.
             Available on iOS and Android with seamless sync across all devices.
           </p>
         </motion.div>
@@ -97,7 +97,7 @@ const AppSection = () => {
             <h3 className="text-3xl font-bold text-gray-900 dark:text-white mb-8">
               Powerful Mobile Experience
             </h3>
-            
+
             <div className="space-y-6 mb-8">
               {appFeatures.map((feature, index) => (
                 <motion.div
@@ -175,7 +175,7 @@ const AppSection = () => {
                         <span className="text-2xl font-bold text-white">T</span>
                       </div>
                       <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
-                        TapOnn
+                        Connection Unlimited
                       </h3>
                       <p className="text-gray-600 dark:text-gray-400">
                         Digital Networking Platform
@@ -258,7 +258,7 @@ const AppSection = () => {
         </div>
 
         {/* Download Section */}
-        <motion.div 
+        <motion.div
           className="bg-white dark:bg-gray-800 rounded-3xl p-8 md:p-12 shadow-xl"
           initial={{ opacity: 0, y: 50 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
@@ -266,7 +266,7 @@ const AppSection = () => {
         >
           <div className="text-center mb-8">
             <h3 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
-              Download TapOnn App
+              Download Connection Unlimited App
             </h3>
             <p className="text-xl text-gray-600 dark:text-gray-400">
               Get the app and start networking smarter today

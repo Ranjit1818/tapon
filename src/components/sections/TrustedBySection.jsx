@@ -2,8 +2,8 @@ import { useEffect, useRef } from 'react'
 import { motion, useInView } from 'framer-motion'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { 
-  ChevronLeft, 
+import {
+  ChevronLeft,
   ChevronRight,
   Star,
   Quote
@@ -59,42 +59,11 @@ const TrustedBySection = () => {
   ]
 
   const testimonials = [
-    {
-      name: 'Sarah Johnson',
-      role: 'Sales Director',
-      company: 'TechCorp',
-      content: 'TapOnn has revolutionized how our sales team networks. The instant sharing and lead tracking features have increased our conversion rates by 40%.',
-      rating: 5,
-      avatar: 'SJ'
-    },
-    {
-      name: 'Michael Chen',
-      role: 'Marketing Manager',
-      company: 'InnovateLab',
-      content: 'The digital profiles are incredibly professional and the analytics help us understand our networking ROI. Highly recommended for any business.',
-      rating: 5,
-      avatar: 'MC'
-    },
-    {
-      name: 'Emma Davis',
-      role: 'Business Development',
-      company: 'GrowthCo',
-      content: 'Our team loves the ease of use and the professional appearance. It\'s made networking events so much more productive and efficient.',
-      rating: 5,
-      avatar: 'ED'
-    },
-    {
-      name: 'Alex Rodriguez',
-      role: 'CEO',
-      company: 'StartupXYZ',
-      content: 'TapOnn has been a game-changer for our startup. The cost savings from not printing business cards and the professional image it creates is invaluable.',
-      rating: 5,
-      avatar: 'AR'
-    }
+
   ]
 
   return (
-    <section 
+    <section
       ref={sectionRef}
       className="py-20 bg-white dark:bg-gray-900 relative overflow-hidden"
     >
@@ -108,7 +77,7 @@ const TrustedBySection = () => {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Section Header */}
-        <motion.div 
+        <motion.div
           className="text-center mb-16"
           initial={{ opacity: 0, y: 50 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
@@ -119,12 +88,12 @@ const TrustedBySection = () => {
             <span className="gradient-text">Leading Brands</span>
           </h2>
           <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
-            Join thousands of professionals and companies who trust TapOnn for their digital networking needs.
+            Join thousands of professionals and companies who trust Connection Unlimited for their digital networking needs.
           </p>
         </motion.div>
 
         {/* Brands Grid */}
-        <motion.div 
+        <motion.div
           className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-8 mb-16"
           initial={{ opacity: 0, y: 30 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
@@ -148,7 +117,7 @@ const TrustedBySection = () => {
         </motion.div>
 
         {/* Testimonials Section */}
-        <motion.div 
+        <motion.div
           className="mb-16"
           initial={{ opacity: 0, y: 50 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
@@ -159,7 +128,7 @@ const TrustedBySection = () => {
               What Our Customers Say
             </h3>
             <p className="text-lg text-gray-600 dark:text-gray-400">
-              Real feedback from professionals who have transformed their networking with TapOnn
+              Real feedback from professionals who have transformed their networking with Connection Unlimited
             </p>
           </div>
 
@@ -210,16 +179,16 @@ const TrustedBySection = () => {
         </motion.div>
 
         {/* Stats Section */}
-        <motion.div 
+        <motion.div
           className="bg-gradient-to-r from-primary-600 to-accent-500 rounded-3xl p-8 md:p-12 text-white text-center"
           initial={{ opacity: 0, y: 50 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.8, delay: 0.8 }}
         >
           <h3 className="text-3xl md:text-4xl font-bold mb-8">
-            Join the TapOnn Community
+            Join the Connection Unlimited Community
           </h3>
-          
+
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {[
               { number: '50K+', label: 'Active Users' },
@@ -246,7 +215,7 @@ const TrustedBySection = () => {
         </motion.div>
 
         {/* CTA Section */}
-        <motion.div 
+        <motion.div
           className="text-center mt-16"
           initial={{ opacity: 0, y: 30 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
@@ -256,7 +225,7 @@ const TrustedBySection = () => {
             Ready to Join Them?
           </h3>
           <p className="text-lg text-gray-600 dark:text-gray-400 mb-8 max-w-2xl mx-auto">
-            Start your journey with TapOnn today and experience the future of digital networking.
+            Start your journey with Connection Unlimited today and experience the future of digital networking.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <motion.button

@@ -123,7 +123,7 @@ const getAllUsers = async (req, res, next) => {
     const startIndex = (page - 1) * limit;
 
     const filter = {};
-    
+
     // Add search filter
     if (req.query.search) {
       filter.$or = [
@@ -193,7 +193,7 @@ const getAllProfiles = async (req, res, next) => {
     const startIndex = (page - 1) * limit;
 
     const filter = {};
-    
+
     // Add search filter
     if (req.query.search) {
       filter.$or = [
@@ -258,7 +258,7 @@ const getAllOrders = async (req, res, next) => {
     const startIndex = (page - 1) * limit;
 
     const filter = {};
-    
+
     // Add status filter
     if (req.query.status) {
       filter.status = req.query.status;
@@ -782,83 +782,100 @@ const generateMissingQRCodes = async (req, res, next) => {
     }
 
     const profiles = await Profile.find({}).populate('user', 'name email');
-    
+
     let qrCodesCreated = 0;
+    let qrCodesUpdated = 0;
     let qrCodesSkipped = 0;
     const errors = [];
+
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
 
     for (const profile of profiles) {
       // Skip if profile doesn't have a user
       if (!profile.user || !profile.user._id) {
-        errors.push({
-          profileId: profile._id,
-          error: 'Profile has no associated user'
-        });
         continue;
       }
 
-      // Check if QR code already exists for this profile
-      const existingQR = await QRCode.findOne({ 
-        user: profile.user._id, 
-        profile: profile._id 
-      });
-      
-      if (existingQR) {
-        qrCodesSkipped++;
-        continue;
+      // 1. Ensure Profile has a username
+      if (!profile.username) {
+        try {
+          const baseUsername = (profile.displayName || profile.user.name || 'user').toLowerCase().replace(/[^a-z0-9]/g, '');
+          let suffix = Math.floor(1000 + Math.random() * 9000);
+          let username = `${baseUsername}${suffix}`;
+
+          while (await Profile.findOne({ username })) {
+            suffix = Math.floor(1000 + Math.random() * 9000);
+            username = `${baseUsername}${suffix}`;
+          }
+
+          profile.username = username;
+          await profile.save();
+          console.log(`✅ Generated missing username for profile ${profile._id}: ${username}`);
+        } catch (err) {
+          console.error(`❌ Failed to generate username for profile ${profile._id}:`, err);
+          errors.push({ profileId: profile._id, error: 'Failed to generate username' });
+          continue;
+        }
       }
-      
+
+      // Calculate the correct expected URL
+      const expectedUrl = `${frontendUrl}/p/${profile.username}`;
+
+      // Check if QR code already exists
+      let qrCode = await QRCode.findOne({
+        user: profile.user._id,
+        profile: profile._id
+      });
+
       try {
-        // Create QR code for this profile
-        const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
-        const profileUrl = profile.username 
-          ? `${frontendUrl}/p/${profile.username}` 
-          : `${frontendUrl}/p/${profile._id}`;
-        
-        const qrCode = await QRCode.create({
-          user: profile.user._id,
-          profile: profile._id,
-          name: `${profile.displayName || profile.user?.name || 'Profile'} QR Code`,
-          type: 'profile',
-          qrData: profileUrl,
-          isActive: true
-        });
-        
-        qrCodesCreated++;
-        
-        if (process.env.NODE_ENV === 'development') {
-          console.log(`✅ Created QR code for ${profile.user?.name || 'User'} (${profile.user?.email || 'N/A'})`);
+        if (!qrCode) {
+          // CREATE NEW
+          // Check if a QR code with this name exists for the user to avoid duplicate key errors? 
+          // (Usually unique index is on _id or user+profile, if not just create)
+
+          qrCode = await QRCode.create({
+            user: profile.user._id,
+            profile: profile._id,
+            name: `${profile.displayName || profile.user.name || 'Profile'} QR Code`,
+            type: 'profile',
+            qrData: expectedUrl,
+            isActive: true
+          });
+
+          qrCodesCreated++;
+        } else {
+          // UPDATE EXISTING if URL is wrong
+          if (qrCode.qrData !== expectedUrl) {
+            qrCode.qrData = expectedUrl;
+            // Also ensure type is profile
+            if (qrCode.type !== 'profile') qrCode.type = 'profile';
+            await qrCode.save();
+            qrCodesUpdated++;
+          } else {
+            qrCodesSkipped++;
+          }
         }
       } catch (error) {
         const errorDetails = {
           profileId: profile._id,
           userId: profile.user?._id,
-          userName: profile.user?.name,
           error: error.message
         };
-        
-        if (error.errors) {
-          errorDetails.validationErrors = error.errors;
-        }
-        
         errors.push(errorDetails);
-        
-        console.error(`❌ Failed to create QR code for profile ${profile._id}:`, error.message);
-        if (error.errors) {
-          console.error('Validation errors:', JSON.stringify(error.errors, null, 2));
-        }
+        console.error(`❌ Error processing QR for profile ${profile._id}:`, error.message);
       }
     }
-    
+
     res.status(200).json({
       success: true,
       data: {
         qrCodesCreated,
+        qrCodesUpdated,
         qrCodesSkipped,
         totalProfiles: profiles.length,
         errors: errors.length > 0 ? errors : undefined
       },
-      message: `Generated ${qrCodesCreated} QR codes. ${qrCodesSkipped} already existed.${errors.length > 0 ? ` ${errors.length} errors occurred.` : ''}`
+      message: `Process complete. Created: ${qrCodesCreated}, Updated: ${qrCodesUpdated}, Skipped: ${qrCodesSkipped}.`
     });
   } catch (error) {
     console.error('Error in generateMissingQRCodes:', error);
@@ -884,13 +901,13 @@ const updateOrderStatusAdmin = async (req, res, next) => {
 
     const oldStatus = order.status;
     const newStatus = req.body.status;
-    
+
     if (!['pending', 'processing', 'shipped', 'delivered', 'cancelled'].includes(newStatus)) {
       return next(new ErrorResponse('Invalid order status', 400));
     }
 
     order.status = newStatus;
-    
+
     // Update tracking number if provided
     if (req.body.trackingNumber) {
       order.trackingNumber = req.body.trackingNumber;

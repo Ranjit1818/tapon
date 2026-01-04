@@ -44,25 +44,37 @@ const register = async (req, res, next) => {
       permissions: ['profile_edit', 'profile_view', 'qr_generate']
     });
 
+    // Generate unique username
+    const baseUsername = name.toLowerCase().replace(/[^a-z0-9]/g, '');
+    let suffix = Math.floor(1000 + Math.random() * 9000);
+    let username = `${baseUsername}${suffix}`;
+
+    // Ensure uniqueness
+    while (await Profile.findOne({ username })) {
+      suffix = Math.floor(1000 + Math.random() * 9000);
+      username = `${baseUsername}${suffix}`;
+    }
+
     // Create default profile
     const profile = await Profile.create({
       user: user._id,
-      displayName: name
+      displayName: name,
+      username: username
     });
 
     // Create default QR code for the profile - MUST SUCCEED
     const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
-    const profileUrl = profile.username 
-      ? `${frontendUrl}/p/${profile.username}` 
+    const profileUrl = profile.username
+      ? `${frontendUrl}/p/${profile.username}`
       : `${frontendUrl}/p/${profile._id}`;
-    
+
     try {
       // Check if QR code already exists (shouldn't happen, but just in case)
-      const existingQR = await QRCode.findOne({ 
-        user: user._id, 
-        profile: profile._id 
+      const existingQR = await QRCode.findOne({
+        user: user._id,
+        profile: profile._id
       });
-      
+
       if (!existingQR) {
         const qrCode = await QRCode.create({
           user: user._id,
@@ -72,7 +84,7 @@ const register = async (req, res, next) => {
           qrData: profileUrl,
           isActive: true
         });
-        
+
         console.log(`✅ Auto-generated QR code for new user: ${name} (${email})`);
         console.log(`   Profile ID: ${profile._id}, QR Code ID: ${qrCode._id}`);
       } else {
@@ -129,7 +141,7 @@ const register = async (req, res, next) => {
 const login = async (req, res, next) => {
   if (process.env.NODE_ENV === 'development') {
     console.log("Request body in login:", req.body);
-  } 
+  }
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -140,7 +152,7 @@ const login = async (req, res, next) => {
         errors: errors.array()
       });
     }
-    
+
 
 
     const { email, password } = req.body;
@@ -214,7 +226,7 @@ const logout = async (req, res, next) => {
 const getMe = async (req, res, next) => {
   try {
     const user = await User.findById(req.user.id).populate('profile');
-    
+
     res.status(200).json({
       success: true,
       data: user

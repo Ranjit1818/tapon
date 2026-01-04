@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { 
+import {
   Settings as SettingsIcon,
   Shield,
   Database,
@@ -25,9 +25,9 @@ const AdminSettings = () => {
   // Settings state
   const [settings, setSettings] = useState({
     general: {
-      siteName: 'TapOnn',
+      siteName: 'Connection Unlimited',
       siteDescription: 'Smart Digital Profile Platform',
-      contactEmail: 'support@taponn.com',
+      contactEmail: 'support@connectionunlimited.com',
       timezone: 'UTC',
       language: 'en',
       maintenanceMode: false
@@ -57,7 +57,7 @@ const AdminSettings = () => {
     api: {
       rateLimit: 1000,
       enableCors: true,
-      corsOrigins: 'https://taponn.com',
+      corsOrigins: 'https://connectionunlimited.com',
       apiVersion: 'v1',
       webhookSecret: 'your-webhook-secret'
     },
@@ -129,7 +129,7 @@ const AdminSettings = () => {
             className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
           />
         </div>
-        
+
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             Contact Email
@@ -348,7 +348,7 @@ const AdminSettings = () => {
             Configure system settings and preferences
           </p>
         </div>
-        
+
         <div className="mt-4 lg:mt-0 flex items-center space-x-3">
           <button
             onClick={resetToDefaults}
@@ -398,11 +398,10 @@ const AdminSettings = () => {
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`w-full flex items-center space-x-3 px-4 py-3 text-left rounded-lg transition-colors ${
-                    activeTab === tab.id
+                  className={`w-full flex items-center space-x-3 px-4 py-3 text-left rounded-lg transition-colors ${activeTab === tab.id
                       ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800'
                       : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
-                  }`}
+                    }`}
                 >
                   <Icon className="w-5 h-5" />
                   <span className="font-medium">{tab.label}</span>
@@ -431,7 +430,7 @@ const AdminSettings = () => {
                 {tabs.find(t => t.id === activeTab)?.label} Settings
               </h2>
             </div>
-            
+
             {renderContent()}
           </motion.div>
         </div>

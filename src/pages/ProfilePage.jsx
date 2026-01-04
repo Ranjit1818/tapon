@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
 import { motion } from 'framer-motion'
 import axios from 'axios'
-import { 
+import {
   Phone,
   Mail,
   MapPin,
@@ -33,7 +33,7 @@ const ProfilePage = () => {
       try {
         setLoading(true)
         const response = await axios.get(`http://localhost:5000/api/profiles/public/${username}`)
-        
+
         if (response.data.success) {
           const profileData = response.data.data
           setProfile({
@@ -82,7 +82,7 @@ const ProfilePage = () => {
     setTimeout(() => setCopied(false), 2000)
   }
 
-  
+
 
   const handleContact = (type, value) => {
     switch (type) {
@@ -129,7 +129,7 @@ const ProfilePage = () => {
   return (
     <>
       <Helmet>
-        <title>{profile.name} - TapOnn Profile</title>
+        <title>{profile.name} - Connection Unlimited Profile</title>
         <meta name="description" content={`Connect with ${profile.name}, ${profile.title} at ${profile.company}`} />
       </Helmet>
 
@@ -145,7 +145,7 @@ const ProfilePage = () => {
             <div className="w-32 h-32 bg-gradient-to-br from-primary-500 to-accent-500 rounded-full flex items-center justify-center mx-auto mb-6">
               <span className="text-white font-bold text-4xl">{profile.avatar}</span>
             </div>
-            
+
             <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
               {profile.name}
             </h1>
@@ -155,7 +155,7 @@ const ProfilePage = () => {
             <p className="text-gray-600 dark:text-gray-400 mb-4">
               {profile.company}
             </p>
-            
+
             <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
               {profile.bio}
             </p>
@@ -171,7 +171,7 @@ const ProfilePage = () => {
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
               Quick Contact
             </h3>
-            
+
             <div className="space-y-3">
               <button
                 onClick={() => handleContact('phone', profile.phone)}
@@ -218,7 +218,7 @@ const ProfilePage = () => {
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
               Connect
             </h3>
-            
+
             <div className="grid grid-cols-2 gap-3">
               {Object.entries(profile.social)
                 .filter(([platform, url]) => url && url.trim() !== '')
@@ -238,7 +238,7 @@ const ProfilePage = () => {
                     facebook: 'bg-blue-800 hover:bg-blue-900',
                     youtube: 'bg-red-600 hover:bg-red-700'
                   }
-                  
+
                   return (
                     <button
                       key={platform}
@@ -264,7 +264,7 @@ const ProfilePage = () => {
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
                 Links
               </h3>
-              
+
               <div className="space-y-3">
                 {profile.links.map((link, index) => (
                   <button
@@ -293,7 +293,7 @@ const ProfilePage = () => {
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
               Profile Stats
             </h3>
-            
+
             <div className="grid grid-cols-3 gap-4 text-center">
               <div>
                 <div className="text-2xl font-bold text-primary-600 dark:text-primary-400">
@@ -330,12 +330,12 @@ const ProfilePage = () => {
               <Copy className="w-5 h-5" />
               <span>{copied ? 'Copied!' : 'Copy Link'}</span>
             </button>
-            
+
             <button className="flex-1 flex items-center justify-center space-x-2 p-3 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
               <Share2 className="w-5 h-5" />
               <span>Share</span>
             </button>
-            
+
             <button className="flex-1 flex items-center justify-center space-x-2 p-3 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
               <Heart className="w-5 h-5" />
               <span>Save</span>
@@ -352,7 +352,7 @@ const ProfilePage = () => {
             <p className="text-sm text-gray-500 dark:text-gray-400">
               Powered by{' '}
               <span className="font-semibold text-primary-600 dark:text-primary-400">
-                TapOnn
+                Connection Unlimited
               </span>
             </p>
           </motion.div>

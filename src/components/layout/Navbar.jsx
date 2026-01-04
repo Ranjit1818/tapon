@@ -3,12 +3,12 @@ import { Link, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useTheme } from '../../contexts/ThemeContext'
 import { useAuth } from '../../contexts/AuthContext'
-import { 
-  Sun, 
-  Moon, 
-  Menu, 
-  X, 
-  User, 
+import {
+  Sun,
+  Moon,
+  Menu,
+  X,
+  User,
   LogOut,
   ChevronDown
 } from 'lucide-react'
@@ -45,11 +45,10 @@ const Navbar = () => {
     <motion.nav
       initial={{ y: -100 }}
       animate={{ y: 0 }}
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled 
-          ? 'bg-white/80 dark:bg-gray-900/80 backdrop-blur-md shadow-lg' 
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled
+          ? 'bg-white/80 dark:bg-gray-900/80 backdrop-blur-md shadow-lg'
           : 'bg-transparent'
-      }`}
+        }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
@@ -59,10 +58,10 @@ const Navbar = () => {
               whileHover={{ scale: 1.05 }}
               className="w-10 h-10 bg-gradient-to-br from-primary-500 to-accent-500 rounded-lg flex items-center justify-center"
             >
-              <span className="text-white font-bold text-xl">T</span>
+              <span className="text-white font-bold text-xl">C</span>
             </motion.div>
             <span className="text-xl font-bold text-gray-900 dark:text-white">
-              TapOnn
+              Connection Unlimited
             </span>
           </Link>
 
@@ -72,11 +71,10 @@ const Navbar = () => {
               <Link
                 key={item.name}
                 to={item.path}
-                className={`relative text-sm font-medium transition-colors duration-200 ${
-                  location.pathname === item.path
+                className={`relative text-sm font-medium transition-colors duration-200 ${location.pathname === item.path
                     ? 'text-primary-600 dark:text-primary-400'
                     : 'text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400'
-                }`}
+                  }`}
               >
                 {item.name}
                 {location.pathname === item.path && (
@@ -109,7 +107,7 @@ const Navbar = () => {
                   <span>{user?.name || 'User'}</span>
                   <ChevronDown size={16} />
                 </button>
-                
+
                 {/* Dropdown Menu */}
                 <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
                   <Link
@@ -154,7 +152,7 @@ const Navbar = () => {
             >
               {isDark ? <Sun size={20} /> : <Moon size={20} />}
             </motion.button>
-            
+
             <motion.button
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
@@ -181,16 +179,15 @@ const Navbar = () => {
                 <Link
                   key={item.name}
                   to={item.path}
-                  className={`block text-base font-medium ${
-                    location.pathname === item.path
+                  className={`block text-base font-medium ${location.pathname === item.path
                       ? 'text-primary-600 dark:text-primary-400'
                       : 'text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400'
-                  }`}
+                    }`}
                 >
                   {item.name}
                 </Link>
               ))}
-              
+
               <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
                 {isAuthenticated ? (
                   <div className="space-y-3">

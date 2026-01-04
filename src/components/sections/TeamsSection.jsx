@@ -2,10 +2,10 @@ import { useEffect, useRef } from 'react'
 import { motion, useInView } from 'framer-motion'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { 
-  Users, 
-  BarChart3, 
-  TrendingUp, 
+import {
+  Users,
+  BarChart3,
+  TrendingUp,
   Target,
   Calendar,
   MessageSquare,
@@ -70,7 +70,7 @@ const TeamsSection = () => {
   ]
 
   return (
-    <section 
+    <section
       ref={sectionRef}
       className="py-20 bg-gradient-to-br from-primary-50 via-white to-accent-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 relative overflow-hidden"
     >
@@ -84,18 +84,18 @@ const TeamsSection = () => {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Section Header */}
-        <motion.div 
+        <motion.div
           className="text-center mb-16"
           initial={{ opacity: 0, y: 50 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.8 }}
         >
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-6">
-            TapOnn for{' '}
+            Connection Unlimited for{' '}
             <span className="gradient-text">Teams</span>
           </h2>
           <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
-            Empower your entire team with unified digital profiles, advanced CRM integrations, 
+            Empower your entire team with unified digital profiles, advanced CRM integrations,
             and comprehensive lead management tools.
           </p>
         </motion.div>
@@ -169,10 +169,9 @@ const TeamsSection = () => {
                         <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-accent-500 rounded-full flex items-center justify-center">
                           <span className="text-white font-semibold text-sm">{member.avatar}</span>
                         </div>
-                        <div className={`absolute -bottom-1 -right-1 w-3 h-3 rounded-full border-2 border-white ${
-                          member.status === 'online' ? 'bg-green-500' : 
-                          member.status === 'away' ? 'bg-yellow-500' : 'bg-gray-400'
-                        }`}></div>
+                        <div className={`absolute -bottom-1 -right-1 w-3 h-3 rounded-full border-2 border-white ${member.status === 'online' ? 'bg-green-500' :
+                            member.status === 'away' ? 'bg-yellow-500' : 'bg-gray-400'
+                          }`}></div>
                       </div>
                       <div>
                         <p className="font-medium text-gray-900 dark:text-white">{member.name}</p>
@@ -198,7 +197,7 @@ const TeamsSection = () => {
             <h3 className="text-3xl font-bold text-gray-900 dark:text-white mb-8">
               Powerful Team Features
             </h3>
-            
+
             <div className="space-y-6">
               {[
                 {
@@ -247,7 +246,7 @@ const TeamsSection = () => {
         </div>
 
         {/* Demo Booking Form */}
-        <motion.div 
+        <motion.div
           className="bg-white dark:bg-gray-800 rounded-3xl p-8 md:p-12 shadow-xl"
           initial={{ opacity: 0, y: 50 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
@@ -258,7 +257,7 @@ const TeamsSection = () => {
               Ready to Scale Your Team?
             </h3>
             <p className="text-xl text-gray-600 dark:text-gray-400">
-              Book a personalized demo and see how TapOnn can transform your team's networking.
+              Book a personalized demo and see how Connection Unlimited can transform your team's networking.
             </p>
           </div>
 

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
 import { motion } from 'framer-motion'
-import { 
+import {
   ArrowLeft,
   Star,
   CheckCircle,
@@ -161,7 +161,7 @@ const ProductDetailPage = () => {
   return (
     <>
       <Helmet>
-        <title>{product.title} - TapOnn | Digital Profile Platform</title>
+        <title>{product.title} - Connection Unlimited | Digital Profile Platform</title>
         <meta name="description" content={product.description} />
       </Helmet>
 
@@ -204,9 +204,8 @@ const ProductDetailPage = () => {
                     <motion.button
                       key={index}
                       onClick={() => setSelectedImage(index)}
-                      className={`w-full h-20 bg-gradient-to-br ${product.gradient} rounded-lg flex items-center justify-center ${
-                        selectedImage === index ? 'ring-2 ring-primary-500' : ''
-                      }`}
+                      className={`w-full h-20 bg-gradient-to-br ${product.gradient} rounded-lg flex items-center justify-center ${selectedImage === index ? 'ring-2 ring-primary-500' : ''
+                        }`}
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
                     >
@@ -234,18 +233,17 @@ const ProductDetailPage = () => {
                   <p className="text-xl text-primary-600 dark:text-primary-400 font-medium mb-4">
                     {product.subtitle}
                   </p>
-                  
+
                   {/* Rating */}
                   <div className="flex items-center space-x-4 mb-4">
                     <div className="flex items-center space-x-1">
                       {[...Array(5)].map((_, i) => (
                         <Star
                           key={i}
-                          className={`w-5 h-5 ${
-                            i < Math.floor(product.rating)
+                          className={`w-5 h-5 ${i < Math.floor(product.rating)
                               ? 'text-yellow-400 fill-current'
                               : 'text-gray-300'
-                          }`}
+                            }`}
                         />
                       ))}
                     </div>
@@ -295,7 +293,7 @@ const ProductDetailPage = () => {
                     <ShoppingCart className="w-5 h-5" />
                     <span>Add to Cart</span>
                   </motion.button>
-                  
+
                   <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
@@ -315,7 +313,7 @@ const ProductDetailPage = () => {
                   >
                     <Heart className="w-5 h-5 text-gray-600 dark:text-gray-400" />
                   </motion.button>
-                  
+
                   <motion.button
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
@@ -341,11 +339,10 @@ const ProductDetailPage = () => {
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
-                    className={`py-4 px-1 border-b-2 font-medium text-sm ${
-                      activeTab === tab.id
+                    className={`py-4 px-1 border-b-2 font-medium text-sm ${activeTab === tab.id
                         ? 'border-primary-500 text-primary-600'
                         : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                    }`}
+                      }`}
                   >
                     {tab.name}
                   </button>
@@ -365,7 +362,7 @@ const ProductDetailPage = () => {
                   <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
                     {product.longDescription}
                   </p>
-                  
+
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
                     {[
                       { icon: Users, title: 'Easy to Use', desc: 'Simple setup and intuitive interface' },

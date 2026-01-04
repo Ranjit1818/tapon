@@ -8,7 +8,7 @@ require('express-async-errors');
 require('dotenv').config();
 
 // Import database connection
-const  connectDB  = require('./config/database');
+const connectDB = require('./config/database');
 
 // Import routes
 const authRoutes = require('./routes/auth');
@@ -168,11 +168,11 @@ const gracefulShutdown = async () => {
   if (process.env.NODE_ENV === 'development') {
     console.log('🔄 Shutting down gracefully...');
   }
-  
+
   // Close MongoDB connection
   const mongoose = require('mongoose');
   await mongoose.connection.close();
-  
+
   if (process.env.NODE_ENV === 'development') {
     console.log('✅ MongoDB connection closed.');
     console.log('✅ Server shutdown complete.');
@@ -185,20 +185,23 @@ process.on('SIGINT', gracefulShutdown);
 
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => {
-  if (process.env.NODE_ENV === 'development') {
-    console.log(`
-🚀 TapOnn Backend Server is running!
-✅ THIS IS THE CORRECT SERVER (from backend_tapon)
-📍 Port: ${PORT}
-🌍 Environment: ${process.env.NODE_ENV || 'development'}
-🗄️ Database: MongoDB
-📊 Health Check: http://localhost:${PORT}/api/health
-📖 API Docs: http://localhost:${PORT}/
-    `);
-  } else {
-    console.log(`🚀 TapOnn Backend Server running on port ${PORT} (${process.env.NODE_ENV})`);
-  }
-});
+// Only listen if run directly (not imported as a module)
+if (require.main === module) {
+  app.listen(PORT, () => {
+    if (process.env.NODE_ENV === 'development') {
+      console.log(`
+  🚀 TapOnn Backend Server is running!
+  ✅ THIS IS THE CORRECT SERVER (from backend_tapon)
+  📍 Port: ${PORT}
+  🌍 Environment: ${process.env.NODE_ENV || 'development'}
+  🗄️ Database: MongoDB
+  📊 Health Check: http://localhost:${PORT}/api/health
+  📖 API Docs: http://localhost:${PORT}/
+      `);
+    } else {
+      console.log(`🚀 TapOnn Backend Server running on port ${PORT} (${process.env.NODE_ENV})`);
+    }
+  });
+}
 
 module.exports = app; 

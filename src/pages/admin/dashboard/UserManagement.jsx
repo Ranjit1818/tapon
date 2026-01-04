@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { 
-  Users, 
-  Search, 
-  Filter, 
-  Download, 
-  Eye, 
-  Edit, 
-  Trash2, 
+import {
+  Users,
+  Search,
+  Filter,
+  Download,
+  Eye,
+  Edit,
+  Trash2,
   UserPlus,
   Crown,
   Shield,
@@ -48,7 +48,7 @@ const UserManagement = () => {
   const loadUsers = async () => {
     try {
       setLoading(true)
-      
+
       // Fetch users from backend API
       const response = await adminAPI.getUsers({
         include: 'profiles,analytics,orders'
@@ -72,7 +72,7 @@ const UserManagement = () => {
           qrScans: user.analytics?.qrScans || 0,
           ordersCount: user.orders?.length || 0
         }))
-        
+
         setUsers(apiUsers)
 
         // Fetch profiles to map userId -> username for QR links
@@ -93,7 +93,7 @@ const UserManagement = () => {
       }
     } catch (error) {
       console.error('Failed to fetch users:', error)
-      
+
       // Fallback to demo data if API fails
       const mockUsers = [
         {
@@ -129,13 +129,13 @@ const UserManagement = () => {
         {
           id: 3,
           name: 'Admin User',
-          email: 'admin@taponn.com',
+          email: 'admin@connectionunlimited.com',
           role: 'admin',
           status: 'active',
           createdAt: '2024-01-01',
           lastLogin: '2024-01-20',
           phone: '+1234567892',
-          company: 'TapOnn',
+          company: 'Connection Unlimited',
           location: 'San Francisco, CA',
           profileViews: 0,
           qrScans: 0,
@@ -168,7 +168,7 @@ const UserManagement = () => {
     let filtered = users
 
     if (searchTerm) {
-      filtered = filtered.filter(user => 
+      filtered = filtered.filter(user =>
         user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
         user.company?.toLowerCase().includes(searchTerm.toLowerCase())
@@ -230,17 +230,17 @@ const UserManagement = () => {
           break
         case 'activate':
           await adminAPI.updateUser(user.id, { isActive: true })
-          setUsers(users.map(u => u.id === user.id ? {...u, status: 'active'} : u))
+          setUsers(users.map(u => u.id === user.id ? { ...u, status: 'active' } : u))
           toast.success(`User ${user.name} activated`)
           break
         case 'deactivate':
           await adminAPI.updateUser(user.id, { isActive: false })
-          setUsers(users.map(u => u.id === user.id ? {...u, status: 'inactive'} : u))
+          setUsers(users.map(u => u.id === user.id ? { ...u, status: 'inactive' } : u))
           toast.success(`User ${user.name} deactivated`)
           break
         case 'makeAdmin':
           await adminAPI.updateUser(user.id, { role: 'admin' })
-          setUsers(users.map(u => u.id === user.id ? {...u, role: 'admin'} : u))
+          setUsers(users.map(u => u.id === user.id ? { ...u, role: 'admin' } : u))
           toast.success(`${user.name} is now an admin`)
           break
         default:
@@ -271,7 +271,7 @@ const UserManagement = () => {
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = 'taponn-users.csv'
+    a.download = 'connectionunlimited-users.csv'
     a.click()
     toast.success('Users exported to CSV')
   }
@@ -371,11 +371,10 @@ const UserManagement = () => {
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Role
                   </label>
-                  <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                    selectedUser.role === 'admin' 
-                      ? 'bg-yellow-100 text-yellow-800' 
+                  <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${selectedUser.role === 'admin'
+                      ? 'bg-yellow-100 text-yellow-800'
                       : 'bg-blue-100 text-blue-800'
-                  }`}>
+                    }`}>
                     {selectedUser.role === 'admin' ? 'Administrator' : 'User'}
                   </span>
                 </div>
@@ -384,11 +383,10 @@ const UserManagement = () => {
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Status
                   </label>
-                  <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                    selectedUser.status === 'active' 
-                      ? 'bg-green-100 text-green-800' 
+                  <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${selectedUser.status === 'active'
+                      ? 'bg-green-100 text-green-800'
                       : 'bg-red-100 text-red-800'
-                  }`}>
+                    }`}>
                     {selectedUser.status === 'active' ? 'Active' : 'Inactive'}
                   </span>
                 </div>
@@ -479,10 +477,10 @@ const UserManagement = () => {
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">User Management</h1>
           <p className="text-gray-600 dark:text-gray-400">
-            Manage all TapOnn users, their roles, and access permissions
+            Manage all Connection Unlimited users, their roles, and access permissions
           </p>
         </div>
-        
+
         <div className="mt-4 lg:mt-0 flex items-center space-x-3">
           <button
             onClick={exportUsers}
@@ -514,7 +512,7 @@ const UserManagement = () => {
               className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
             />
           </div>
-          
+
           <select
             value={filterRole}
             onChange={(e) => setFilterRole(e.target.value)}
@@ -524,7 +522,7 @@ const UserManagement = () => {
             <option value="user">Users</option>
             <option value="admin">Admins</option>
           </select>
-          
+
           <select
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value)}
@@ -599,19 +597,17 @@ const UserManagement = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="space-y-1">
-                        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                          user.role === 'admin' 
-                            ? 'bg-yellow-100 text-yellow-800' 
+                        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${user.role === 'admin'
+                            ? 'bg-yellow-100 text-yellow-800'
                             : 'bg-blue-100 text-blue-800'
-                        }`}>
+                          }`}>
                           {user.role === 'admin' ? 'Admin' : 'User'}
                         </span>
                         <br />
-                        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                          user.status === 'active' 
-                            ? 'bg-green-100 text-green-800' 
+                        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${user.status === 'active'
+                            ? 'bg-green-100 text-green-800'
                             : 'bg-red-100 text-red-800'
-                        }`}>
+                          }`}>
                           {user.status}
                         </span>
                       </div>

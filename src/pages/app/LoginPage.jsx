@@ -4,11 +4,11 @@ import { Link, Navigate } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
 import { motion } from 'framer-motion'
 import { useAuth } from '../../contexts/AuthContext'
-import { 
-  Mail, 
-  Lock, 
-  Eye, 
-  EyeOff, 
+import {
+  Mail,
+  Lock,
+  Eye,
+  EyeOff,
   ArrowRight,
   AlertCircle,
   Check
@@ -97,7 +97,7 @@ const LoginPage = () => {
         email: formData.email.trim(),
         password: formData.password
       })
-      
+
       if (result.success) {
         toast.success('Login successful!')
         console.log('Login successful, redirecting to dashboard...')
@@ -118,8 +118,8 @@ const LoginPage = () => {
   return (
     <>
       <Helmet>
-        <title>Login to TapOnn 🔐 - Access Your Digital Profile</title>
-        <meta name="description" content="Login to your TapOnn account and manage your smart digital profile. Connect instantly, share effortlessly." />
+        <title>Login to Connection Unlimited 🔐 - Access Your Digital Profile</title>
+        <meta name="description" content="Login to your Connection Unlimited account and manage your smart digital profile. Connect instantly, share effortlessly." />
       </Helmet>
 
       <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-accent-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center px-4 py-8">
@@ -133,9 +133,9 @@ const LoginPage = () => {
           >
             <Link to="/" className="inline-flex items-center space-x-2 mb-6">
               <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-accent-500 rounded-xl flex items-center justify-center">
-                <span className="text-white font-bold text-lg">T</span>
+                <span className="text-white font-bold text-lg">C</span>
               </div>
-              <span className="text-2xl font-bold text-gray-900 dark:text-white">TapOnn</span>
+              <span className="text-2xl font-bold text-gray-900 dark:text-white">Connection Unlimited</span>
             </Link>
             <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
               🔐 Welcome Back
@@ -168,11 +168,10 @@ const LoginPage = () => {
                     name="email"
                     value={formData.email}
                     onChange={handleInputChange}
-                    className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all ${
-                      errors.email
+                    className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all ${errors.email
                         ? 'border-red-500 bg-red-50 dark:bg-red-900/20'
                         : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800'
-                    }`}
+                      }`}
                     placeholder="Enter your email address"
                   />
                   <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -203,11 +202,10 @@ const LoginPage = () => {
                     name="password"
                     value={formData.password}
                     onChange={handleInputChange}
-                    className={`w-full pl-10 pr-12 py-3 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all ${
-                      errors.password
+                    className={`w-full pl-10 pr-12 py-3 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all ${errors.password
                         ? 'border-red-500 bg-red-50 dark:bg-red-900/20'
                         : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800'
-                    }`}
+                      }`}
                     placeholder="Enter your password"
                   />
                   <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />

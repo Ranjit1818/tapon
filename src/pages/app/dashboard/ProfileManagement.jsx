@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { 
-  User, 
-  Mail, 
-  Phone, 
-  MapPin, 
-  Globe, 
+import {
+  User,
+  Mail,
+  Phone,
+  MapPin,
+  Globe,
   Building,
   Briefcase,
   Camera,
@@ -44,7 +44,9 @@ const ProfileManagement = () => {
       instagram: '',
       twitter: '',
       facebook: '',
-      youtube: ''
+      facebook: '',
+      youtube: '',
+      googleReview: ''
     },
     customLinks: []
   })
@@ -57,53 +59,61 @@ const ProfileManagement = () => {
   ]
 
   const socialPlatforms = [
-    { 
-      key: 'whatsapp', 
-      name: 'WhatsApp', 
-      emoji: '📞', 
+    {
+      key: 'whatsapp',
+      name: 'WhatsApp',
+      emoji: '📞',
       placeholder: 'https://wa.me/1234567890',
       color: 'text-green-600',
       bgColor: 'bg-green-100 dark:bg-green-900/20'
     },
-    { 
-      key: 'linkedin', 
-      name: 'LinkedIn', 
-      emoji: '💼', 
+    {
+      key: 'linkedin',
+      name: 'LinkedIn',
+      emoji: '💼',
       placeholder: 'https://linkedin.com/in/username',
       color: 'text-blue-600',
       bgColor: 'bg-blue-100 dark:bg-blue-900/20'
     },
-    { 
-      key: 'instagram', 
-      name: 'Instagram', 
-      emoji: '📸', 
+    {
+      key: 'instagram',
+      name: 'Instagram',
+      emoji: '📸',
       placeholder: 'https://instagram.com/username',
       color: 'text-pink-600',
       bgColor: 'bg-pink-100 dark:bg-pink-900/20'
     },
-    { 
-      key: 'twitter', 
-      name: 'Twitter', 
-      emoji: '🐦', 
+    {
+      key: 'twitter',
+      name: 'Twitter',
+      emoji: '🐦',
       placeholder: 'https://twitter.com/username',
       color: 'text-blue-400',
       bgColor: 'bg-blue-100 dark:bg-blue-900/20'
     },
-    { 
-      key: 'facebook', 
-      name: 'Facebook', 
-      emoji: '📘', 
+    {
+      key: 'facebook',
+      name: 'Facebook',
+      emoji: '📘',
       placeholder: 'https://facebook.com/username',
       color: 'text-blue-800',
       bgColor: 'bg-blue-100 dark:bg-blue-900/20'
     },
-    { 
-      key: 'youtube', 
-      name: 'YouTube', 
-      emoji: '📺', 
+    {
+      key: 'youtube',
+      name: 'YouTube',
+      emoji: '📺',
       placeholder: 'https://youtube.com/channel/username',
       color: 'text-red-600',
       bgColor: 'bg-red-100 dark:bg-red-900/20'
+    },
+    {
+      key: 'googleReview',
+      name: 'Google Review',
+      emoji: '⭐',
+      placeholder: 'https://g.page/r/.../review',
+      color: 'text-yellow-600',
+      bgColor: 'bg-yellow-100 dark:bg-yellow-900/20'
     }
   ]
 
@@ -116,11 +126,11 @@ const ProfileManagement = () => {
     try {
       setIsLoadingProfile(true)
       const response = await profileAPI.getMyProfile()
-      
+
       if (response.data.success && response.data.data) {
         const profileData = response.data.data
         setProfile(profileData)
-        
+
         // Update form data with fetched profile
         setProfileData({
           displayName: profileData.displayName || '',
@@ -138,7 +148,9 @@ const ProfileManagement = () => {
             instagram: profileData.socialLinks?.instagram || '',
             twitter: profileData.socialLinks?.twitter || '',
             facebook: profileData.socialLinks?.facebook || '',
-            youtube: profileData.socialLinks?.youtube || ''
+            facebook: profileData.socialLinks?.facebook || '',
+            youtube: profileData.socialLinks?.youtube || '',
+            googleReview: profileData.socialLinks?.googleReview || ''
           },
           customLinks: profileData.customLinks || []
         })
@@ -153,7 +165,7 @@ const ProfileManagement = () => {
     } catch (error) {
       console.error('Failed to fetch profile:', error)
       toast.error('Failed to load profile data')
-      
+
       // Fallback to user data
       setProfileData(prev => ({
         ...prev,
@@ -193,7 +205,7 @@ const ProfileManagement = () => {
   const updateCustomLink = (index, field, value) => {
     setProfileData(prev => ({
       ...prev,
-      customLinks: prev.customLinks.map((link, i) => 
+      customLinks: prev.customLinks.map((link, i) =>
         i === index ? { ...link, [field]: value } : link
       )
     }))
@@ -226,10 +238,10 @@ const ProfileManagement = () => {
             phone: profileData.phone
           }
         }
-        
+
         await profileAPI.updateProfile(profile._id, updateData)
         toast.success('✅ Profile updated successfully!')
-        
+
         // Refresh profile data
         await fetchProfile()
       } else {
@@ -249,7 +261,7 @@ const ProfileManagement = () => {
             phone: profileData.phone
           }
         }
-        
+
         const response = await profileAPI.createProfile(createData)
         if (response.data.success) {
           setProfile(response.data.data)
@@ -269,10 +281,10 @@ const ProfileManagement = () => {
     if (file) {
       try {
         setIsLoading(true)
-        
+
         // Upload image to backend
         const response = await uploadAPI.uploadImage(file, 'profile')
-        
+
         if (response.data.success) {
           setProfileData(prev => ({
             ...prev,
@@ -283,7 +295,7 @@ const ProfileManagement = () => {
       } catch (error) {
         console.error('Failed to upload image:', error)
         toast.error('❌ Failed to upload image')
-        
+
         // Fallback to local preview
         const reader = new FileReader()
         reader.onload = (e) => {
@@ -334,7 +346,7 @@ const ProfileManagement = () => {
             Manage your digital profile information and social links
           </p>
         </div>
-        
+
         <motion.div
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
@@ -350,7 +362,7 @@ const ProfileManagement = () => {
             <Eye className="w-4 h-4" />
             <span>👁️ Preview</span>
           </motion.button>
-          
+
           <motion.button
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
@@ -389,19 +401,17 @@ const ProfileManagement = () => {
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`p-3 rounded-lg text-left transition-all ${
-                    activeTab === tab.id
+                  className={`p-3 rounded-lg text-left transition-all ${activeTab === tab.id
                       ? 'bg-gradient-to-r from-primary-500 to-accent-500 text-white'
                       : 'hover:bg-gray-100 dark:hover:bg-gray-700'
-                  }`}
+                    }`}
                 >
                   <div className="flex items-center space-x-2 mb-1">
                     <span className="text-lg">{tab.emoji}</span>
                     <span className="font-medium">{tab.name}</span>
                   </div>
-                  <p className={`text-xs ${
-                    activeTab === tab.id ? 'text-white/80' : 'text-gray-500 dark:text-gray-400'
-                  }`}>
+                  <p className={`text-xs ${activeTab === tab.id ? 'text-white/80' : 'text-gray-500 dark:text-gray-400'
+                    }`}>
                     {tab.description}
                   </p>
                 </motion.button>
@@ -423,15 +433,15 @@ const ProfileManagement = () => {
                   <span>👤</span>
                   <span>Basic Information</span>
                 </h3>
-                
+
                 {/* Profile Image */}
                 <div className="flex items-center space-x-4">
                   <div className="relative">
                     <div className="w-20 h-20 bg-gradient-to-br from-primary-500 to-accent-500 rounded-full flex items-center justify-center overflow-hidden">
                       {profileData.avatar ? (
-                        <img 
-                          src={profileData.avatar} 
-                          alt="Profile" 
+                        <img
+                          src={profileData.avatar}
+                          alt="Profile"
                           className="w-full h-full object-cover"
                         />
                       ) : (
@@ -442,11 +452,11 @@ const ProfileManagement = () => {
                     </div>
                     <label className="absolute bottom-0 right-0 w-6 h-6 bg-primary-500 rounded-full flex items-center justify-center cursor-pointer hover:bg-primary-600 transition-colors">
                       <Camera className="w-3 h-3 text-white" />
-                      <input 
-                        type="file" 
-                        accept="image/*" 
+                      <input
+                        type="file"
+                        accept="image/*"
                         onChange={handleImageUpload}
-                        className="hidden" 
+                        className="hidden"
                       />
                     </label>
                   </div>
@@ -471,7 +481,7 @@ const ProfileManagement = () => {
                       placeholder="Your display name"
                     />
                   </div>
-                  
+
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                       Job Title
@@ -523,7 +533,7 @@ const ProfileManagement = () => {
                   <span>📞</span>
                   <span>Contact Information</span>
                 </h3>
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -540,7 +550,7 @@ const ProfileManagement = () => {
                       <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                     </div>
                   </div>
-                  
+
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                       Phone Number
@@ -574,7 +584,7 @@ const ProfileManagement = () => {
                       <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                     </div>
                   </div>
-                  
+
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                       Website
@@ -600,7 +610,7 @@ const ProfileManagement = () => {
                   <span>🌐</span>
                   <span>Social Media Links</span>
                 </h3>
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {socialPlatforms.map((platform) => (
                     <div key={platform.key} className={`p-4 ${platform.bgColor} rounded-lg`}>
@@ -638,7 +648,7 @@ const ProfileManagement = () => {
                     <span>Add Link</span>
                   </motion.button>
                 </div>
-                
+
                 {profileData.customLinks.length === 0 ? (
                   <div className="text-center py-8 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg">
                     <LinkIcon className="w-12 h-12 text-gray-400 mx-auto mb-4" />
@@ -667,7 +677,7 @@ const ProfileManagement = () => {
                             <X className="w-4 h-4" />
                           </button>
                         </div>
-                        
+
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                           <div>
                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -682,7 +692,7 @@ const ProfileManagement = () => {
                               maxLength={2}
                             />
                           </div>
-                          
+
                           <div>
                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                               Title
@@ -695,7 +705,7 @@ const ProfileManagement = () => {
                               placeholder="Link title"
                             />
                           </div>
-                          
+
                           <div>
                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                               URL
@@ -729,15 +739,15 @@ const ProfileManagement = () => {
             <span>👁️</span>
             <span>Live Preview</span>
           </h3>
-          
+
           <div className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-800 rounded-lg p-4 min-h-[400px]">
             {/* Mock mobile profile preview */}
             <div className="text-center">
               <div className="w-20 h-20 bg-gradient-to-br from-primary-500 to-accent-500 rounded-full flex items-center justify-center mx-auto mb-4 overflow-hidden">
                 {profileData.avatar ? (
-                  <img 
-                    src={profileData.avatar} 
-                    alt="Profile" 
+                  <img
+                    src={profileData.avatar}
+                    alt="Profile"
                     className="w-full h-full object-cover"
                   />
                 ) : (
@@ -746,29 +756,29 @@ const ProfileManagement = () => {
                   </span>
                 )}
               </div>
-              
+
               <h4 className="text-lg font-bold text-gray-900 dark:text-white mb-1">
                 {profileData.displayName || 'Your Name'}
               </h4>
-              
+
               {profileData.jobTitle && (
                 <p className="text-primary-600 dark:text-primary-400 font-medium mb-1">
                   {profileData.jobTitle}
                 </p>
               )}
-              
+
               {profileData.company && (
                 <p className="text-gray-600 dark:text-gray-400 text-sm mb-3">
                   {profileData.company}
                 </p>
               )}
-              
+
               {profileData.bio && (
                 <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed mb-4">
                   {profileData.bio}
                 </p>
               )}
-              
+
               {/* Contact methods preview */}
               <div className="space-y-2">
                 {profileData.phone && (
@@ -781,7 +791,7 @@ const ProfileManagement = () => {
                     ✉️ Email
                   </div>
                 )}
-                {Object.entries(profileData.socialLinks).map(([key, value]) => 
+                {Object.entries(profileData.socialLinks).map(([key, value]) =>
                   value && (
                     <div key={key} className="p-2 bg-gray-600 text-white rounded text-xs">
                       {socialPlatforms.find(p => p.key === key)?.emoji} {socialPlatforms.find(p => p.key === key)?.name}
@@ -791,7 +801,7 @@ const ProfileManagement = () => {
               </div>
             </div>
           </div>
-          
+
           <div className="mt-4 space-y-2">
             <motion.button
               whileHover={{ scale: 1.02 }}
@@ -802,7 +812,7 @@ const ProfileManagement = () => {
               <Eye className="w-4 h-4" />
               <span>View Full Profile</span>
             </motion.button>
-            
+
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}

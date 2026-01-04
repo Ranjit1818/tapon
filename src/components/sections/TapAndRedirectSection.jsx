@@ -2,9 +2,9 @@ import { useEffect, useRef, useState } from 'react'
 import { motion, useInView } from 'framer-motion'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { 
-  Smartphone, 
-  QrCode, 
+import {
+  Smartphone,
+  QrCode,
   CreditCard,
   Mail,
   Phone,
@@ -69,7 +69,7 @@ const TapAndRedirectSection = () => {
     {
       icon: CreditCard,
       title: '1. Tap Your Card',
-      description: 'Simply tap your NFC-enabled TapOnn card on any smartphone',
+      description: 'Simply tap your NFC-enabled Connection Unlimited card on any smartphone',
       color: 'from-blue-500 to-purple-600'
     },
     {
@@ -89,18 +89,18 @@ const TapAndRedirectSection = () => {
   const contactLinks = [
     { icon: Phone, label: 'Call', color: 'bg-green-500', href: 'tel:+1234567890' },
     { icon: MessageCircle, label: 'WhatsApp', color: 'bg-green-600', href: 'https://wa.me/1234567890' },
-    { icon: Mail, label: 'Email', color: 'bg-blue-500', href: 'mailto:hello@taponn.com' },
-    { icon: Instagram, label: 'Instagram', color: 'bg-pink-500', href: 'https://instagram.com/taponn' },
-    { icon: Linkedin, label: 'LinkedIn', color: 'bg-blue-600', href: 'https://linkedin.com/in/taponn' },
-    { icon: Twitter, label: 'Twitter', color: 'bg-blue-400', href: 'https://twitter.com/taponn' },
-    { icon: Youtube, label: 'YouTube', color: 'bg-red-500', href: 'https://youtube.com/taponn' },
-    { icon: Globe, label: 'Website', color: 'bg-purple-500', href: 'https://taponn.com' },
-    { icon: Calendar, label: 'Calendly', color: 'bg-blue-700', href: 'https://calendly.com/taponn' },
+    { icon: Mail, label: 'Email', color: 'bg-blue-500', href: 'mailto:hello@connectionunlimited.com' },
+    { icon: Instagram, label: 'Instagram', color: 'bg-pink-500', href: 'https://instagram.com/connectionunlimited' },
+    { icon: Linkedin, label: 'LinkedIn', color: 'bg-blue-600', href: 'https://linkedin.com/in/connectionunlimited' },
+    { icon: Twitter, label: 'Twitter', color: 'bg-blue-400', href: 'https://twitter.com/connectionunlimited' },
+    { icon: Youtube, label: 'YouTube', color: 'bg-red-500', href: 'https://youtube.com/connectionunlimited' },
+    { icon: Globe, label: 'Website', color: 'bg-purple-500', href: 'https://connectionunlimited.com' },
+    { icon: Calendar, label: 'Calendly', color: 'bg-blue-700', href: 'https://calendly.com/connectionunlimited' },
     { icon: MapPin, label: 'Location', color: 'bg-red-600', href: 'https://maps.google.com' }
   ]
 
   return (
-    <section 
+    <section
       ref={sectionRef}
       className="py-20 bg-white dark:bg-gray-900 relative overflow-hidden"
     >
@@ -114,7 +114,7 @@ const TapAndRedirectSection = () => {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Section Header */}
-        <motion.div 
+        <motion.div
           className="text-center mb-16"
           initial={{ opacity: 0, y: 50 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
@@ -125,7 +125,7 @@ const TapAndRedirectSection = () => {
             <span className="gradient-text">Redirect</span>
           </h2>
           <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
-            Experience the magic of instant sharing. One tap or scan opens your complete digital profile 
+            Experience the magic of instant sharing. One tap or scan opens your complete digital profile
             with all your important links and contact information.
           </p>
         </motion.div>
@@ -140,14 +140,13 @@ const TapAndRedirectSection = () => {
             <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-8">
               How It Works
             </h3>
-            
+
             <div className="space-y-6">
               {steps.map((step, index) => (
                 <motion.div
                   key={index}
-                  className={`step-card card p-6 transition-all duration-300 ${
-                    activeStep === index ? 'ring-2 ring-primary-500 shadow-lg' : ''
-                  }`}
+                  className={`step-card card p-6 transition-all duration-300 ${activeStep === index ? 'ring-2 ring-primary-500 shadow-lg' : ''
+                    }`}
                   initial={{ opacity: 0, x: -50 }}
                   animate={isInView ? { opacity: 1, x: 0 } : {}}
                   transition={{ duration: 0.6, delay: index * 0.2 }}
@@ -170,7 +169,7 @@ const TapAndRedirectSection = () => {
             </div>
 
             {/* Features */}
-            <motion.div 
+            <motion.div
               className="mt-8 p-6 bg-gradient-to-r from-primary-50 to-accent-50 dark:from-primary-900/20 dark:to-accent-900/20 rounded-2xl"
               initial={{ opacity: 0, y: 30 }}
               animate={isInView ? { opacity: 1, y: 0 } : {}}
@@ -285,7 +284,7 @@ const TapAndRedirectSection = () => {
         </div>
 
         {/* Bottom CTA */}
-        <motion.div 
+        <motion.div
           className="text-center mt-16"
           initial={{ opacity: 0, y: 30 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
@@ -295,7 +294,7 @@ const TapAndRedirectSection = () => {
             Ready to Experience Instant Sharing?
           </h3>
           <p className="text-lg text-gray-600 dark:text-gray-400 mb-8 max-w-2xl mx-auto">
-            Get your personalized TapOnn card and start sharing your digital profile instantly.
+            Get your personalized Connection Unlimited card and start sharing your digital profile instantly.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <motion.button

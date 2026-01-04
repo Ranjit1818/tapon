@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { 
+import {
   ShoppingBag,
-  Search, 
-  Filter, 
-  Download, 
-  Eye, 
-  Edit, 
+  Search,
+  Filter,
+  Download,
+  Eye,
+  Edit,
   CheckCircle,
   XCircle,
   Clock,
@@ -51,7 +51,7 @@ const OrderManagement = () => {
   const loadOrders = async () => {
     try {
       setLoading(true)
-      
+
       // Fetch orders from backend API
       const response = await adminAPI.getAllOrders({
         include: 'user,shipping'
@@ -83,12 +83,12 @@ const OrderManagement = () => {
           notes: order.notes || '',
           trackingNumber: order.trackingNumber || null
         }))
-        
+
         setOrders(apiOrders)
       }
     } catch (error) {
       console.error('Failed to fetch orders:', error)
-      
+
       // Zero-state on failure
       setOrders([])
     } finally {
@@ -100,7 +100,7 @@ const OrderManagement = () => {
     let filtered = orders
 
     if (searchTerm) {
-      filtered = filtered.filter(order => 
+      filtered = filtered.filter(order =>
         order.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
         order.userName.toLowerCase().includes(searchTerm.toLowerCase()) ||
         order.userEmail.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -123,14 +123,14 @@ const OrderManagement = () => {
     try {
       const response = await adminAPI.updateOrder(orderId, { status: newStatus })
       if (response.data.success) {
-        setOrders(orders.map(order => 
-          order.id === orderId 
-            ? { 
-                ...order, 
-                status: newStatus, 
-                updatedAt: new Date().toISOString().split('T')[0],
-                trackingNumber: response.data.data.trackingNumber || order.trackingNumber
-              }
+        setOrders(orders.map(order =>
+          order.id === orderId
+            ? {
+              ...order,
+              status: newStatus,
+              updatedAt: new Date().toISOString().split('T')[0],
+              trackingNumber: response.data.data.trackingNumber || order.trackingNumber
+            }
             : order
         ))
         // Update selected order if it's the one being updated
@@ -159,8 +159,8 @@ const OrderManagement = () => {
     try {
       const response = await adminAPI.updateOrder(orderId, { trackingNumber: trackingNumber.trim() })
       if (response.data.success) {
-        setOrders(orders.map(order => 
-          order.id === orderId 
+        setOrders(orders.map(order =>
+          order.id === orderId
             ? { ...order, trackingNumber: trackingNumber.trim(), updatedAt: new Date().toISOString().split('T')[0] }
             : order
         ))
@@ -202,7 +202,7 @@ const OrderManagement = () => {
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = 'taponn-orders.csv'
+    a.download = 'connectionunlimited-orders.csv'
     a.click()
     toast.success('Orders exported to CSV')
   }
@@ -328,9 +328,8 @@ const OrderManagement = () => {
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                       Payment
                     </label>
-                    <span className={`inline-flex items-center space-x-1 px-2 py-1 rounded-full text-xs font-medium ${
-                      selectedOrder.paymentStatus === 'paid' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                    }`}>
+                    <span className={`inline-flex items-center space-x-1 px-2 py-1 rounded-full text-xs font-medium ${selectedOrder.paymentStatus === 'paid' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                      }`}>
                       <CreditCard className="w-3 h-3" />
                       <span>{selectedOrder.paymentStatus}</span>
                     </span>
@@ -365,7 +364,7 @@ const OrderManagement = () => {
                     <input
                       type="text"
                       value={selectedOrder.trackingNumber || ''}
-                      onChange={(e) => setSelectedOrder({...selectedOrder, trackingNumber: e.target.value})}
+                      onChange={(e) => setSelectedOrder({ ...selectedOrder, trackingNumber: e.target.value })}
                       className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                       placeholder="Enter tracking number"
                     />
@@ -450,10 +449,10 @@ const OrderManagement = () => {
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Order Management</h1>
           <p className="text-gray-600 dark:text-gray-400">
-            Process and manage all TapOnn card orders
+            Process and manage all Connection Unlimited card orders
           </p>
         </div>
-        
+
         <div className="mt-4 lg:mt-0 flex items-center space-x-3">
           <button
             onClick={exportOrders}
@@ -525,7 +524,7 @@ const OrderManagement = () => {
               className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
             />
           </div>
-          
+
           <select
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value)}
@@ -538,7 +537,7 @@ const OrderManagement = () => {
             <option value="delivered">Delivered</option>
             <option value="cancelled">Cancelled</option>
           </select>
-          
+
           <select
             value={filterProduct}
             onChange={(e) => setFilterProduct(e.target.value)}

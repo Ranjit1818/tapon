@@ -13,7 +13,7 @@ export const useTheme = () => {
 export const ThemeProvider = ({ children }) => {
   const [isDark, setIsDark] = useState(() => {
     // Check localStorage first, then system preference
-    const saved = localStorage.getItem('taponn-theme')
+    const saved = localStorage.getItem('connectionunlimited-theme')
     if (saved) {
       return saved === 'dark'
     }
@@ -22,8 +22,8 @@ export const ThemeProvider = ({ children }) => {
 
   useEffect(() => {
     // Update localStorage
-    localStorage.setItem('taponn-theme', isDark ? 'dark' : 'light')
-    
+    localStorage.setItem('connectionunlimited-theme', isDark ? 'dark' : 'light')
+
     // Update document class
     if (isDark) {
       document.documentElement.classList.add('dark')

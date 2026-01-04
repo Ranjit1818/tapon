@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { 
+import {
   Database,
-  Search, 
-  Filter, 
-  Download, 
-  Eye, 
-  Edit, 
+  Search,
+  Filter,
+  Download,
+  Eye,
+  Edit,
   Trash2,
   RefreshCw,
   Plus,
@@ -35,40 +35,40 @@ const DatabaseViewer = () => {
   const [customQuery, setCustomQuery] = useState('')
   const [queryResult, setQueryResult] = useState(null)
   const [tables, setTables] = useState([
-    { 
-      name: 'users', 
-      icon: Users, 
-      label: 'Users', 
+    {
+      name: 'users',
+      icon: Users,
+      label: 'Users',
       description: 'User accounts and profiles',
-      count: 0 
+      count: 0
     },
-    { 
-      name: 'profiles', 
-      icon: FileText, 
-      label: 'Profiles', 
+    {
+      name: 'profiles',
+      icon: FileText,
+      label: 'Profiles',
       description: 'User profile data',
-      count: 0 
+      count: 0
     },
-    { 
-      name: 'qrcodes', 
-      icon: QrCode, 
-      label: 'QR Codes', 
+    {
+      name: 'qrcodes',
+      icon: QrCode,
+      label: 'QR Codes',
       description: 'Generated QR codes',
-      count: 0 
+      count: 0
     },
-    { 
-      name: 'orders', 
-      icon: ShoppingBag, 
-      label: 'Orders', 
+    {
+      name: 'orders',
+      icon: ShoppingBag,
+      label: 'Orders',
       description: 'Card orders and purchases',
-      count: 0 
+      count: 0
     },
-    { 
-      name: 'analytics', 
-      icon: BarChart3, 
-      label: 'Analytics', 
+    {
+      name: 'analytics',
+      icon: BarChart3,
+      label: 'Analytics',
       description: 'Usage analytics and stats',
-      count: 0 
+      count: 0
     }
   ])
 
@@ -81,7 +81,7 @@ const DatabaseViewer = () => {
       const response = await adminAPI.getDatabaseTables()
       if (response.data.success) {
         const tableData = response.data.data
-        setTables(prevTables => 
+        setTables(prevTables =>
           prevTables.map(table => {
             const realData = tableData.find(t => t.name === table.name)
             return {
@@ -120,7 +120,7 @@ const DatabaseViewer = () => {
       {
         id: 3,
         name: 'Admin User',
-        email: 'admin@taponn.com',
+        email: 'admin@connectionunlimited.com',
         role: 'admin',
         status: 'active',
         createdAt: '2024-01-01T00:00:00Z',
@@ -160,8 +160,8 @@ const DatabaseViewer = () => {
         id: 1,
         userId: 1,
         type: 'profile',
-        url: 'https://taponn.com/profile/johndoe',
-        qrData: 'https://taponn.com/profile/johndoe',
+        url: 'https://connectionunlimited.com/profile/johndoe',
+        qrData: 'https://connectionunlimited.com/profile/johndoe',
         isActive: true,
         scanCount: 23,
         createdAt: '2024-01-15T11:00:00Z'
@@ -234,7 +234,7 @@ const DatabaseViewer = () => {
   const loadTableData = async (tableName) => {
     try {
       setLoading(true)
-      
+
       let response
       switch (tableName) {
         case 'users':
@@ -324,7 +324,7 @@ const DatabaseViewer = () => {
       }
     } catch (error) {
       console.error(`Failed to fetch ${tableName} data:`, error)
-      
+
       // Fallback to demo data if API fails
       setTableData(mockData[tableName] || [])
       toast.error(`Using demo data - Backend connection failed for ${tableName}`)
@@ -340,7 +340,7 @@ const DatabaseViewer = () => {
     }
 
     const filtered = tableData.filter(row => {
-      return Object.values(row).some(value => 
+      return Object.values(row).some(value =>
         value?.toString().toLowerCase().includes(searchTerm.toLowerCase())
       )
     })
@@ -364,10 +364,10 @@ const DatabaseViewer = () => {
         success: !customQuery.toLowerCase().includes('drop'),
         data: mockData[activeTable]?.slice(0, 3) || []
       }
-      
+
       setQueryResult(mockResult)
       setLoading(false)
-      
+
       if (mockResult.success) {
         toast.success(`Query executed successfully. ${mockResult.rowCount} rows affected.`)
       } else {
@@ -387,7 +387,7 @@ const DatabaseViewer = () => {
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = `taponn-${activeTable}.csv`
+    a.download = `connectionunlimited-${activeTable}.csv`
     a.click()
     toast.success(`${activeTable} data exported`)
   }
@@ -451,8 +451,8 @@ const DatabaseViewer = () => {
               >
                 {headers.map(header => (
                   <td key={header} className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                    {typeof row[header] === 'object' ? 
-                      JSON.stringify(row[header]) : 
+                    {typeof row[header] === 'object' ?
+                      JSON.stringify(row[header]) :
                       row[header]?.toString() || '-'
                     }
                   </td>
@@ -488,10 +488,10 @@ const DatabaseViewer = () => {
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Database Viewer</h1>
           <p className="text-gray-600 dark:text-gray-400">
-            View and manage TapOnn database tables and records
+            View and manage Connection Unlimited database tables and records
           </p>
         </div>
-        
+
         <div className="mt-4 lg:mt-0 flex items-center space-x-3">
           <button
             onClick={() => setShowQueryBuilder(!showQueryBuilder)}
@@ -527,19 +527,16 @@ const DatabaseViewer = () => {
               onClick={() => setActiveTable(table.name)}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              className={`p-4 rounded-xl border-2 transition-all ${
-                activeTable === table.name
+              className={`p-4 rounded-xl border-2 transition-all ${activeTable === table.name
                   ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
                   : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:border-gray-300'
-              }`}
+                }`}
             >
               <div className="flex items-center space-x-3 mb-2">
-                <Icon className={`w-6 h-6 ${
-                  activeTable === table.name ? 'text-blue-600' : 'text-gray-500'
-                }`} />
-                <span className={`font-medium ${
-                  activeTable === table.name ? 'text-blue-900 dark:text-blue-100' : 'text-gray-900 dark:text-white'
-                }`}>
+                <Icon className={`w-6 h-6 ${activeTable === table.name ? 'text-blue-600' : 'text-gray-500'
+                  }`} />
+                <span className={`font-medium ${activeTable === table.name ? 'text-blue-900 dark:text-blue-100' : 'text-gray-900 dark:text-white'
+                  }`}>
                   {table.label}
                 </span>
               </div>
@@ -562,7 +559,7 @@ const DatabaseViewer = () => {
             <Terminal className="w-5 h-5 text-purple-500" />
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white">SQL Query Builder</h3>
           </div>
-          
+
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -576,7 +573,7 @@ const DatabaseViewer = () => {
                 rows="4"
               />
             </div>
-            
+
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
                 <AlertTriangle className="w-4 h-4 text-orange-500" />
@@ -644,7 +641,7 @@ const DatabaseViewer = () => {
               </span>
             </div>
           </div>
-          
+
           <div className="flex items-center space-x-2">
             <button
               onClick={() => toast.info('Add record functionality coming soon')}
@@ -667,7 +664,7 @@ const DatabaseViewer = () => {
             Showing data from the {activeTable} collection
           </p>
         </div>
-        
+
         {renderTableContent()}
       </div>
 

@@ -1,11 +1,11 @@
 import { useState, useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
-import { 
-  QrCode, 
-  Download, 
-  Copy, 
-  Printer, 
-  Share2, 
+import {
+  QrCode,
+  Download,
+  Copy,
+  Printer,
+  Share2,
   Eye,
   Palette,
   Settings,
@@ -22,14 +22,14 @@ import toast from 'react-hot-toast'
 import AccessDenied from '../../../components/common/AccessDenied'
 
 const QRGenerator = () => {
-  const { user, isTapOnnUser, hasPermission } = useAuth()
+  const { user, isConnectionUnlimitedUser, hasPermission } = useAuth()
 
   // Check if user has permission to access QR Generator
-  if (!isTapOnnUser || !hasPermission('qr_generate')) {
+  if (!isConnectionUnlimitedUser || !hasPermission('qr_generate')) {
     return (
-      <AccessDenied 
+      <AccessDenied
         title="QR Generator Access Restricted"
-        message="QR code generation is exclusive to TapOnn administrators. Regular users can purchase pre-made cards with QR codes from our shop."
+        message="QR code generation is exclusive to Connection Unlimited administrators. Regular users can purchase pre-made cards with QR codes from our shop."
       />
     )
   }
@@ -56,7 +56,7 @@ const QRGenerator = () => {
       label: 'My Profile',
       url: `${window.location.origin}/profile/${user?.username || 'demo'}`,
       emoji: '👤',
-      description: 'Your public TapOnn profile'
+      description: 'Your public Connection Unlimited profile'
     },
     {
       label: 'WhatsApp',
@@ -66,7 +66,7 @@ const QRGenerator = () => {
     },
     {
       label: 'Email',
-      url: `mailto:${user?.email || 'hello@taponn.com'}`,
+      url: `mailto:${user?.email || 'hello@connectionunlimited.com'}`,
       emoji: '✉️',
       description: 'Send email directly'
     },
@@ -114,46 +114,46 @@ const QRGenerator = () => {
 
   const downloadQR = async () => {
     setIsGenerating(true)
-    
+
     try {
       // Create a temporary canvas to draw the QR code
       const canvas = document.createElement('canvas')
       const ctx = canvas.getContext('2d')
-      
+
       // Set canvas size
       canvas.width = qrSize
       canvas.height = qrSize
-      
+
       // Fill background
       ctx.fillStyle = qrBgColor
       ctx.fillRect(0, 0, qrSize, qrSize)
-      
+
       // Create QR code SVG
       const svg = qrRef.current.querySelector('svg')
       const svgData = new XMLSerializer().serializeToString(svg)
       const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' })
       const svgUrl = URL.createObjectURL(svgBlob)
-      
+
       // Load SVG as image and draw to canvas
       const img = new Image()
       img.onload = () => {
         ctx.drawImage(img, 0, 0, qrSize, qrSize)
-        
+
         // Download the canvas as PNG
         canvas.toBlob((blob) => {
           const url = URL.createObjectURL(blob)
           const a = document.createElement('a')
           a.href = url
-          a.download = `taponn-qr-${Date.now()}.png`
+          a.download = `connectionunlimited-qr-${Date.now()}.png`
           document.body.appendChild(a)
           a.click()
           document.body.removeChild(a)
           URL.revokeObjectURL(url)
-          
+
           setDownloadCount(prev => prev + 1)
           toast.success('📥 QR Code downloaded successfully!')
         })
-        
+
         URL.revokeObjectURL(svgUrl)
       }
       img.src = svgUrl
@@ -176,15 +176,15 @@ const QRGenerator = () => {
   const printQR = () => {
     const printWindow = window.open('', '_blank')
     const qrElement = qrRef.current
-    
+
     if (qrElement && printWindow) {
       const svg = qrElement.querySelector('svg')
       const svgData = new XMLSerializer().serializeToString(svg)
-      
+
       printWindow.document.write(`
         <html>
           <head>
-            <title>TapOnn QR Code - ${user?.name || 'User'}</title>
+            <title>Connection Unlimited QR Code - ${user?.name || 'User'}</title>
             <style>
               body {
                 font-family: Arial, sans-serif;
@@ -202,7 +202,7 @@ const QRGenerator = () => {
             </style>
           </head>
           <body>
-            <h1>TapOnn Digital Profile</h1>
+            <h1>Connection Unlimited Digital Profile</h1>
             <h2>${user?.name || 'User Profile'}</h2>
             <div class="qr-container">
               ${svgData}
@@ -210,12 +210,12 @@ const QRGenerator = () => {
             <div class="info">
               <p>Scan this QR code to view the digital profile</p>
               <p>Generated on: ${new Date().toLocaleDateString()}</p>
-              <p>Powered by TapOnn.com</p>
+              <p>Powered by ConnectionUnlimited.com</p>
             </div>
           </body>
         </html>
       `)
-      
+
       printWindow.document.close()
       printWindow.print()
       toast.success('🖨️ Print dialog opened!')
@@ -226,8 +226,8 @@ const QRGenerator = () => {
     if (navigator.share) {
       try {
         await navigator.share({
-          title: 'My TapOnn Digital Profile',
-          text: 'Check out my digital profile on TapOnn!',
+          title: 'My Connection Unlimited Digital Profile',
+          text: 'Check out my digital profile on Connection Unlimited!',
           url: qrData
         })
         setShareCount(prev => prev + 1)
@@ -257,7 +257,7 @@ const QRGenerator = () => {
             Generate, customize, and share QR codes for your digital profile
           </p>
         </div>
-        
+
         <motion.div
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
@@ -307,7 +307,7 @@ const QRGenerator = () => {
               </motion.button>
             </div>
           </div>
-          
+
           {/* QR Code Display */}
           <div className="flex justify-center mb-6">
             <motion.div
@@ -392,7 +392,7 @@ const QRGenerator = () => {
               <span>🔗</span>
               <span>URL Content</span>
             </h3>
-            
+
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -446,7 +446,7 @@ const QRGenerator = () => {
               <span>📐</span>
               <span>Size & Quality</span>
             </h3>
-            
+
             <div className="space-y-4">
               {/* Size Selection */}
               <div>
@@ -460,11 +460,10 @@ const QRGenerator = () => {
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                       onClick={() => setQrSize(size.value)}
-                      className={`p-3 rounded-lg text-sm font-medium transition-colors ${
-                        qrSize === size.value
-                          ? 'bg-primary-500 text-white'
-                          : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-                      }`}
+                      className={`p-3 rounded-lg text-sm font-medium transition-colors ${qrSize === size.value
+                        ? 'bg-primary-500 text-white'
+                        : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                        }`}
                     >
                       <div className="flex items-center space-x-2">
                         <span>{size.emoji}</span>
@@ -504,7 +503,7 @@ const QRGenerator = () => {
               <span>🎨</span>
               <span>Colors</span>
             </h3>
-            
+
             <div className="space-y-4">
               {/* Color Presets */}
               <div>
@@ -556,7 +555,7 @@ const QRGenerator = () => {
                     />
                   </div>
                 </div>
-                
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Background
@@ -593,7 +592,7 @@ const QRGenerator = () => {
           <span>💡</span>
           <span>Tips for Better QR Codes</span>
         </h3>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
             <div className="flex items-center space-x-2 mb-2">
@@ -604,7 +603,7 @@ const QRGenerator = () => {
               Use Medium or Large sizes for mobile scanning. Small QR codes may be hard to scan.
             </p>
           </div>
-          
+
           <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
             <div className="flex items-center space-x-2 mb-2">
               <span className="text-lg">🎨</span>
@@ -614,7 +613,7 @@ const QRGenerator = () => {
               Ensure good contrast between foreground and background colors for better readability.
             </p>
           </div>
-          
+
           <div className="p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
             <div className="flex items-center space-x-2 mb-2">
               <span className="text-lg">🛡️</span>

@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { 
-  TrendingUp, 
-  Users, 
-  Eye, 
-  MessageSquare, 
+import {
+  TrendingUp,
+  Users,
+  Eye,
+  MessageSquare,
   Calendar,
   Download,
   Share2,
@@ -26,7 +26,7 @@ import CountUp from 'react-countup'
 import toast from 'react-hot-toast'
 
 const DashboardOverview = () => {
-  const { user, isTapOnnUser, hasPermission } = useAuth()
+  const { user, isConnectionUnlimitedUser, hasPermission } = useAuth()
   const { trackEvent } = useAnalytics()
   const [stats, setStats] = useState({
     profileViews: 0,
@@ -47,7 +47,7 @@ const DashboardOverview = () => {
   const fetchDashboardData = async () => {
     try {
       setIsLoading(true)
-      
+
       // Fetch user profile
       const profileResponse = await profileAPI.getProfile()
       if (profileResponse.data.success && profileResponse.data.data.length > 0) {
@@ -62,7 +62,7 @@ const DashboardOverview = () => {
 
       if (analyticsResponse.data.success) {
         const analyticsData = analyticsResponse.data.data
-        
+
         setStats({
           profileViews: analyticsData.profileViews || 0,
           whatsappClicks: analyticsData.whatsappClicks || 0,
@@ -85,7 +85,7 @@ const DashboardOverview = () => {
       }
     } catch (error) {
       console.error('Failed to fetch dashboard data:', error)
-      
+
       // Fallback to zero data if API fails
       setStats({
         profileViews: 0,
@@ -95,9 +95,9 @@ const DashboardOverview = () => {
         nfcTaps: 0,
         socialClicks: 0
       })
-      
+
       setRecentActivity([])
-      
+
       toast.error('Analytics data unavailable - Backend connection failed')
     } finally {
       setIsLoading(false)
@@ -150,7 +150,7 @@ const DashboardOverview = () => {
     const now = new Date()
     const time = new Date(timestamp)
     const diffInMinutes = Math.floor((now - time) / (1000 * 60))
-    
+
     if (diffInMinutes < 1) return 'Just now'
     if (diffInMinutes < 60) return `${diffInMinutes} minutes ago`
     if (diffInMinutes < 1440) return `${Math.floor(diffInMinutes / 60)} hours ago`
@@ -226,13 +226,13 @@ const DashboardOverview = () => {
   const getGreeting = () => {
     const hour = new Date().getHours()
     const firstName = user?.name?.split(' ')[0] || 'User'
-    const roleTitle = isTapOnnUser ? ' 👑' : ''
-    
+    const roleTitle = isConnectionUnlimitedUser ? ' 👑' : ''
+
     let timeGreeting
     if (hour < 12) timeGreeting = `🌅 Good Morning, ${firstName}${roleTitle}!`
     else if (hour < 17) timeGreeting = `☀️ Good Afternoon, ${firstName}${roleTitle}!`
     else timeGreeting = `🌙 Good Evening, ${firstName}${roleTitle}!`
-    
+
     return timeGreeting
   }
 
@@ -277,7 +277,7 @@ const DashboardOverview = () => {
             Here's what's happening with your digital profile today 📈
           </p>
         </div>
-        
+
         <motion.div
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
@@ -317,7 +317,7 @@ const DashboardOverview = () => {
             className="card p-6 relative overflow-hidden group"
           >
             <div className={`absolute inset-0 bg-gradient-to-br ${stat.color} opacity-0 group-hover:opacity-10 transition-opacity duration-300`} />
-            
+
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center space-x-3">
                 <div className={`w-12 h-12 bg-gradient-to-br ${stat.color} rounded-lg flex items-center justify-center text-white text-xl`}>
@@ -336,20 +336,19 @@ const DashboardOverview = () => {
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 transition={{ delay: 0.5 + index * 0.1 }}
-                className={`text-xs font-medium px-2 py-1 rounded-full ${
-                  stat.changeType === 'positive' 
-                    ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300' 
-                    : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'
-                }`}
+                className={`text-xs font-medium px-2 py-1 rounded-full ${stat.changeType === 'positive'
+                  ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
+                  : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'
+                  }`}
               >
                 {stat.change}
               </motion.div>
             </div>
-            
+
             <p className="text-xs text-gray-500 dark:text-gray-400">
               {stat.description}
             </p>
-            
+
             <motion.div
               className={`absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r ${stat.color}`}
               initial={{ scaleX: 0 }}
@@ -378,7 +377,7 @@ const DashboardOverview = () => {
                 Manage your profile efficiently
               </span>
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {quickActions.map((action, index) => (
                 <motion.div
@@ -434,7 +433,7 @@ const DashboardOverview = () => {
               View All
             </Link>
           </div>
-          
+
           <div className="space-y-4">
             {recentActivity.map((activity, index) => (
               <motion.div
@@ -458,7 +457,7 @@ const DashboardOverview = () => {
               </motion.div>
             ))}
           </div>
-          
+
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -502,7 +501,7 @@ const DashboardOverview = () => {
             </Link>
           </div>
         </div>
-        
+
         <div className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-800 rounded-lg p-6">
           <div className="flex items-center space-x-4 mb-4">
             <div className="w-16 h-16 bg-gradient-to-br from-primary-500 to-accent-500 rounded-full flex items-center justify-center">
@@ -522,11 +521,11 @@ const DashboardOverview = () => {
               </p>
             </div>
           </div>
-          
+
           <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
             {profile?.bio || user?.bio || 'Add your bio to tell people about yourself and what you do. This will appear on your public profile.'}
           </p>
-          
+
           <div className="mt-4 flex flex-wrap gap-2">
             {profile?.socialLinks?.whatsapp && (
               <span className="bg-primary-100 dark:bg-primary-900 text-primary-700 dark:text-primary-300 px-2 py-1 rounded-full text-xs">

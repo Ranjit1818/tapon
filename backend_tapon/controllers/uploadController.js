@@ -1,5 +1,20 @@
 const ErrorResponse = require('../utils/errorResponse');
 const cloudinary = require('../utils/cloudinary');
+const { Readable } = require('stream');
+
+// Helper to upload buffer to Cloudinary
+const uploadToCloudinary = (buffer, options) => {
+  return new Promise((resolve, reject) => {
+    const uploadStream = cloudinary.uploader.upload_stream(
+      options,
+      (error, result) => {
+        if (error) return reject(error);
+        resolve(result);
+      }
+    );
+    Readable.from(buffer).pipe(uploadStream);
+  });
+};
 
 // @desc    Upload profile image
 // @route   POST /api/upload/profile-image
@@ -21,7 +36,7 @@ const uploadProfileImage = async (req, res, next) => {
     }
 
     // Upload to Cloudinary
-    const result = await cloudinary.uploader.upload(req.file.path, {
+    const result = await uploadToCloudinary(req.file.buffer, {
       folder: 'taponn/profile-images',
       transformation: [
         { width: 400, height: 400, crop: 'fill', gravity: 'face' },
@@ -64,7 +79,7 @@ const uploadCoverImage = async (req, res, next) => {
     }
 
     // Upload to Cloudinary
-    const result = await cloudinary.uploader.upload(req.file.path, {
+    const result = await uploadToCloudinary(req.file.buffer, {
       folder: 'taponn/cover-images',
       transformation: [
         { width: 1200, height: 400, crop: 'fill' },
@@ -107,7 +122,7 @@ const uploadQRLogo = async (req, res, next) => {
     }
 
     // Upload to Cloudinary
-    const result = await cloudinary.uploader.upload(req.file.path, {
+    const result = await uploadToCloudinary(req.file.buffer, {
       folder: 'taponn/qr-logos',
       transformation: [
         { width: 200, height: 200, crop: 'fill' },
@@ -150,7 +165,7 @@ const uploadImage = async (req, res, next) => {
     }
 
     // Upload to Cloudinary
-    const result = await cloudinary.uploader.upload(req.file.path, {
+    const result = await uploadToCloudinary(req.file.buffer, {
       folder: 'taponn/general',
       transformation: [
         { quality: 'auto:good' }
@@ -199,7 +214,7 @@ const uploadDocument = async (req, res, next) => {
     }
 
     // Upload to Cloudinary
-    const result = await cloudinary.uploader.upload(req.file.path, {
+    const result = await uploadToCloudinary(req.file.buffer, {
       folder: 'taponn/documents',
       resource_type: 'raw'
     });
@@ -296,7 +311,7 @@ const bulkUploadImages = async (req, res, next) => {
       }
 
       // Upload to Cloudinary
-      const result = await cloudinary.uploader.upload(file.path, {
+      const result = await uploadToCloudinary(file.buffer, {
         folder: 'taponn/bulk-uploads',
         transformation: [
           { quality: 'auto:good' }

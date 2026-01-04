@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { 
-  ShoppingBag, 
-  CreditCard, 
-  Star, 
+import {
+  ShoppingBag,
+  CreditCard,
+  Star,
   Heart,
   MessageCircle,
   Truck,
@@ -22,7 +22,7 @@ import { orderAPI } from '../../../services/api'
 import toast from 'react-hot-toast'
 
 const Shop = () => {
-  const { user, isTapOnnUser, hasPermission } = useAuth()
+  const { user, isConnectionUnlimitedUser, hasPermission } = useAuth()
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [flippedCards, setFlippedCards] = useState(new Set())
   const [cart, setCart] = useState([])
@@ -145,8 +145,8 @@ const Shop = () => {
     }
   ]
 
-  const filteredProducts = selectedCategory === 'all' 
-    ? products 
+  const filteredProducts = selectedCategory === 'all'
+    ? products
     : products.filter(product => product.category === selectedCategory)
 
   const toggleCardFlip = (productId) => {
@@ -162,8 +162,8 @@ const Shop = () => {
   const addToCart = (product, quantity = 1) => {
     const existingItem = cart.find(item => item.id === product.id)
     if (existingItem) {
-      setCart(cart.map(item => 
-        item.id === product.id 
+      setCart(cart.map(item =>
+        item.id === product.id
           ? { ...item, quantity: item.quantity + quantity }
           : item
       ))
@@ -183,8 +183,8 @@ const Shop = () => {
       removeFromCart(productId)
       return
     }
-    setCart(cart.map(item => 
-      item.id === productId 
+    setCart(cart.map(item =>
+      item.id === productId
         ? { ...item, quantity }
         : item
     ))
@@ -249,7 +249,7 @@ const Shop = () => {
 
   const ProductCard = ({ product }) => {
     const isFlipped = flippedCards.has(product.id)
-    
+
     return (
       <motion.div
         layout
@@ -266,14 +266,14 @@ const Shop = () => {
           <div className="absolute inset-0 w-full h-full backface-hidden">
             <div className="card p-0 h-full overflow-hidden group hover:shadow-xl transition-all duration-300">
               <div className="relative">
-                <img 
-                  src={product.image} 
+                <img
+                  src={product.image}
                   alt={product.name}
                   className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
                 />
                 <div className="absolute top-3 left-3 flex flex-wrap gap-1">
                   {product.tags.map((tag, index) => (
-                    <span 
+                    <span
                       key={index}
                       className="px-2 py-1 bg-black/70 text-white text-xs rounded-full backdrop-blur-sm"
                     >
@@ -289,7 +289,7 @@ const Shop = () => {
                   <ArrowRight className="w-4 h-4" />
                 </button>
               </div>
-              
+
               <div className="p-4 flex-1 flex flex-col">
                 <div className="flex items-center justify-between mb-2">
                   <h3 className="font-bold text-gray-900 dark:text-white truncate">
@@ -302,11 +302,11 @@ const Shop = () => {
                     </span>
                   </div>
                 </div>
-                
+
                 <p className="text-sm text-gray-600 dark:text-gray-400 mb-3 line-clamp-2">
                   {product.description}
                 </p>
-                
+
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center space-x-2">
                     <span className="text-lg font-bold text-gray-900 dark:text-white">
@@ -322,7 +322,7 @@ const Shop = () => {
                     🚚 {product.delivery}
                   </span>
                 </div>
-                
+
                 <motion.button
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
@@ -335,7 +335,7 @@ const Shop = () => {
               </div>
             </div>
           </div>
-          
+
           {/* Back of card */}
           <div className="absolute inset-0 w-full h-full backface-hidden rotate-y-180">
             <div className="card p-6 h-full">
@@ -350,7 +350,7 @@ const Shop = () => {
                   <X className="w-4 h-4" />
                 </button>
               </div>
-              
+
               <div className="space-y-4">
                 <div>
                   <h4 className="font-medium text-gray-900 dark:text-white mb-2 flex items-center space-x-2">
@@ -366,7 +366,7 @@ const Shop = () => {
                     ))}
                   </ul>
                 </div>
-                
+
                 <div>
                   <h4 className="font-medium text-gray-900 dark:text-white mb-2 flex items-center space-x-2">
                     <span>🎨</span>
@@ -374,7 +374,7 @@ const Shop = () => {
                   </h4>
                   <div className="flex flex-wrap gap-1">
                     {product.colors.map((color, index) => (
-                      <span 
+                      <span
                         key={index}
                         className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-xs rounded-full"
                       >
@@ -383,7 +383,7 @@ const Shop = () => {
                     ))}
                   </div>
                 </div>
-                
+
                 <div className="flex items-center justify-between text-sm">
                   <div className="flex items-center space-x-1">
                     <Star className="w-4 h-4 text-yellow-400 fill-current" />
@@ -394,7 +394,7 @@ const Shop = () => {
                     <span>{product.inStock ? 'In Stock' : 'Out of Stock'}</span>
                   </div>
                 </div>
-                
+
                 <motion.button
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
@@ -424,8 +424,8 @@ const Shop = () => {
         <div>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2 flex items-center space-x-3">
             <span>💳</span>
-            <span>{isTapOnnUser ? 'TapOnn Admin Shop' : 'TapOnn Shop'}</span>
-            {isTapOnnUser && (
+            <span>{isConnectionUnlimitedUser ? 'Connection Unlimited Admin Shop' : 'Connection Unlimited Shop'}</span>
+            {isConnectionUnlimitedUser && (
               <motion.span
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
@@ -437,13 +437,13 @@ const Shop = () => {
             )}
           </h1>
           <p className="text-gray-600 dark:text-gray-400">
-            {isTapOnnUser 
+            {isConnectionUnlimitedUser
               ? 'Manage your card inventory, track sales, and fulfill customer orders'
               : 'Get your NFC cards and accessories to enhance your digital networking'
             }
           </p>
         </div>
-        
+
         <motion.button
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
@@ -480,11 +480,10 @@ const Shop = () => {
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             onClick={() => setSelectedCategory(category.id)}
-            className={`px-4 py-2 rounded-lg font-medium transition-all flex items-center space-x-2 ${
-              selectedCategory === category.id
-                ? 'bg-gradient-to-r from-primary-500 to-accent-500 text-white'
-                : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-            }`}
+            className={`px-4 py-2 rounded-lg font-medium transition-all flex items-center space-x-2 ${selectedCategory === category.id
+              ? 'bg-gradient-to-r from-primary-500 to-accent-500 text-white'
+              : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+              }`}
           >
             <span>{category.emoji}</span>
             <span>{category.name}</span>
@@ -493,7 +492,7 @@ const Shop = () => {
       </motion.div>
 
       {/* Products Grid */}
-      <motion.div 
+      <motion.div
         layout
         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
       >
@@ -533,7 +532,7 @@ const Shop = () => {
                   <X className="w-4 h-4" />
                 </button>
               </div>
-              
+
               {cart.length === 0 ? (
                 <div className="text-center py-8">
                   <ShoppingBag className="w-16 h-16 text-gray-400 mx-auto mb-4" />
@@ -547,8 +546,8 @@ const Shop = () => {
                   <div className="space-y-4 mb-6">
                     {cart.map((item) => (
                       <div key={item.id} className="flex items-center space-x-3 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                        <img 
-                          src={item.image} 
+                        <img
+                          src={item.image}
                           alt={item.name}
                           className="w-16 h-16 object-cover rounded"
                         />
@@ -591,14 +590,14 @@ const Shop = () => {
                       </div>
                     ))}
                   </div>
-                  
+
                   <div className="border-t border-gray-200 dark:border-gray-600 pt-4">
                     <div className="flex items-center justify-between mb-4">
                       <span className="text-lg font-bold text-gray-900 dark:text-white">
                         Total: ${getTotalPrice().toFixed(2)}
                       </span>
                     </div>
-                    
+
                     <motion.button
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
@@ -608,7 +607,7 @@ const Shop = () => {
                       <CreditCard className="w-5 h-5" />
                       <span>Proceed to Checkout</span>
                     </motion.button>
-                    
+
                     <p className="text-xs text-gray-500 dark:text-gray-400 text-center mt-2">
                       🔒 Secure checkout • Free shipping on orders over $100
                     </p>
@@ -645,17 +644,17 @@ const Shop = () => {
               </div>
 
               <div className="grid grid-cols-1 gap-3">
-                <input value={checkout.fullName} onChange={e=>setCheckout({...checkout, fullName:e.target.value})} placeholder="Full Name" className="px-3 py-2 border rounded-lg bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600" />
-                <input value={checkout.email} onChange={e=>setCheckout({...checkout, email:e.target.value})} placeholder="Email" className="px-3 py-2 border rounded-lg bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600" />
-                <input value={checkout.phone} onChange={e=>setCheckout({...checkout, phone:e.target.value})} placeholder="Phone" className="px-3 py-2 border rounded-lg bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600" />
-                <input value={checkout.street} onChange={e=>setCheckout({...checkout, street:e.target.value})} placeholder="Street" className="px-3 py-2 border rounded-lg bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600" />
+                <input value={checkout.fullName} onChange={e => setCheckout({ ...checkout, fullName: e.target.value })} placeholder="Full Name" className="px-3 py-2 border rounded-lg bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600" />
+                <input value={checkout.email} onChange={e => setCheckout({ ...checkout, email: e.target.value })} placeholder="Email" className="px-3 py-2 border rounded-lg bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600" />
+                <input value={checkout.phone} onChange={e => setCheckout({ ...checkout, phone: e.target.value })} placeholder="Phone" className="px-3 py-2 border rounded-lg bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600" />
+                <input value={checkout.street} onChange={e => setCheckout({ ...checkout, street: e.target.value })} placeholder="Street" className="px-3 py-2 border rounded-lg bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600" />
                 <div className="grid grid-cols-2 gap-3">
-                  <input value={checkout.city} onChange={e=>setCheckout({...checkout, city:e.target.value})} placeholder="City" className="px-3 py-2 border rounded-lg bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600" />
-                  <input value={checkout.state} onChange={e=>setCheckout({...checkout, state:e.target.value})} placeholder="State" className="px-3 py-2 border rounded-lg bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600" />
+                  <input value={checkout.city} onChange={e => setCheckout({ ...checkout, city: e.target.value })} placeholder="City" className="px-3 py-2 border rounded-lg bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600" />
+                  <input value={checkout.state} onChange={e => setCheckout({ ...checkout, state: e.target.value })} placeholder="State" className="px-3 py-2 border rounded-lg bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600" />
                 </div>
                 <div className="grid grid-cols-2 gap-3">
-                  <input value={checkout.zipCode} onChange={e=>setCheckout({...checkout, zipCode:e.target.value})} placeholder="ZIP Code" className="px-3 py-2 border rounded-lg bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600" />
-                  <input value={checkout.country} onChange={e=>setCheckout({...checkout, country:e.target.value})} placeholder="Country" className="px-3 py-2 border rounded-lg bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600" />
+                  <input value={checkout.zipCode} onChange={e => setCheckout({ ...checkout, zipCode: e.target.value })} placeholder="ZIP Code" className="px-3 py-2 border rounded-lg bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600" />
+                  <input value={checkout.country} onChange={e => setCheckout({ ...checkout, country: e.target.value })} placeholder="Country" className="px-3 py-2 border rounded-lg bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600" />
                 </div>
               </div>
 
@@ -679,9 +678,9 @@ const Shop = () => {
       >
         <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center space-x-2">
           <span>🛡️</span>
-          <span>Why Choose TapOnn?</span>
+          <span>Why Choose Connection Unlimited?</span>
         </h3>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div className="text-center p-4">
             <div className="w-12 h-12 bg-green-100 dark:bg-green-900/20 rounded-full flex items-center justify-center mx-auto mb-2">
@@ -690,7 +689,7 @@ const Shop = () => {
             <h4 className="font-medium text-gray-900 dark:text-white mb-1">Lifetime Warranty</h4>
             <p className="text-sm text-gray-600 dark:text-gray-400">All products covered</p>
           </div>
-          
+
           <div className="text-center p-4">
             <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/20 rounded-full flex items-center justify-center mx-auto mb-2">
               <Truck className="w-6 h-6 text-blue-600 dark:text-blue-400" />
@@ -698,7 +697,7 @@ const Shop = () => {
             <h4 className="font-medium text-gray-900 dark:text-white mb-1">Fast Shipping</h4>
             <p className="text-sm text-gray-600 dark:text-gray-400">1-3 day delivery</p>
           </div>
-          
+
           <div className="text-center p-4">
             <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/20 rounded-full flex items-center justify-center mx-auto mb-2">
               <Zap className="w-6 h-6 text-purple-600 dark:text-purple-400" />
@@ -706,7 +705,7 @@ const Shop = () => {
             <h4 className="font-medium text-gray-900 dark:text-white mb-1">Instant Setup</h4>
             <p className="text-sm text-gray-600 dark:text-gray-400">Ready in minutes</p>
           </div>
-          
+
           <div className="text-center p-4">
             <div className="w-12 h-12 bg-orange-100 dark:bg-orange-900/20 rounded-full flex items-center justify-center mx-auto mb-2">
               <Gift className="w-6 h-6 text-orange-600 dark:text-orange-400" />

@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { 
-  BarChart3, 
-  TrendingUp, 
-  Eye, 
-  Users, 
+import {
+  BarChart3,
+  TrendingUp,
+  Eye,
+  Users,
   Calendar,
   Download,
   Filter,
@@ -20,15 +20,15 @@ import {
 import { useAuth } from '../../../contexts/AuthContext'
 import { analyticsAPI } from '../../../services/api'
 import AccessDenied from '../../../components/common/AccessDenied'
-import { 
-  LineChart, 
-  Line, 
-  BarChart, 
-  Bar, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
+import {
+  LineChart,
+  Line,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
   ResponsiveContainer,
   PieChart,
   Pie,
@@ -40,7 +40,7 @@ import { useAnalytics } from '../../../contexts/AnalyticsContext'
 import toast from 'react-hot-toast'
 
 const Analytics = () => {
-  const { user, isTapOnnUser, hasPermission } = useAuth()
+  const { user, isConnectionUnlimitedUser, hasPermission } = useAuth()
   const { trackEvent } = useAnalytics()
 
   // Helper function to get emoji for click types
@@ -64,9 +64,9 @@ const Analytics = () => {
   };
 
   // Check if user has permission to access Analytics
-  if (!isTapOnnUser) {
+  if (!isConnectionUnlimitedUser) {
     return (
-      <AccessDenied 
+      <AccessDenied
         title="Login Required"
         message="Please log in to access analytics."
       />
@@ -89,7 +89,7 @@ const Analytics = () => {
   })
 
   const fetchAnalyticsData = async () => {
-    const token = localStorage.getItem('taponn-token')
+    const token = localStorage.getItem('connectionunlimited-token')
     if (!user || !token) {
       toast.error('Cannot fetch analytics: user or token missing')
       setIsLoading(false)
@@ -115,116 +115,116 @@ const Analytics = () => {
       console.log('📊 Element Rankings:', analyticsData?.elementRankings)
       console.log('📊 Element Performance:', analyticsData?.elementPerformance)
 
-        // The backend already formats the data correctly, so we can use it directly
-        console.log('📊 Using backend formatted data directly')
+      // The backend already formats the data correctly, so we can use it directly
+      console.log('📊 Using backend formatted data directly')
 
-        const newData = {
-          overview: {
-            totalViews: analyticsData?.overview?.totalViews || 0,
-            totalClicks: analyticsData?.overview?.totalClicks || 0,
-            totalEngagements: analyticsData?.overview?.totalEngagements || 0,
-            uniqueVisitors: analyticsData?.overview?.uniqueVisitors || 0,
-            engagementRate: analyticsData?.overview?.engagementRate || 0,
-            averageTime: analyticsData?.overview?.averageTime || '0m 0s',
-            bounceRate: analyticsData?.overview?.bounceRate || 0,
-            avgViewsPerSession: analyticsData?.overview?.avgViewsPerSession || 0
-          },
-          visitData: analyticsData?.visits || [],
-          clickData: analyticsData?.clicks || [],
-          deviceData: analyticsData?.devices || [],
-          timeData: analyticsData?.time || [],
-          elementRankings: analyticsData?.elementRankings || [],
-          elementPerformance: analyticsData?.elementPerformance || [],
-          referrers: analyticsData?.referrers || [],
-          browsers: analyticsData?.browsers || [],
-          languages: analyticsData?.languages || []
-        }
+      const newData = {
+        overview: {
+          totalViews: analyticsData?.overview?.totalViews || 0,
+          totalClicks: analyticsData?.overview?.totalClicks || 0,
+          totalEngagements: analyticsData?.overview?.totalEngagements || 0,
+          uniqueVisitors: analyticsData?.overview?.uniqueVisitors || 0,
+          engagementRate: analyticsData?.overview?.engagementRate || 0,
+          averageTime: analyticsData?.overview?.averageTime || '0m 0s',
+          bounceRate: analyticsData?.overview?.bounceRate || 0,
+          avgViewsPerSession: analyticsData?.overview?.avgViewsPerSession || 0
+        },
+        visitData: analyticsData?.visits || [],
+        clickData: analyticsData?.clicks || [],
+        deviceData: analyticsData?.devices || [],
+        timeData: analyticsData?.time || [],
+        elementRankings: analyticsData?.elementRankings || [],
+        elementPerformance: analyticsData?.elementPerformance || [],
+        referrers: analyticsData?.referrers || [],
+        browsers: analyticsData?.browsers || [],
+        languages: analyticsData?.languages || []
+      }
 
-        console.log('📊 Setting new data:', newData)
-        console.log('📊 Visit Data Length:', newData.visitData.length)
-        console.log('📊 Click Data Length:', newData.clickData.length)
-        console.log('📊 Device Data Length:', newData.deviceData.length)
-        console.log('📊 Element Rankings Length:', newData.elementRankings.length)
-        console.log('📊 Visit Data Sample:', newData.visitData[0])
-        console.log('📊 Click Data Sample:', newData.clickData[0])
-        console.log('📊 Device Data Sample:', newData.deviceData[0])
+      console.log('📊 Setting new data:', newData)
+      console.log('📊 Visit Data Length:', newData.visitData.length)
+      console.log('📊 Click Data Length:', newData.clickData.length)
+      console.log('📊 Device Data Length:', newData.deviceData.length)
+      console.log('📊 Element Rankings Length:', newData.elementRankings.length)
+      console.log('📊 Visit Data Sample:', newData.visitData[0])
+      console.log('📊 Click Data Sample:', newData.clickData[0])
+      console.log('📊 Device Data Sample:', newData.deviceData[0])
 
-        setData(newData)
+      setData(newData)
     } catch (error) {
       console.error('❌ Analytics fetch failed:', error)
       toast.error('Using demo data - Backend connection failed')
 
-        // fallback demo data with real structure
-        console.log('📊 Using fallback demo data')
-        setData({
-          overview: {
-            totalViews: 10,
-            totalClicks: 38,
-            totalEngagements: 38,
-            uniqueVisitors: 8,
-            engagementRate: 380.0,
-            averageTime: '2m 34s',
-            bounceRate: 20.0,
-            avgViewsPerSession: 1.2
-          },
-          visitData: [
-            { date: '2025-10-12', views: 10, clicks: 0 }
-          ],
-          clickData: [
-            { name: 'whatsapp', clicks: 8, emoji: '📱' },
-            { name: 'email', clicks: 7, emoji: '📧' },
-            { name: 'linkedin', clicks: 6, emoji: '💼' },
-            { name: 'phone', clicks: 5, emoji: '📞' },
-            { name: 'instagram', clicks: 4, emoji: '📷' },
-            { name: 'website', clicks: 3, emoji: '🌐' },
-            { name: 'twitter', clicks: 2, emoji: '🐦' },
-            { name: 'location', clicks: 2, emoji: '📍' },
-            { name: 'facebook', clicks: 1, emoji: '👥' }
-          ],
-          deviceData: [
-            { name: 'Tablet', value: 40, emoji: '📱' },
-            { name: 'Desktop', value: 40, emoji: '💻' },
-            { name: 'Mobile', value: 20, emoji: '📱' }
-          ],
-          timeData: [
-            { hour: '07', views: 10 }
-          ],
-          elementRankings: [
-            { rank: 1, elementType: 'social_link_click', elementName: 'whatsapp', clicks: 8, emoji: '📱' },
-            { rank: 2, elementType: 'contact_click', elementName: 'email', clicks: 7, emoji: '📧' },
-            { rank: 3, elementType: 'social_link_click', elementName: 'linkedin', clicks: 6, emoji: '💼' },
-            { rank: 4, elementType: 'contact_click', elementName: 'phone', clicks: 5, emoji: '📞' },
-            { rank: 5, elementType: 'social_link_click', elementName: 'instagram', clicks: 4, emoji: '📷' },
-            { rank: 6, elementType: 'contact_click', elementName: 'website', clicks: 3, emoji: '🌐' },
-            { rank: 7, elementType: 'social_link_click', elementName: 'twitter', clicks: 2, emoji: '🐦' },
-            { rank: 8, elementType: 'contact_click', elementName: 'location', clicks: 2, emoji: '📍' },
-            { rank: 9, elementType: 'social_link_click', elementName: 'facebook', clicks: 1, emoji: '👥' }
-          ],
-          elementPerformance: [
-            { elementName: 'whatsapp', totalClicks: 8, uniqueSessions: 3, avgClicksPerSession: 2.67 },
-            { elementName: 'email', totalClicks: 7, uniqueSessions: 2, avgClicksPerSession: 3.5 },
-            { elementName: 'linkedin', totalClicks: 6, uniqueSessions: 2, avgClicksPerSession: 3.0 }
-          ],
-          referrers: [
-            { source: 'Direct', count: 8, percentage: 80.0 },
-            { source: 'QR Code', count: 2, percentage: 20.0 }
-          ],
-          browsers: [
-            { name: 'Chrome', count: 6, percentage: 60.0 },
-            { name: 'Safari', count: 4, percentage: 40.0 }
-          ],
-          languages: [
-            { code: 'en-US', count: 8, percentage: 80.0 },
-            { code: 'hi-IN', count: 2, percentage: 20.0 }
-          ]
-        })
+      // fallback demo data with real structure
+      console.log('📊 Using fallback demo data')
+      setData({
+        overview: {
+          totalViews: 10,
+          totalClicks: 38,
+          totalEngagements: 38,
+          uniqueVisitors: 8,
+          engagementRate: 380.0,
+          averageTime: '2m 34s',
+          bounceRate: 20.0,
+          avgViewsPerSession: 1.2
+        },
+        visitData: [
+          { date: '2025-10-12', views: 10, clicks: 0 }
+        ],
+        clickData: [
+          { name: 'whatsapp', clicks: 8, emoji: '📱' },
+          { name: 'email', clicks: 7, emoji: '📧' },
+          { name: 'linkedin', clicks: 6, emoji: '💼' },
+          { name: 'phone', clicks: 5, emoji: '📞' },
+          { name: 'instagram', clicks: 4, emoji: '📷' },
+          { name: 'website', clicks: 3, emoji: '🌐' },
+          { name: 'twitter', clicks: 2, emoji: '🐦' },
+          { name: 'location', clicks: 2, emoji: '📍' },
+          { name: 'facebook', clicks: 1, emoji: '👥' }
+        ],
+        deviceData: [
+          { name: 'Tablet', value: 40, emoji: '📱' },
+          { name: 'Desktop', value: 40, emoji: '💻' },
+          { name: 'Mobile', value: 20, emoji: '📱' }
+        ],
+        timeData: [
+          { hour: '07', views: 10 }
+        ],
+        elementRankings: [
+          { rank: 1, elementType: 'social_link_click', elementName: 'whatsapp', clicks: 8, emoji: '📱' },
+          { rank: 2, elementType: 'contact_click', elementName: 'email', clicks: 7, emoji: '📧' },
+          { rank: 3, elementType: 'social_link_click', elementName: 'linkedin', clicks: 6, emoji: '💼' },
+          { rank: 4, elementType: 'contact_click', elementName: 'phone', clicks: 5, emoji: '📞' },
+          { rank: 5, elementType: 'social_link_click', elementName: 'instagram', clicks: 4, emoji: '📷' },
+          { rank: 6, elementType: 'contact_click', elementName: 'website', clicks: 3, emoji: '🌐' },
+          { rank: 7, elementType: 'social_link_click', elementName: 'twitter', clicks: 2, emoji: '🐦' },
+          { rank: 8, elementType: 'contact_click', elementName: 'location', clicks: 2, emoji: '📍' },
+          { rank: 9, elementType: 'social_link_click', elementName: 'facebook', clicks: 1, emoji: '👥' }
+        ],
+        elementPerformance: [
+          { elementName: 'whatsapp', totalClicks: 8, uniqueSessions: 3, avgClicksPerSession: 2.67 },
+          { elementName: 'email', totalClicks: 7, uniqueSessions: 2, avgClicksPerSession: 3.5 },
+          { elementName: 'linkedin', totalClicks: 6, uniqueSessions: 2, avgClicksPerSession: 3.0 }
+        ],
+        referrers: [
+          { source: 'Direct', count: 8, percentage: 80.0 },
+          { source: 'QR Code', count: 2, percentage: 20.0 }
+        ],
+        browsers: [
+          { name: 'Chrome', count: 6, percentage: 60.0 },
+          { name: 'Safari', count: 4, percentage: 40.0 }
+        ],
+        languages: [
+          { code: 'en-US', count: 8, percentage: 80.0 },
+          { code: 'hi-IN', count: 2, percentage: 20.0 }
+        ]
+      })
     } finally {
       setIsLoading(false)
     }
   }
 
   useEffect(() => {
-    const token = localStorage.getItem('taponn-token')
+    const token = localStorage.getItem('connectionunlimited-token')
     if (user && token) {
       fetchAnalyticsData()
     }
@@ -233,7 +233,7 @@ const Analytics = () => {
   // Auto-refresh analytics every 30 seconds
   useEffect(() => {
     const interval = setInterval(() => {
-      const token = localStorage.getItem('taponn-token')
+      const token = localStorage.getItem('connectionunlimited-token')
       if (user && token) {
         fetchAnalyticsData()
       }
@@ -355,7 +355,7 @@ const Analytics = () => {
             Track your profile performance and visitor insights
           </p>
         </div>
-        
+
         <motion.div
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
@@ -373,7 +373,7 @@ const Analytics = () => {
               </option>
             ))}
           </select>
-          
+
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
@@ -402,7 +402,7 @@ const Analytics = () => {
             className="card p-6 relative overflow-hidden group"
           >
             <div className={`absolute inset-0 bg-gradient-to-br ${card.color} opacity-0 group-hover:opacity-10 transition-opacity duration-300`} />
-            
+
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center space-x-3">
                 <div className={`w-12 h-12 bg-gradient-to-br ${card.color} rounded-lg flex items-center justify-center text-white text-xl`}>
@@ -417,15 +417,14 @@ const Analytics = () => {
                   </p>
                 </div>
               </div>
-              <div className={`text-xs font-medium px-2 py-1 rounded-full ${
-                card.changeType === 'positive' 
-                  ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300' 
-                  : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'
-              }`}>
+              <div className={`text-xs font-medium px-2 py-1 rounded-full ${card.changeType === 'positive'
+                ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300'
+                : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300'
+                }`}>
                 {card.change}
               </div>
             </div>
-            
+
             <p className="text-xs text-gray-500 dark:text-gray-400">
               {card.description}
             </p>
@@ -450,40 +449,40 @@ const Analytics = () => {
               Peak at {getPeakHour()}:00
             </div>
           </div>
-          
+
           {data.visitData && data.visitData.length > 0 ? (
             <ResponsiveContainer width="100%" height={300} key={`visits-${data.visitData.length}`}>
               <AreaChart data={data.visitData}>
                 <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
-                <XAxis 
-                  dataKey="date" 
+                <XAxis
+                  dataKey="date"
                   tickFormatter={(value) => new Date(value).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                   className="text-gray-600 dark:text-gray-400"
                 />
                 <YAxis className="text-gray-600 dark:text-gray-400" />
                 <Tooltip content={<CustomTooltip />} />
-                <Area 
-                  type="monotone" 
-                  dataKey="views" 
-                  stroke="#3B82F6" 
-                  fill="url(#colorViews)" 
+                <Area
+                  type="monotone"
+                  dataKey="views"
+                  stroke="#3B82F6"
+                  fill="url(#colorViews)"
                   strokeWidth={3}
                 />
-                <Area 
-                  type="monotone" 
-                  dataKey="clicks" 
-                  stroke="#10B981" 
-                  fill="url(#colorClicks)" 
+                <Area
+                  type="monotone"
+                  dataKey="clicks"
+                  stroke="#10B981"
+                  fill="url(#colorClicks)"
                   strokeWidth={2}
                 />
                 <defs>
                   <linearGradient id="colorViews" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.3}/>
-                    <stop offset="95%" stopColor="#3B82F6" stopOpacity={0}/>
+                    <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.3} />
+                    <stop offset="95%" stopColor="#3B82F6" stopOpacity={0} />
                   </linearGradient>
                   <linearGradient id="colorClicks" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#10B981" stopOpacity={0.3}/>
-                    <stop offset="95%" stopColor="#10B981" stopOpacity={0}/>
+                    <stop offset="5%" stopColor="#10B981" stopOpacity={0.3} />
+                    <stop offset="95%" stopColor="#10B981" stopOpacity={0} />
                   </linearGradient>
                 </defs>
               </AreaChart>
@@ -516,19 +515,19 @@ const Analytics = () => {
               <span>{getMostPopularContact().name}</span>
             </div>
           </div>
-          
+
           {data.clickData && data.clickData.length > 0 ? (
             <ResponsiveContainer width="100%" height={300} key={`clicks-${data.clickData.length}`}>
               <BarChart data={data.clickData} layout="horizontal">
                 <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
                 <XAxis type="number" className="text-gray-600 dark:text-gray-400" />
-                <YAxis 
-                  type="category" 
-                  dataKey="name" 
+                <YAxis
+                  type="category"
+                  dataKey="name"
                   className="text-gray-600 dark:text-gray-400"
                   tickFormatter={(value, index) => `${data.clickData[index]?.emoji} ${value}`}
                 />
-                <Tooltip 
+                <Tooltip
                   content={({ active, payload, label }) => {
                     if (active && payload && payload.length) {
                       const data = payload[0].payload
@@ -546,9 +545,9 @@ const Analytics = () => {
                     return null
                   }}
                 />
-                <Bar 
-                  dataKey="clicks" 
-                  fill="#8884d8" 
+                <Bar
+                  dataKey="clicks"
+                  fill="#8884d8"
                   radius={[0, 4, 4, 0]}
                 />
               </BarChart>
@@ -577,7 +576,7 @@ const Analytics = () => {
             <span>📱</span>
             <span>Device Types</span>
           </h2>
-          
+
           {data.deviceData && data.deviceData.length > 0 ? (
             <ResponsiveContainer width="100%" height={200} key={`devices-${data.deviceData.length}`}>
               <PieChart>
@@ -594,7 +593,7 @@ const Analytics = () => {
                     <Cell key={`cell-${index}`} fill={['#3B82F6', '#10B981', '#F59E0B'][index]} />
                   ))}
                 </Pie>
-                <Tooltip 
+                <Tooltip
                   content={({ active, payload }) => {
                     if (active && payload && payload.length) {
                       const data = payload[0].payload
@@ -623,13 +622,13 @@ const Analytics = () => {
               </div>
             </div>
           )}
-          
+
           <div className="space-y-2 mt-4">
             {data.deviceData.map((device, index) => (
               <div key={device.name} className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
-                  <div 
-                    className="w-3 h-3 rounded-full" 
+                  <div
+                    className="w-3 h-3 rounded-full"
                     style={{ backgroundColor: ['#3B82F6', '#10B981', '#F59E0B'][index] }}
                   />
                   <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -655,7 +654,7 @@ const Analytics = () => {
             <span>🏆</span>
             <span>Most Clicked Elements</span>
           </h2>
-          
+
           {data.elementRankings && data.elementRankings.length > 0 ? (
             <div className="space-y-6">
               {/* Bar Chart */}
@@ -663,8 +662,8 @@ const Analytics = () => {
                 <ResponsiveContainer width="100%" height="100%" key={`rankings-${data.elementRankings.length}`}>
                   <BarChart data={data.elementRankings.slice(0, 8)} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
                     <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
-                    <XAxis 
-                      dataKey="elementName" 
+                    <XAxis
+                      dataKey="elementName"
                       className="text-gray-600 dark:text-gray-400"
                       tick={{ fontSize: 12 }}
                       angle={-45}
@@ -672,7 +671,7 @@ const Analytics = () => {
                       height={80}
                     />
                     <YAxis className="text-gray-600 dark:text-gray-400" />
-                    <Tooltip 
+                    <Tooltip
                       content={({ active, payload, label }) => {
                         if (active && payload && payload.length) {
                           const data = payload[0].payload;
@@ -696,8 +695,8 @@ const Analytics = () => {
                         return null;
                       }}
                     />
-                    <Bar 
-                      dataKey="clicks" 
+                    <Bar
+                      dataKey="clicks"
                       fill="#3B82F6"
                       radius={[4, 4, 0, 0]}
                       className="hover:opacity-80 transition-opacity"
@@ -722,12 +721,11 @@ const Analytics = () => {
                     >
                       <div className="flex items-center space-x-3">
                         <div className="flex items-center space-x-2">
-                          <span className={`text-lg font-bold ${
-                            rank === 1 ? 'text-yellow-500' : 
-                            rank === 2 ? 'text-gray-400' : 
-                            rank === 3 ? 'text-orange-500' : 
-                            'text-primary-500'
-                          }`}>
+                          <span className={`text-lg font-bold ${rank === 1 ? 'text-yellow-500' :
+                            rank === 2 ? 'text-gray-400' :
+                              rank === 3 ? 'text-orange-500' :
+                                'text-primary-500'
+                            }`}>
                             #{rank}
                           </span>
                           <span className="text-xl">{emoji}</span>
@@ -774,7 +772,7 @@ const Analytics = () => {
             <span>💡</span>
             <span>Key Insights</span>
           </h2>
-          
+
           <div className="space-y-4">
             <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
               <div className="flex items-center space-x-2 mb-2">
@@ -785,7 +783,7 @@ const Analytics = () => {
                 {getMostPopularContact().emoji} {getMostPopularContact().name} gets the most clicks ({getMostPopularContact().clicks} total)
               </p>
             </div>
-            
+
             <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
               <div className="flex items-center space-x-2 mb-2">
                 <span className="text-lg">⏰</span>
@@ -795,7 +793,7 @@ const Analytics = () => {
                 Most views happen at {getPeakHour()}:00. Consider posting content around this time.
               </p>
             </div>
-            
+
             <div className="p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
               <div className="flex items-center space-x-2 mb-2">
                 <span className="text-lg">📱</span>
@@ -820,21 +818,21 @@ const Analytics = () => {
           <span>🕐</span>
           <span>Views by Hour</span>
         </h2>
-        
+
         {data.timeData && data.timeData.length > 0 ? (
           <ResponsiveContainer width="100%" height={200} key={`time-${data.timeData.length}`}>
             <BarChart data={data.timeData}>
               <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
-              <XAxis 
-                dataKey="hour" 
+              <XAxis
+                dataKey="hour"
                 className="text-gray-600 dark:text-gray-400"
                 tickFormatter={(value) => `${value}:00`}
               />
               <YAxis className="text-gray-600 dark:text-gray-400" />
               <Tooltip content={<CustomTooltip />} />
-              <Bar 
-                dataKey="views" 
-                fill="#8B5CF6" 
+              <Bar
+                dataKey="views"
+                fill="#8B5CF6"
                 radius={[4, 4, 0, 0]}
               />
             </BarChart>
@@ -850,52 +848,52 @@ const Analytics = () => {
         )}
       </motion.div>
 
-        {/* Traffic Sources */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.9 }}
-          className="card p-6"
-        >
-          <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6 flex items-center space-x-2">
-            <span>🌐</span>
-            <span>Traffic Sources</span>
-          </h2>
-          
-          {data.referrers && data.referrers.length > 0 ? (
-            <div className="space-y-4">
-              {data.referrers.map((referrer, index) => (
-                <div key={referrer.source} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                  <div className="flex items-center space-x-3">
-                    <span className="text-lg">{index === 0 ? '🎯' : '🔗'}</span>
-                    <div>
-                      <p className="font-medium text-gray-900 dark:text-white">
-                        {referrer.source}
-                      </p>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">
-                        {referrer.percentage}% of traffic
-                      </p>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <p className="font-bold text-gray-900 dark:text-white">
-                      {referrer.count}
+      {/* Traffic Sources */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.9 }}
+        className="card p-6"
+      >
+        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6 flex items-center space-x-2">
+          <span>🌐</span>
+          <span>Traffic Sources</span>
+        </h2>
+
+        {data.referrers && data.referrers.length > 0 ? (
+          <div className="space-y-4">
+            {data.referrers.map((referrer, index) => (
+              <div key={referrer.source} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                <div className="flex items-center space-x-3">
+                  <span className="text-lg">{index === 0 ? '🎯' : '🔗'}</span>
+                  <div>
+                    <p className="font-medium text-gray-900 dark:text-white">
+                      {referrer.source}
                     </p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">
-                      visits
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      {referrer.percentage}% of traffic
                     </p>
                   </div>
                 </div>
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-              <span className="text-4xl mb-2 block">🌐</span>
-              <p>No traffic source data available</p>
-              <p className="text-sm">Traffic sources will appear as visitors come to your profile</p>
-            </div>
-          )}
-        </motion.div>
+                <div className="text-right">
+                  <p className="font-bold text-gray-900 dark:text-white">
+                    {referrer.count}
+                  </p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                    visits
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+            <span className="text-4xl mb-2 block">🌐</span>
+            <p>No traffic source data available</p>
+            <p className="text-sm">Traffic sources will appear as visitors come to your profile</p>
+          </div>
+        )}
+      </motion.div>
 
       {/* Browser Analytics */}
       <motion.div
@@ -908,7 +906,7 @@ const Analytics = () => {
           <span>🌐</span>
           <span>Browser Analytics</span>
         </h2>
-        
+
         {data.browsers && data.browsers.length > 0 ? (
           <div className="space-y-4">
             {data.browsers.map((browser, index) => (
@@ -921,8 +919,8 @@ const Analytics = () => {
                 </div>
                 <div className="flex items-center space-x-4">
                   <div className="w-32 bg-gray-200 dark:bg-gray-600 rounded-full h-2">
-                    <div 
-                      className="bg-blue-500 h-2 rounded-full" 
+                    <div
+                      className="bg-blue-500 h-2 rounded-full"
                       style={{ width: `${browser.percentage}%` }}
                     ></div>
                   </div>
@@ -953,7 +951,7 @@ const Analytics = () => {
           <span>📊</span>
           <span>Element Performance</span>
         </h2>
-        
+
         {data.elementPerformance && data.elementPerformance.length > 0 ? (
           <div className="space-y-4">
             {data.elementPerformance.map((element, index) => (
@@ -1011,7 +1009,7 @@ const Analytics = () => {
           <span>💡</span>
           <span>Business Insights</span>
         </h2>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
             <div className="flex items-center space-x-2 mb-2">
@@ -1019,40 +1017,40 @@ const Analytics = () => {
               <h4 className="font-medium text-blue-900 dark:text-blue-300">Engagement Quality</h4>
             </div>
             <p className="text-sm text-blue-700 dark:text-blue-400">
-              {data.overview.engagementRate}% of visitors engage with your content. 
+              {data.overview.engagementRate}% of visitors engage with your content.
               {data.overview.engagementRate > 20 ? ' Excellent engagement!' : ' Consider improving your call-to-actions.'}
             </p>
           </div>
-          
+
           <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
             <div className="flex items-center space-x-2 mb-2">
               <span className="text-lg">⏱️</span>
               <h4 className="font-medium text-green-900 dark:text-green-300">Session Quality</h4>
             </div>
             <p className="text-sm text-green-700 dark:text-green-400">
-              Average session time is {data.overview.averageTime}. 
+              Average session time is {data.overview.averageTime}.
               {data.overview.avgViewsPerSession > 1.5 ? ' Visitors are exploring multiple pages!' : ' Consider adding more engaging content.'}
             </p>
           </div>
-          
+
           <div className="p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
             <div className="flex items-center space-x-2 mb-2">
               <span className="text-lg">🎯</span>
               <h4 className="font-medium text-purple-900 dark:text-purple-300">Audience Reach</h4>
             </div>
             <p className="text-sm text-purple-700 dark:text-purple-400">
-              You have {data.overview.uniqueVisitors} unique visitors. 
+              You have {data.overview.uniqueVisitors} unique visitors.
               {data.overview.uniqueVisitors > 100 ? ' Great reach!' : ' Focus on increasing visibility.'}
             </p>
           </div>
-          
+
           <div className="p-4 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
             <div className="flex items-center space-x-2 mb-2">
               <span className="text-lg">🏆</span>
               <h4 className="font-medium text-orange-900 dark:text-orange-300">Top Performer</h4>
             </div>
             <p className="text-sm text-orange-700 dark:text-orange-400">
-              {data.elementRankings[0]?.elementName || 'WhatsApp'} is your most clicked element with {data.elementRankings[0]?.clicks || 0} clicks. 
+              {data.elementRankings[0]?.elementName || 'WhatsApp'} is your most clicked element with {data.elementRankings[0]?.clicks || 0} clicks.
               {data.elementRankings[0]?.clicks > 10 ? ' Great engagement!' : ' Consider promoting this element more.'}
             </p>
           </div>

@@ -41,7 +41,7 @@ export const AuthProvider = ({ children }) => {
   // Attach token to each request
   useEffect(() => {
     const reqId = api.interceptors.request.use((config) => {
-      const token = localStorage.getItem('taponn-token')
+      const token = localStorage.getItem('connectionunlimited-token')
       if (token) {
         // Make sure the token is properly formatted
         const formattedToken = token.startsWith('Bearer ') ? token : `Bearer ${token}`
@@ -64,7 +64,7 @@ export const AuthProvider = ({ children }) => {
 
   // Stable logout (used by interceptor)
   const logout = useCallback(() => {
-    localStorage.removeItem('taponn-token')
+    localStorage.removeItem('connectionunlimited-token')
     delete api.defaults.headers.common['Authorization']
 
     setUser(null)
@@ -83,13 +83,13 @@ export const AuthProvider = ({ children }) => {
         console.log('Response error:', error.response?.status, error.config?.url)
         console.log('Error response data:', error.response?.data)
         console.log('Error config:', error.config)
-        
+
         // Only handle 401 for non-login requests
         if (error?.response?.status === 401 && !error.config.url.includes('/auth/login')) {
           console.log('401 error detected, logging out')
           logout()
         }
-        
+
         return Promise.reject(error)
       }
     )
@@ -98,77 +98,77 @@ export const AuthProvider = ({ children }) => {
 
   // Check auth on mount
   useEffect(() => {
-    const token = localStorage.getItem('taponn-token')
+    const token = localStorage.getItem('connectionunlimited-token')
     if (!token) {
       console.log('No token found in localStorage')
       setLoading(false)
       return
     }
-    
+
     // Set token in axios headers - make sure it's properly formatted
     const formattedToken = token.startsWith('Bearer ') ? token : `Bearer ${token}`
     api.defaults.headers.common['Authorization'] = formattedToken
     console.log('Setting Authorization header on mount:', formattedToken)
     console.log('Token from localStorage:', token)
-    
-    ;(async () => {
-      try {
-        console.log('Checking authentication with token:', token)
-        console.log('API base URL:', API_BASE_URL)
-        console.log('Current axios defaults:', api.defaults)
-        
-        // Try with both path formats to debug
-        console.log('Attempting auth check with path: auth/me')
+
+      ; (async () => {
         try {
-          const res = await api.get('auth/me')
-          console.log('Auth check response:', res.data)
-          
-          const me = res?.data?.user ?? res?.data?.data ?? res?.data
-          if (me) {
-            setUser(me)
-            console.log('User authenticated:', me)
-          } else {
-            console.log('No user data returned from auth/me')
-            localStorage.removeItem('taponn-token')
-            delete api.defaults.headers.common['Authorization']
+          console.log('Checking authentication with token:', token)
+          console.log('API base URL:', API_BASE_URL)
+          console.log('Current axios defaults:', api.defaults)
+
+          // Try with both path formats to debug
+          console.log('Attempting auth check with path: auth/me')
+          try {
+            const res = await api.get('auth/me')
+            console.log('Auth check response:', res.data)
+
+            const me = res?.data?.user ?? res?.data?.data ?? res?.data
+            if (me) {
+              setUser(me)
+              console.log('User authenticated:', me)
+            } else {
+              console.log('No user data returned from auth/me')
+              localStorage.removeItem('connectionunlimited-token')
+              delete api.defaults.headers.common['Authorization']
+            }
+          } catch (error) {
+            console.error('First auth check failed, trying alternate path')
+            console.error('Error details:', error.response?.data || error.message || error)
+
+            // Try alternate path format
+            console.log('Attempting auth check with path: /auth/me')
+            const res = await api.get('/auth/me')
+            console.log('Auth check response (alternate path):', res.data)
+
+            const me = res?.data?.user ?? res?.data?.data ?? res?.data
+            if (me) {
+              setUser(me)
+              console.log('User authenticated (alternate path):', me)
+            } else {
+              console.log('No user data returned from /auth/me')
+              localStorage.removeItem('connectionunlimited-token')
+              delete api.defaults.headers.common['Authorization']
+            }
           }
         } catch (error) {
-          console.error('First auth check failed, trying alternate path')
+          console.error('Auth check error (all attempts failed):', error)
           console.error('Error details:', error.response?.data || error.message || error)
-          
-          // Try alternate path format
-          console.log('Attempting auth check with path: /auth/me')
-          const res = await api.get('/auth/me')
-          console.log('Auth check response (alternate path):', res.data)
-          
-          const me = res?.data?.user ?? res?.data?.data ?? res?.data
-          if (me) {
-            setUser(me)
-            console.log('User authenticated (alternate path):', me)
-          } else {
-            console.log('No user data returned from /auth/me')
-            localStorage.removeItem('taponn-token')
-            delete api.defaults.headers.common['Authorization']
-          }
+          console.error('Error status:', error.response?.status)
+          console.error('Error headers:', error.response?.headers)
+          localStorage.removeItem('connectionunlimited-token')
+          delete api.defaults.headers.common['Authorization']
+        } finally {
+          setLoading(false)
         }
-      } catch (error) {
-        console.error('Auth check error (all attempts failed):', error)
-        console.error('Error details:', error.response?.data || error.message || error)
-        console.error('Error status:', error.response?.status)
-        console.error('Error headers:', error.response?.headers)
-        localStorage.removeItem('taponn-token')
-        delete api.defaults.headers.common['Authorization']
-      } finally {
-        setLoading(false)
-      }
-    })()
+      })()
   }, [api, API_BASE_URL])
 
   // Debug effect to track auth state changes
   useEffect(() => {
-    console.log('Auth state changed:', { 
-      user: Boolean(user), 
-      token: Boolean(localStorage.getItem('taponn-token')),
+    console.log('Auth state changed:', {
+      user: Boolean(user),
+      token: Boolean(localStorage.getItem('connectionunlimited-token')),
       isAuthenticated: Boolean(user)
     })
   }, [user])
@@ -178,27 +178,27 @@ export const AuthProvider = ({ children }) => {
     try {
       console.log("Login credentials:", credentials)
       console.log("API base URL:", API_BASE_URL)
-  
+
       const response = await api.post('auth/login', credentials)
       console.log('Login response:', response.data)
-  
+
       const token = response?.data?.token
       const serverUser = response?.data?.user
-  
+
       if (!token || !serverUser) {
         throw new Error('Invalid login response: missing token or user')
       }
-  
-      localStorage.setItem('taponn-token', token)
+
+      localStorage.setItem('connectionunlimited-token', token)
       api.defaults.headers.common['Authorization'] = `Bearer ${token}`
       setUser(serverUser)
-  
+
       toast.success('Welcome back!')
       return { success: true }
-  
+
     } catch (error) {
       console.error('Login Error:', error.response?.data || error.message)
-  
+
       let message = 'Login failed. Please try again.'
       if (error.response?.data) {
         if (error.response.data.errors && error.response.data.errors.length > 0) {
@@ -207,18 +207,18 @@ export const AuthProvider = ({ children }) => {
           message = error.response.data.message
         }
       }
-  
+
       toast.error(message)
       return { success: false, error: message }
     }
   }
-  
-  
+
+
 
   const register = async (userData) => {
     try {
       if (DEMO_MODE || !navigator.onLine) {
-        const isAdmin = userData.email?.toLowerCase().includes('admin') || userData.email?.toLowerCase().includes('taponn')
+        const isAdmin = userData.email?.toLowerCase().includes('admin') || userData.email?.toLowerCase().includes('connectionunlimited')
         const demoUser = {
           _id: `${isAdmin ? 'admin-user' : 'demo-user'}-${Date.now()}`,
           name: userData.name,
@@ -233,7 +233,7 @@ export const AuthProvider = ({ children }) => {
             : ['profile_view', 'card_purchase'],
         }
         const demoToken = 'demo-token-' + Date.now()
-        localStorage.setItem('taponn-token', demoToken)
+        localStorage.setItem('connectionunlimited-token', demoToken)
         setUser(demoUser)
         toast.success('Account created successfully! (Demo Mode)')
         return { success: true }
@@ -251,13 +251,13 @@ export const AuthProvider = ({ children }) => {
         throw new Error('Invalid register response: missing token or user')
       }
 
-      localStorage.setItem('taponn-token', token)
+      localStorage.setItem('connectionunlimited-token', token)
       setUser(serverUser)
       toast.success('Account created successfully!')
       return { success: true }
     } catch (error) {
       if (error?.code === 'ERR_NETWORK' || (error?.response && error.response.status >= 500)) {
-        const isAdmin = userData.email?.toLowerCase().includes('admin') || userData.email?.toLowerCase().includes('taponn')
+        const isAdmin = userData.email?.toLowerCase().includes('admin') || userData.email?.toLowerCase().includes('connectionunlimited')
         const demoUser = {
           _id: `${isAdmin ? 'admin-user' : 'demo-user'}-${Date.now()}`,
           name: userData.name,
@@ -272,7 +272,7 @@ export const AuthProvider = ({ children }) => {
             : ['profile_view', 'card_purchase'],
         }
         const demoToken = 'demo-token-' + Date.now()
-        localStorage.setItem('taponn-token', demoToken)
+        localStorage.setItem('connectionunlimited-token', demoToken)
         setUser(demoUser)
         toast.success('Account created successfully! (Demo Mode - Backend Offline)')
         return { success: true }
@@ -315,9 +315,9 @@ export const AuthProvider = ({ children }) => {
 
   // Debug authentication state
   useEffect(() => {
-    console.log('Auth state updated:', { 
-      user: Boolean(user), 
-      token: Boolean(localStorage.getItem('taponn-token')),
+    console.log('Auth state updated:', {
+      user: Boolean(user),
+      token: Boolean(localStorage.getItem('connectionunlimited-token')),
       isAuthenticated: Boolean(user)
     })
   }, [user])
@@ -329,7 +329,7 @@ export const AuthProvider = ({ children }) => {
     isAuthenticated: Boolean(user),
     userRole: user?.role || 'user',
     isAdmin: user?.role === 'admin',
-    isTapOnnUser: Boolean(user),
+    isConnectionUnlimitedUser: Boolean(user),
 
     // actions
     login,

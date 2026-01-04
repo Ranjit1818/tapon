@@ -1,10 +1,10 @@
 import { useState } from 'react'
 import { Helmet } from 'react-helmet-async'
 import { motion } from 'framer-motion'
-import { 
-  Mail, 
-  Phone, 
-  MapPin, 
+import {
+  Mail,
+  Phone,
+  MapPin,
   Clock,
   MessageSquare,
   Send,
@@ -32,13 +32,13 @@ const ContactPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault()
     setIsSubmitting(true)
-    
+
     // Simulate form submission
     await new Promise(resolve => setTimeout(resolve, 2000))
-    
+
     setIsSubmitting(false)
     setIsSubmitted(true)
-    
+
     // Reset form after 3 seconds
     setTimeout(() => {
       setIsSubmitted(false)
@@ -56,7 +56,7 @@ const ContactPage = () => {
     {
       icon: Mail,
       title: 'Email Us',
-      details: ['hello@taponn.com', 'support@taponn.com'],
+      details: ['hello@connectionunlimited.com', 'support@connectionunlimited.com'],
       description: 'We typically respond within 24 hours'
     },
     {
@@ -85,8 +85,8 @@ const ContactPage = () => {
   return (
     <>
       <Helmet>
-        <title>Contact Us - TapOnn | Digital Profile Platform</title>
-        <meta name="description" content="Get in touch with the TapOnn team. We're here to help with any questions about our digital networking solutions." />
+        <title>Contact Us - Connection Unlimited | Digital Profile Platform</title>
+        <meta name="description" content="Get in touch with the Connection Unlimited team. We're here to help with any questions about our digital networking solutions." />
       </Helmet>
 
       <div className="pt-20 pb-16">
@@ -104,7 +104,7 @@ const ContactPage = () => {
                 <span className="gradient-text">Touch</span>
               </h1>
               <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
-                Have questions about TapOnn? We're here to help. Reach out to our team 
+                Have questions about Connection Unlimited? We're here to help. Reach out to our team
                 and we'll get back to you as soon as possible.
               </p>
             </motion.div>
@@ -157,7 +157,7 @@ const ContactPage = () => {
                   <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">
                     Send us a Message
                   </h2>
-                  
+
                   {isSubmitted ? (
                     <motion.div
                       initial={{ opacity: 0, scale: 0.8 }}
@@ -312,7 +312,7 @@ const ContactPage = () => {
                           Mumbai Office
                         </h4>
                         <p className="text-gray-600 dark:text-gray-400 mb-2">
-                          TapOnn Technologies Pvt. Ltd.<br />
+                          Connection Unlimited Technologies Pvt. Ltd.<br />
                           Andheri West, Mumbai 400058<br />
                           Maharashtra, India
                         </p>
@@ -333,7 +333,7 @@ const ContactPage = () => {
                           Bangalore Office
                         </h4>
                         <p className="text-gray-600 dark:text-gray-400 mb-2">
-                          TapOnn Technologies Pvt. Ltd.<br />
+                          Connection Unlimited Technologies Pvt. Ltd.<br />
                           Koramangala, Bangalore 560034<br />
                           Karnataka, India
                         </p>
@@ -419,7 +419,7 @@ const ContactPage = () => {
               Ready to Get Started?
             </h2>
             <p className="text-xl text-primary-100 mb-8 max-w-2xl mx-auto">
-              Join thousands of professionals who have already transformed their networking with TapOnn.
+              Join thousands of professionals who have already transformed their networking with Connection Unlimited.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <motion.button

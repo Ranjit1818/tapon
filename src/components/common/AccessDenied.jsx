@@ -2,9 +2,9 @@ import { motion } from 'framer-motion'
 import { ShieldX, Crown, ArrowLeft } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
-const AccessDenied = ({ 
-  title = "Access Restricted", 
-  message = "This feature is only available to TapOnn administrators.",
+const AccessDenied = ({
+  title = "Access Restricted",
+  message = "This feature is only available to Connection Unlimited administrators.",
   requiredRole = "admin"
 }) => {
   return (
@@ -55,11 +55,11 @@ const AccessDenied = ({
           <div className="flex items-center justify-center mb-3">
             <Crown className="w-5 h-5 text-yellow-500 mr-2" />
             <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-              TapOnn Admin Access Required
+              Connection Unlimited Admin Access Required
             </span>
           </div>
           <p className="text-xs text-gray-600 dark:text-gray-400 mb-3">
-            This feature is exclusive to TapOnn administrators who can:
+            This feature is exclusive to Connection Unlimited administrators who can:
           </p>
           <ul className="text-xs text-gray-600 dark:text-gray-400 space-y-1">
             <li>📎 Generate QR codes for cards</li>
@@ -101,7 +101,7 @@ const AccessDenied = ({
           transition={{ delay: 0.6 }}
           className="text-xs text-gray-500 dark:text-gray-400 mt-6"
         >
-          Need admin access? Contact TapOnn support
+          Need admin access? Contact Connection Unlimited support
         </motion.p>
       </motion.div>
     </div>

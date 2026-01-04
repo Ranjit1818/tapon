@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { 
-  User, 
-  Shield, 
-  Bell, 
-  Palette, 
-  Globe, 
+import {
+  User,
+  Shield,
+  Bell,
+  Palette,
+  Globe,
   Key,
   Mail,
   Smartphone,
@@ -27,12 +27,12 @@ const SettingsPage = () => {
   const { user, updateProfile } = useAuth();
   const { isDark, toggleTheme } = useTheme();
   const { trackEvent } = useAnalytics();
-  
+
   const [activeTab, setActiveTab] = useState('profile');
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
-  
+
   const [profileSettings, setProfileSettings] = useState({
     name: user?.name || '',
     email: user?.email || '',
@@ -93,7 +93,7 @@ const SettingsPage = () => {
       toast.error('New passwords do not match');
       return;
     }
-    
+
     setIsLoading(true);
     try {
       // Simulate API call
@@ -148,15 +148,15 @@ const SettingsPage = () => {
       privacy: privacySettings,
       exportDate: new Date().toISOString()
     };
-    
+
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'taponn-data.json';
+    a.download = 'connectionunlimited-data.json';
     a.click();
     window.URL.revokeObjectURL(url);
-    
+
     trackEvent('data_exported');
     toast.success('Data exported successfully!');
   };
@@ -532,11 +532,10 @@ const SettingsPage = () => {
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
-                    className={`w-full flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
-                      activeTab === tab.id
+                    className={`w-full flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors ${activeTab === tab.id
                         ? 'bg-primary-100 text-primary-700 dark:bg-primary-900 dark:text-primary-300'
                         : 'text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700'
-                    }`}
+                      }`}
                   >
                     <Icon className="w-4 h-4 mr-3" />
                     {tab.label}

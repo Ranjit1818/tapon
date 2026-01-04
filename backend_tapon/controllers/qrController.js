@@ -14,7 +14,7 @@ const getQRCodes = async (req, res, next) => {
     const startIndex = (page - 1) * limit;
 
     const filter = { user: req.user.id };
-    
+
     // Add search filter
     if (req.query.search) {
       filter.$or = [
@@ -303,8 +303,8 @@ const getQRAnalytics = async (req, res, next) => {
     // Calculate summary stats
     const totalScans = qrCode.scanCount;
     const uniqueScans = analytics.filter(a => a.event.type === 'qr_scan').length;
-    const recentScans = analytics.filter(a => 
-      a.event.type === 'qr_scan' && 
+    const recentScans = analytics.filter(a =>
+      a.event.type === 'qr_scan' &&
       new Date(a.createdAt) > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
     ).length;
 
@@ -386,53 +386,77 @@ const regenerateQRCode = async (req, res, next) => {
   }
 };
 
-// Helper function to generate QR data based on type
 const generateQRData = async (qrCodeData) => {
   const { type, data, profile } = qrCodeData;
 
   switch (type) {
     case 'profile':
-      return `${process.env.FRONTEND_URL}/profile/${profile?.username || profile?._id}`;
-    
+      let identifier;
+      // If profile object with username passed
+      if (profile && profile.username) {
+        identifier = profile.username;
+      } else if (profile) {
+        // If profile is just an ID, fetch it
+        try {
+          const profileDoc = await Profile.findById(profile);
+          if (profileDoc) {
+            identifier = profileDoc.username || profileDoc._id;
+          }
+        } catch (err) {
+          console.error('Error fetching profile for QR generation:', err);
+          // Fallback
+          identifier = profile;
+        }
+      }
+
+      // Default fallback if still undefined
+      if (!identifier && qrCodeData.user) {
+        // Try to find profile by user if profile field missing
+        const profileDoc = await Profile.findOne({ user: qrCodeData.user });
+        if (profileDoc) identifier = profileDoc.username || profileDoc._id;
+      }
+
+      return `${process.env.FRONTEND_URL || 'http://localhost:3000'}/p/${identifier}`;
+
     case 'contact':
       return `BEGIN:VCARD\nVERSION:3.0\nFN:${data.content.name}\nTEL:${data.content.phone}\nEMAIL:${data.content.email}\nEND:VCARD`;
-    
+
     case 'whatsapp':
       return `https://wa.me/${data.content.phone}?text=${encodeURIComponent(data.content.message || '')}`;
-    
+
     case 'email':
       return `mailto:${data.content.email}?subject=${encodeURIComponent(data.content.subject || '')}&body=${encodeURIComponent(data.content.body || '')}`;
-    
+
     case 'phone':
       return `tel:${data.content.phone}`;
-    
+
     case 'linkedin':
       return data.content.url;
-    
+
     case 'instagram':
       return data.content.url;
-    
+
     case 'facebook':
       return data.content.url;
-    
+
     case 'twitter':
       return data.content.url;
-    
+
     case 'website':
       return data.content.url;
-    
+
     case 'wifi':
       return `WIFI:T:${data.content.encryption};S:${data.content.ssid};P:${data.content.password};;`;
-    
+
     case 'text':
       return data.content.text;
-    
+
     case 'url':
       return data.content.url;
-    
+
     case 'custom':
       return data.content.custom;
-    
+
     default:
       return data.content;
   }

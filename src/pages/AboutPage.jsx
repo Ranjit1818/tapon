@@ -1,7 +1,7 @@
 import { Helmet } from 'react-helmet-async'
 import { motion } from 'framer-motion'
-import { 
-  Users, 
+import {
+  Users,
   Target,
   Heart,
   Globe,
@@ -45,37 +45,14 @@ const AboutPage = () => {
   ]
 
   const team = [
-    {
-      name: 'Priya Sharma',
-      role: 'CEO & Co-Founder',
-      avatar: 'PS',
-      bio: 'Former Google Product Manager with 10+ years in tech. Passionate about creating products that make a difference.',
-      linkedin: 'https://linkedin.com/in/priya-sharma',
-      twitter: 'https://twitter.com/priyasharma'
-    },
-    {
-      name: 'Rahul Patel',
-      role: 'CTO & Co-Founder',
-      avatar: 'RP',
-      bio: 'Ex-Microsoft engineer with expertise in NFC technology. Leading our technical innovation and product development.',
-      linkedin: 'https://linkedin.com/in/rahul-patel',
-      twitter: 'https://twitter.com/rahulpatel'
-    },
-    {
-      name: 'Amit Kumar',
-      role: 'COO & Co-Founder',
-      avatar: 'AK',
-      bio: 'Serial entrepreneur with 3 successful exits. Driving our business strategy and global expansion.',
-      linkedin: 'https://linkedin.com/in/amit-kumar',
-      twitter: 'https://twitter.com/amitkumar'
-    }
+
   ]
 
   return (
     <>
       <Helmet>
-        <title>About Us - TapOnn | Digital Profile Platform</title>
-        <meta name="description" content="Learn about TapOnn's mission to revolutionize digital networking and the team behind our innovative NFC solutions." />
+        <title>About Us - Connection Unlimited | Digital Profile Platform</title>
+        <meta name="description" content="Learn about Connection Unlimited's mission to revolutionize digital networking and the team behind our innovative NFC solutions." />
       </Helmet>
 
       <div className="pt-20 pb-16">
@@ -90,10 +67,10 @@ const AboutPage = () => {
             >
               <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-6">
                 About{' '}
-                <span className="gradient-text">TapOnn</span>
+                <span className="gradient-text">Connection Unlimited</span>
               </h1>
               <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
-                We're revolutionizing the way people connect and network through innovative 
+                We're revolutionizing the way people connect and network through innovative
                 digital solutions that make sharing information instant, professional, and meaningful.
               </p>
             </motion.div>
@@ -117,9 +94,9 @@ const AboutPage = () => {
                     Our Mission
                   </h2>
                   <p className="text-gray-600 dark:text-gray-400 text-lg leading-relaxed">
-                    To revolutionize the way people connect and network by providing innovative, 
-                    eco-friendly digital solutions that make sharing information instant, 
-                    professional, and meaningful. We believe that networking should be effortless, 
+                    To revolutionize the way people connect and network by providing innovative,
+                    eco-friendly digital solutions that make sharing information instant,
+                    professional, and meaningful. We believe that networking should be effortless,
                     sustainable, and impactful.
                   </p>
                 </div>
@@ -138,8 +115,8 @@ const AboutPage = () => {
                     Our Vision
                   </h2>
                   <p className="text-gray-600 dark:text-gray-400 text-lg leading-relaxed">
-                    To become the global standard for digital networking, connecting millions 
-                    of professionals worldwide through seamless, intelligent, and sustainable 
+                    To become the global standard for digital networking, connecting millions
+                    of professionals worldwide through seamless, intelligent, and sustainable
                     networking solutions that drive meaningful relationships and business growth.
                   </p>
                 </div>
@@ -237,7 +214,7 @@ const AboutPage = () => {
                 Meet Our Founders
               </h2>
               <p className="text-lg text-gray-600 dark:text-gray-400">
-                The passionate team behind TapOnn's success
+                The passionate team behind Connection Unlimited's success
               </p>
             </motion.div>
 
@@ -301,7 +278,7 @@ const AboutPage = () => {
               Join Our Mission
             </h2>
             <p className="text-xl text-primary-100 mb-8 max-w-2xl mx-auto">
-              Be part of the revolution in digital networking. Together, we're building 
+              Be part of the revolution in digital networking. Together, we're building
               the future of professional connections.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">

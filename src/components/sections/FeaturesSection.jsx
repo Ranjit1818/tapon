@@ -2,10 +2,10 @@ import React, { useEffect, useRef, useState } from 'react'
 import { motion, useInView, AnimatePresence } from 'framer-motion'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { 
-  Briefcase, 
-  Star, 
-  Mail, 
+import {
+  Briefcase,
+  Star,
+  Mail,
   Brain,
   Users,
   BarChart3,
@@ -99,7 +99,7 @@ const FeaturesSection = () => {
   ]
 
   return (
-    <section 
+    <section
       ref={sectionRef}
       className="py-20 bg-white dark:bg-gray-900 relative overflow-hidden"
     >
@@ -113,7 +113,7 @@ const FeaturesSection = () => {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Section Header */}
-        <motion.div 
+        <motion.div
           className="text-center mb-16"
           initial={{ opacity: 0, y: 50 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
@@ -124,7 +124,7 @@ const FeaturesSection = () => {
             <span className="gradient-text">Features</span>
           </h2>
           <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
-            Discover the advanced features that make TapOnn the ultimate digital networking platform 
+            Discover the advanced features that make Connection Unlimited the ultimate digital networking platform
             for modern professionals and teams.
           </p>
         </motion.div>
@@ -136,11 +136,10 @@ const FeaturesSection = () => {
               <motion.button
                 key={feature.id}
                 onClick={() => setActiveTab(index)}
-                className={`px-6 py-3 rounded-xl font-medium transition-all duration-300 ${
-                  activeTab === index
-                    ? 'bg-gradient-to-r from-primary-500 to-accent-500 text-white shadow-lg'
-                    : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
-                }`}
+                className={`px-6 py-3 rounded-xl font-medium transition-all duration-300 ${activeTab === index
+                  ? 'bg-gradient-to-r from-primary-500 to-accent-500 text-white shadow-lg'
+                  : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
+                  }`}
                 initial={{ opacity: 0, y: 20 }}
                 animate={isInView ? { opacity: 1, y: 0 } : {}}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
@@ -173,15 +172,15 @@ const FeaturesSection = () => {
                 <div className={`w-16 h-16 bg-gradient-to-br ${features[activeTab].color} rounded-2xl flex items-center justify-center mb-6`}>
                   {React.createElement(features[activeTab].icon, { className: "w-8 h-8 text-white" })}
                 </div>
-                
+
                 <h3 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
                   {features[activeTab].title}
                 </h3>
-                
+
                 <p className="text-lg text-primary-600 dark:text-primary-400 font-medium mb-6">
                   {features[activeTab].subtitle}
                 </p>
-                
+
                 <p className="text-gray-600 dark:text-gray-400 text-lg mb-8">
                   {features[activeTab].description}
                 </p>
@@ -287,7 +286,7 @@ const FeaturesSection = () => {
         </AnimatePresence>
 
         {/* Bottom CTA */}
-        <motion.div 
+        <motion.div
           className="text-center mt-16"
           initial={{ opacity: 0, y: 30 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
@@ -297,7 +296,7 @@ const FeaturesSection = () => {
             Ready to Experience These Features?
           </h3>
           <p className="text-lg text-gray-600 dark:text-gray-400 mb-8 max-w-2xl mx-auto">
-            Start using TapOnn today and discover how these powerful features can transform your networking experience.
+            Start using Connection Unlimited today and discover how these powerful features can transform your networking experience.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <motion.button

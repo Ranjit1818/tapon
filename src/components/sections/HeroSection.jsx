@@ -3,10 +3,10 @@ import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { gsap } from 'gsap'
 import { useAnalytics } from '../../contexts/AnalyticsContext'
-import { 
-  Play, 
-  ArrowRight, 
-  Download, 
+import {
+  Play,
+  ArrowRight,
+  Download,
   Sparkles,
   Zap,
   Globe,
@@ -34,7 +34,7 @@ const HeroSection = ({ typedRef }) => {
   }
 
   return (
-    <section 
+    <section
       ref={heroRef}
       className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-primary-50 via-white to-accent-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900"
       style={{ position: 'relative', zIndex: 1 }}
@@ -68,7 +68,7 @@ const HeroSection = ({ typedRef }) => {
         >
           🌱 Eco-friendly
         </motion.div>
-        
+
         <motion.div
           className="absolute top-32 right-20 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 animate-float"
           initial={{ opacity: 0, y: 20 }}
@@ -78,7 +78,7 @@ const HeroSection = ({ typedRef }) => {
         >
           ⚡ Instant Sharing
         </motion.div>
-        
+
         <motion.div
           className="absolute bottom-32 left-20 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 animate-float"
           initial={{ opacity: 0, y: 20 }}
@@ -88,7 +88,7 @@ const HeroSection = ({ typedRef }) => {
         >
           🌍 Global Network
         </motion.div>
-        
+
         <motion.div
           className="absolute bottom-20 right-10 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 animate-float"
           initial={{ opacity: 0, y: 20 }}
@@ -104,17 +104,17 @@ const HeroSection = ({ typedRef }) => {
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <div className="max-w-4xl mx-auto">
           {/* Main Title */}
-          <motion.h1 
+          <motion.h1
             className="text-5xl md:text-7xl lg:text-8xl font-bold text-gray-900 dark:text-white mb-6 relative z-10 text-stable"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
           >
-            <span className="gradient-text text-stable">TapOnn</span>
+            <span className="gradient-text text-stable">Connection Unlimited</span>
           </motion.h1>
 
           {/* Typed Subtitle */}
-          <motion.div 
+          <motion.div
             className="text-2xl md:text-3xl lg:text-4xl font-medium text-gray-700 dark:text-gray-300 mb-8 relative z-10 min-h-[3rem] text-stable"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -126,7 +126,7 @@ const HeroSection = ({ typedRef }) => {
 
 
           {/* CTA Buttons */}
-          <motion.div 
+          <motion.div
             className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16 mt-12 relative z-10 text-stable"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -156,7 +156,7 @@ const HeroSection = ({ typedRef }) => {
           </motion.div>
 
           {/* App Download Buttons */}
-          <motion.div 
+          <motion.div
             className="flex flex-col sm:flex-row gap-4 justify-center items-center"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -192,7 +192,7 @@ const HeroSection = ({ typedRef }) => {
       </div>
 
       {/* Scroll Indicator */}
-      <motion.div 
+      <motion.div
         className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}

@@ -1,11 +1,11 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { 
-  User, 
-  Shield, 
-  Bell, 
-  Palette, 
-  Globe, 
+import {
+  User,
+  Shield,
+  Bell,
+  Palette,
+  Globe,
   Key,
   Mail,
   Smartphone,
@@ -42,20 +42,20 @@ const SettingsPage = () => {
     emailNotifications: true,
     smsNotifications: false,
     marketingEmails: false,
-    
+
     // Privacy settings
     profileVisibility: 'public',
     showEmail: false,
     showPhone: false,
     allowAnalytics: true,
     allowIndexing: true,
-    
+
     // Notification settings
     profileViews: true,
     newConnections: true,
     weeklyReports: true,
     securityAlerts: true,
-    
+
     // Appearance settings
     theme: 'system',
     animations: true,
@@ -87,17 +87,17 @@ const SettingsPage = () => {
       settings,
       exportDate: new Date().toISOString()
     }
-    
+
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = `taponn-data-${Date.now()}.json`
+    a.download = `connectionunlimited-data-${Date.now()}.json`
     document.body.appendChild(a)
     a.click()
     document.body.removeChild(a)
     URL.revokeObjectURL(url)
-    
+
     toast.success('📥 Data exported successfully!')
   }
 
@@ -105,15 +105,15 @@ const SettingsPage = () => {
     const confirmed = window.confirm(
       '⚠️ Are you sure you want to delete your account? This action cannot be undone.'
     )
-    
+
     if (confirmed) {
       const doubleConfirmed = window.confirm(
         '🚨 This will permanently delete all your data, including your profile, analytics, and settings. Type "DELETE" in the next prompt to confirm.'
       )
-      
+
       if (doubleConfirmed) {
         const finalConfirmation = prompt('Type "DELETE" to confirm account deletion:')
-        
+
         if (finalConfirmation === 'DELETE') {
           toast.success('🗑️ Account deletion initiated. You will be contacted within 24 hours.')
           // In a real app, this would call an API to start the deletion process
@@ -141,7 +141,7 @@ const SettingsPage = () => {
             Manage your account preferences and privacy settings
           </p>
         </div>
-        
+
         <motion.button
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
@@ -179,19 +179,17 @@ const SettingsPage = () => {
                 key={section.id}
                 whileHover={{ x: 4 }}
                 onClick={() => setActiveSection(section.id)}
-                className={`w-full text-left p-3 rounded-lg transition-all ${
-                  activeSection === section.id
+                className={`w-full text-left p-3 rounded-lg transition-all ${activeSection === section.id
                     ? 'bg-gradient-to-r from-primary-500 to-accent-500 text-white'
                     : 'hover:bg-gray-100 dark:hover:bg-gray-700'
-                }`}
+                  }`}
               >
                 <div className="flex items-center space-x-3">
                   <span className="text-lg">{section.emoji}</span>
                   <div>
                     <div className="font-medium">{section.name}</div>
-                    <div className={`text-xs ${
-                      activeSection === section.id ? 'text-white/80' : 'text-gray-500 dark:text-gray-400'
-                    }`}>
+                    <div className={`text-xs ${activeSection === section.id ? 'text-white/80' : 'text-gray-500 dark:text-gray-400'
+                      }`}>
                       {section.description}
                     </div>
                   </div>
@@ -215,7 +213,7 @@ const SettingsPage = () => {
                 <span>👤</span>
                 <span>Account Settings</span>
               </h3>
-              
+
               <div className="space-y-4">
                 <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
                   <div className="flex items-center justify-between">
@@ -296,7 +294,7 @@ const SettingsPage = () => {
                 <span>🔒</span>
                 <span>Privacy & Security</span>
               </h3>
-              
+
               <div className="space-y-4">
                 <div className="p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
                   <div className="flex items-center space-x-2 mb-2">
@@ -379,7 +377,7 @@ const SettingsPage = () => {
                 <span>🔔</span>
                 <span>Notification Preferences</span>
               </h3>
-              
+
               <div className="space-y-4">
                 <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
                   <div>
@@ -462,52 +460,49 @@ const SettingsPage = () => {
                 <span>🎨</span>
                 <span>Appearance & Theme</span>
               </h3>
-              
+
               <div className="space-y-4">
                 <div className="p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
                   <div className="flex items-center space-x-2 mb-3">
                     <Palette className="w-5 h-5 text-purple-600 dark:text-purple-400" />
                     <h4 className="font-medium text-purple-900 dark:text-purple-300">Theme Preference</h4>
                   </div>
-                  
+
                   <div className="grid grid-cols-3 gap-3">
                     <button
                       onClick={() => {
                         handleSettingChange('theme', 'light')
                         if (isDark) toggleTheme()
                       }}
-                      className={`p-3 rounded-lg border-2 transition-all ${
-                        settings.theme === 'light' 
-                          ? 'border-primary-500 bg-primary-50' 
+                      className={`p-3 rounded-lg border-2 transition-all ${settings.theme === 'light'
+                          ? 'border-primary-500 bg-primary-50'
                           : 'border-gray-200 dark:border-gray-600 hover:border-primary-300'
-                      }`}
+                        }`}
                     >
                       <Sun className="w-6 h-6 mx-auto mb-2 text-yellow-500" />
                       <div className="text-sm font-medium">Light</div>
                     </button>
-                    
+
                     <button
                       onClick={() => {
                         handleSettingChange('theme', 'dark')
                         if (!isDark) toggleTheme()
                       }}
-                      className={`p-3 rounded-lg border-2 transition-all ${
-                        settings.theme === 'dark' 
-                          ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/20' 
+                      className={`p-3 rounded-lg border-2 transition-all ${settings.theme === 'dark'
+                          ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/20'
                           : 'border-gray-200 dark:border-gray-600 hover:border-primary-300'
-                      }`}
+                        }`}
                     >
                       <Moon className="w-6 h-6 mx-auto mb-2 text-blue-500" />
                       <div className="text-sm font-medium">Dark</div>
                     </button>
-                    
+
                     <button
                       onClick={() => handleSettingChange('theme', 'system')}
-                      className={`p-3 rounded-lg border-2 transition-all ${
-                        settings.theme === 'system' 
-                          ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/20' 
+                      className={`p-3 rounded-lg border-2 transition-all ${settings.theme === 'system'
+                          ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/20'
                           : 'border-gray-200 dark:border-gray-600 hover:border-primary-300'
-                      }`}
+                        }`}
                     >
                       <Monitor className="w-6 h-6 mx-auto mb-2 text-gray-500" />
                       <div className="text-sm font-medium">System</div>
@@ -560,7 +555,7 @@ const SettingsPage = () => {
                 <span>📊</span>
                 <span>Data Management</span>
               </h3>
-              
+
               <div className="space-y-4">
                 <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
                   <div className="flex items-center justify-between">

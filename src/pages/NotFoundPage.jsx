@@ -7,7 +7,7 @@ const NotFoundPage = () => {
   return (
     <>
       <Helmet>
-        <title>404 - Page Not Found | TapOnn</title>
+        <title>404 - Page Not Found | Connection Unlimited</title>
         <meta name="description" content="The page you're looking for doesn't exist." />
       </Helmet>
 
@@ -28,7 +28,7 @@ const NotFoundPage = () => {
               Page Not Found
             </h1>
             <p className="text-lg text-gray-600 dark:text-gray-400 mb-8">
-              Oops! The page you're looking for doesn't exist. It might have been moved, 
+              Oops! The page you're looking for doesn't exist. It might have been moved,
               deleted, or you entered the wrong URL.
             </p>
 
@@ -63,7 +63,7 @@ const NotFoundPage = () => {
                 <Home className="w-5 h-5" />
                 <span>Go Home</span>
               </Link>
-              
+
               <button
                 onClick={() => window.history.back()}
                 className="btn-secondary flex items-center justify-center space-x-2"
@@ -112,8 +112,8 @@ const NotFoundPage = () => {
             >
               <p className="text-sm text-blue-700 dark:text-blue-300">
                 Need help? Contact our support team at{' '}
-                <a href="mailto:support@taponn.com" className="font-semibold hover:underline">
-                  support@taponn.com
+                <a href="mailto:support@connectionunlimited.com" className="font-semibold hover:underline">
+                  support@connectionunlimited.com
                 </a>
               </p>
             </motion.div>

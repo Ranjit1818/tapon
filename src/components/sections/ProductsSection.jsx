@@ -3,10 +3,10 @@ import { Link } from 'react-router-dom'
 import { motion, useInView } from 'framer-motion'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { 
-  CreditCard, 
-  Monitor, 
-  Star, 
+import {
+  CreditCard,
+  Monitor,
+  Star,
   Package,
   ArrowRight,
   Zap,
@@ -92,7 +92,7 @@ const ProductsSection = () => {
   ]
 
   return (
-    <section 
+    <section
       ref={sectionRef}
       className="py-20 bg-gray-50 dark:bg-gray-800 relative overflow-hidden"
     >
@@ -106,7 +106,7 @@ const ProductsSection = () => {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Section Header */}
-        <motion.div 
+        <motion.div
           className="text-center mb-16"
           initial={{ opacity: 0, y: 50 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
@@ -117,7 +117,7 @@ const ProductsSection = () => {
             <span className="gradient-text">Products</span>
           </h2>
           <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
-            Choose from our range of innovative NFC products designed to transform your networking 
+            Choose from our range of innovative NFC products designed to transform your networking
             and lead generation experience.
           </p>
         </motion.div>
@@ -189,7 +189,7 @@ const ProductsSection = () => {
         </div>
 
         {/* Features Comparison */}
-        <motion.div 
+        <motion.div
           className="bg-white dark:bg-gray-900 rounded-3xl p-8 md:p-12 shadow-xl"
           initial={{ opacity: 0, y: 50 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
@@ -197,7 +197,7 @@ const ProductsSection = () => {
         >
           <div className="text-center mb-12">
             <h3 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
-              Why Choose TapOnn Products?
+              Why Choose Connection Unlimited Products?
             </h3>
             <p className="text-xl text-gray-600 dark:text-gray-400">
               Built with cutting-edge technology and designed for modern professionals
@@ -233,7 +233,7 @@ const ProductsSection = () => {
         </motion.div>
 
         {/* CTA Section */}
-        <motion.div 
+        <motion.div
           className="text-center mt-16"
           initial={{ opacity: 0, y: 30 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}

@@ -3,13 +3,13 @@ import { Link, Navigate } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
 import { motion } from 'framer-motion'
 import { useAuth } from '../../contexts/AuthContext'
-import { 
-  User, 
-  Mail, 
-  Lock, 
-  Eye, 
-  EyeOff, 
-  Building, 
+import {
+  User,
+  Mail,
+  Lock,
+  Eye,
+  EyeOff,
+  Building,
   MapPin,
   Phone,
   Check,
@@ -41,27 +41,27 @@ const RegisterPage = () => {
 
   const validateStep1 = () => {
     const newErrors = {}
-    
+
     if (!formData.name.trim()) {
       newErrors.name = 'Name is required'
     }
-    
+
     if (!formData.email.trim()) {
       newErrors.email = 'Email is required'
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
       newErrors.email = 'Email is invalid'
     }
-    
+
     if (!formData.password) {
       newErrors.password = 'Password is required'
     } else if (formData.password.length < 6) {
       newErrors.password = 'Password must be at least 6 characters'
     }
-    
+
     if (formData.password !== formData.confirmPassword) {
       newErrors.confirmPassword = 'Passwords do not match'
     }
-    
+
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
   }
@@ -78,7 +78,7 @@ const RegisterPage = () => {
       ...prev,
       [name]: value
     }))
-    
+
     // Clear error when user starts typing
     if (errors[name]) {
       setErrors(prev => ({
@@ -90,29 +90,29 @@ const RegisterPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    
+
     if (!validateStep1()) {
       setStep(1)
       return
     }
-    
+
     setIsSubmitting(true)
     const result = await register(formData)
-    
+
     if (result.success) {
-      toast.success('🎉 Welcome to TapOnn! Your account has been created successfully!')
+      toast.success('🎉 Welcome to Connection Unlimited! Your account has been created successfully!')
     } else {
       toast.error(result.error)
     }
-    
+
     setIsSubmitting(false)
   }
 
   return (
     <>
       <Helmet>
-        <title>Join TapOnn 🚀 - Create Your Digital Profile</title>
-        <meta name="description" content="Join TapOnn and create your smart digital profile. Connect instantly, share effortlessly, and grow your network." />
+        <title>Join Connection Unlimited 🚀 - Create Your Digital Profile</title>
+        <meta name="description" content="Join Connection Unlimited and create your smart digital profile. Connect instantly, share effortlessly, and grow your network." />
       </Helmet>
 
       <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-accent-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center px-4 py-8">
@@ -126,16 +126,16 @@ const RegisterPage = () => {
           >
             <Link to="/" className="inline-flex items-center space-x-2 mb-6">
               <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-accent-500 rounded-xl flex items-center justify-center">
-                <span className="text-white font-bold text-lg">T</span>
+                <span className="text-white font-bold text-lg">C</span>
               </div>
-              <span className="text-2xl font-bold text-gray-900 dark:text-white">TapOnn</span>
+              <span className="text-2xl font-bold text-gray-900 dark:text-white">Connection Unlimited</span>
             </Link>
-            
+
             <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-              {step === 1 ? '🚀 Join TapOnn' : '🙋‍♂️ Tell us about yourself'}
+              {step === 1 ? '🚀 Join Connection Unlimited' : '🙋‍♂️ Tell us about yourself'}
             </h1>
             <p className="text-gray-600 dark:text-gray-400">
-              {step === 1 
+              {step === 1
                 ? 'Create your account and start connecting instantly'
                 : 'Help us personalize your digital profile'
               }
@@ -150,17 +150,14 @@ const RegisterPage = () => {
             className="mb-8"
           >
             <div className="flex items-center space-x-4 mb-2">
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${
-                step >= 1 ? 'bg-primary-500 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-500'
-              }`}>
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${step >= 1 ? 'bg-primary-500 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-500'
+                }`}>
                 {step > 1 ? <Check className="w-4 h-4" /> : '1'}
               </div>
-              <div className={`flex-1 h-2 rounded-full ${
-                step >= 2 ? 'bg-primary-500' : 'bg-gray-200 dark:bg-gray-700'
-              }`} />
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${
-                step >= 2 ? 'bg-primary-500 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-500'
-              }`}>
+              <div className={`flex-1 h-2 rounded-full ${step >= 2 ? 'bg-primary-500' : 'bg-gray-200 dark:bg-gray-700'
+                }`} />
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${step >= 2 ? 'bg-primary-500 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-500'
+                }`}>
                 2
               </div>
             </div>
@@ -196,11 +193,10 @@ const RegisterPage = () => {
                         name="name"
                         value={formData.name}
                         onChange={handleInputChange}
-                        className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all ${
-                          errors.name 
-                            ? 'border-red-500 bg-red-50 dark:bg-red-900/20' 
-                            : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800'
-                        }`}
+                        className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all ${errors.name
+                          ? 'border-red-500 bg-red-50 dark:bg-red-900/20'
+                          : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800'
+                          }`}
                         placeholder="Enter your full name"
                       />
                       <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -231,11 +227,10 @@ const RegisterPage = () => {
                         name="email"
                         value={formData.email}
                         onChange={handleInputChange}
-                        className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all ${
-                          errors.email 
-                            ? 'border-red-500 bg-red-50 dark:bg-red-900/20' 
-                            : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800'
-                        }`}
+                        className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all ${errors.email
+                          ? 'border-red-500 bg-red-50 dark:bg-red-900/20'
+                          : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800'
+                          }`}
                         placeholder="Enter your email address"
                       />
                       <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -266,11 +261,10 @@ const RegisterPage = () => {
                         name="password"
                         value={formData.password}
                         onChange={handleInputChange}
-                        className={`w-full pl-10 pr-12 py-3 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all ${
-                          errors.password 
-                            ? 'border-red-500 bg-red-50 dark:bg-red-900/20' 
-                            : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800'
-                        }`}
+                        className={`w-full pl-10 pr-12 py-3 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all ${errors.password
+                          ? 'border-red-500 bg-red-50 dark:bg-red-900/20'
+                          : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800'
+                          }`}
                         placeholder="Create a strong password"
                       />
                       <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -305,11 +299,10 @@ const RegisterPage = () => {
                         name="confirmPassword"
                         value={formData.confirmPassword}
                         onChange={handleInputChange}
-                        className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all ${
-                          errors.confirmPassword 
-                            ? 'border-red-500 bg-red-50 dark:bg-red-900/20' 
-                            : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800'
-                        }`}
+                        className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all ${errors.confirmPassword
+                          ? 'border-red-500 bg-red-50 dark:bg-red-900/20'
+                          : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800'
+                          }`}
                         placeholder="Confirm your password"
                       />
                       <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -430,7 +423,7 @@ const RegisterPage = () => {
                     >
                       Back
                     </motion.button>
-                    
+
                     <motion.button
                       type="submit"
                       disabled={isSubmitting}
@@ -463,8 +456,8 @@ const RegisterPage = () => {
             >
               <p className="text-gray-600 dark:text-gray-400">
                 Already have an account?{' '}
-                <Link 
-                  to="/app/login" 
+                <Link
+                  to="/app/login"
                   className="text-primary-500 hover:text-primary-600 font-medium transition-colors"
                 >
                   Sign in here 🔐

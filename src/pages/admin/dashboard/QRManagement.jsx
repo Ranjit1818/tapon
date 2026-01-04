@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { 
-  QrCode, 
-  Search, 
-  Download, 
-  Eye, 
-  Copy, 
+import {
+  QrCode,
+  Search,
+  Download,
+  Eye,
+  Copy,
   Printer,
   Filter,
   Calendar,
@@ -39,7 +39,7 @@ const QRManagement = () => {
   useEffect(() => {
     filterQRCodes()
   }, [qrCodes, searchTerm, filterType])
-  
+
   useEffect(() => {
     // Reload QR codes when qrCodesByUser changes to update the user QR display
     if (Object.keys(qrCodesByUser).length > 0) {
@@ -50,7 +50,7 @@ const QRManagement = () => {
   const loadQRCodes = async () => {
     try {
       setLoading(true)
-      
+
       // Fetch QR codes from backend API
       const response = await adminAPI.getAllQRCodes({
         include: 'user,analytics',
@@ -73,10 +73,10 @@ const QRManagement = () => {
             scanCount: qr.analytics?.scanCount || qr.scanCount || 0,
             isActive: qr.isActive !== false
           }))
-        
+
         console.log(`✅ Loaded ${apiQRCodes.length} QR codes from API`)
         setQrCodes(apiQRCodes)
-        
+
         // Create a map of userId -> QR code for quick lookup
         const qrMap = {}
         apiQRCodes.forEach(qr => {
@@ -92,7 +92,7 @@ const QRManagement = () => {
     } catch (error) {
       console.error('Failed to fetch QR codes:', error)
       toast.error('Failed to load QR codes')
-      
+
       // Fallback to demo data if API fails
       const mockQRCodes = [
         {
@@ -101,8 +101,8 @@ const QRManagement = () => {
           userName: 'John Doe',
           userEmail: 'john@example.com',
           type: 'profile',
-          url: 'https://taponn.com/profile/johndoe',
-          qrData: 'https://taponn.com/profile/johndoe',
+          url: 'https://connectionunlimited.com/profile/johndoe',
+          qrData: 'https://connectionunlimited.com/profile/johndoe',
           createdAt: '2024-01-15',
           lastScanned: '2024-01-20',
           scanCount: 23,
@@ -114,8 +114,8 @@ const QRManagement = () => {
           userName: 'Sarah Johnson',
           userEmail: 'sarah@company.com',
           type: 'profile',
-          url: 'https://taponn.com/profile/sarahjohnson',
-          qrData: 'https://taponn.com/profile/sarahjohnson',
+          url: 'https://connectionunlimited.com/profile/sarahjohnson',
+          qrData: 'https://connectionunlimited.com/profile/sarahjohnson',
           createdAt: '2024-01-10',
           lastScanned: '2024-01-19',
           scanCount: 12,
@@ -192,20 +192,20 @@ const QRManagement = () => {
       const origin = typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000'
       return `${origin}/p/${username}`
     }
-    
+
     // If no username, check if we have a QR code with profile ID
     const qrCode = qrCodesByUser[userId]
     if (qrCode && qrCode.qrData) {
       return qrCode.qrData
     }
-    
+
     // If we have a profile ID, use that
     const profileId = userProfileMap[userId]
     if (profileId) {
       const origin = typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000'
       return `${origin}/p/${profileId}`
     }
-    
+
     return ''
   }
 
@@ -226,7 +226,7 @@ const QRManagement = () => {
     toast.success('QR downloaded')
   }
 
-  const printQrSvg = (domId, title = 'TapOnn QR Code', subtitle = 'Digital Profile') => {
+  const printQrSvg = (domId, title = 'Connection Unlimited QR Code', subtitle = 'Digital Profile') => {
     const svg = document.getElementById(domId)
     if (!svg) return toast.error('QR not ready')
     const serializer = new XMLSerializer()
@@ -262,7 +262,7 @@ const QRManagement = () => {
         <body>
           <div class="wrap">
             <div class="heading">
-              <div class="brand">TapOnn</div>
+              <div class="brand">Connection Unlimited</div>
               <div class="title">${title}</div>
               <div class="subtitle">${subtitle}</div>
             </div>
@@ -273,7 +273,7 @@ const QRManagement = () => {
                 <p>Generated on: ${new Date().toLocaleString()}</p>
               </div>
             </div>
-            <div class="footer">© ${new Date().getFullYear()} TapOnn.com • Smart Digital Profiles</div>
+            <div class="footer">© ${new Date().getFullYear()} connectionunlimited.com • Smart Digital Profiles</div>
           </div>
           <script>
             window.onload = () => { setTimeout(() => { window.print(); window.close(); }, 150); };
@@ -334,7 +334,7 @@ const QRManagement = () => {
       let y = margin
       doc.setTextColor(37, 99, 235)
       doc.setFontSize(11)
-      doc.text('TapOnn', pageWidth / 2, y, { align: 'center' })
+      doc.text('Connection Unlimited', pageWidth / 2, y, { align: 'center' })
       y += 6
       doc.setTextColor(0, 0, 0)
       doc.setFontSize(20)
@@ -356,7 +356,7 @@ const QRManagement = () => {
       doc.text(`Generated on: ${new Date().toLocaleString()}`, pageWidth / 2, y, { align: 'center' })
       y += 10
       doc.setFontSize(9)
-      doc.text(`© ${new Date().getFullYear()} TapOnn.com • Smart Digital Profiles`, pageWidth / 2, y, { align: 'center' })
+      doc.text(`© ${new Date().getFullYear()} ConnectionUnlimited.com • Smart Digital Profiles`, pageWidth / 2, y, { align: 'center' })
       doc.save(`${filenameBase}.pdf`)
       toast.success('PDF downloaded')
     } catch (e) {
@@ -369,7 +369,7 @@ const QRManagement = () => {
     let filtered = qrCodes
 
     if (searchTerm) {
-      filtered = filtered.filter(qr => 
+      filtered = filtered.filter(qr =>
         qr.userName.toLowerCase().includes(searchTerm.toLowerCase()) ||
         qr.userEmail.toLowerCase().includes(searchTerm.toLowerCase()) ||
         qr.url.toLowerCase().includes(searchTerm.toLowerCase())
@@ -412,7 +412,7 @@ const QRManagement = () => {
       const response = await adminAPI.getQRCodeById(qr._id)
       if (response.data?.success) {
         const qrData = response.data.data.qrData
-        
+
         // Create QR code using qrcode library
         const canvas = document.createElement('canvas')
         await QRCode.toCanvas(canvas, qrData, {
@@ -423,7 +423,7 @@ const QRManagement = () => {
             light: '#FFFFFF'
           }
         })
-        
+
         // Convert to blob and download
         canvas.toBlob((blob) => {
           const url = URL.createObjectURL(blob)
@@ -433,7 +433,7 @@ const QRManagement = () => {
           a.click()
           URL.revokeObjectURL(url)
         })
-        
+
         toast.success('QR code downloaded')
       } else {
         toast.error('Failed to download QR code')
@@ -446,8 +446,8 @@ const QRManagement = () => {
 
   const regenerateQRCode = (qr) => {
     // Simulate QR code regeneration
-    setQrCodes(qrCodes.map(q => 
-      q.id === qr.id 
+    setQrCodes(qrCodes.map(q =>
+      q.id === qr.id
         ? { ...q, createdAt: new Date().toISOString().split('T')[0], scanCount: 0 }
         : q
     ))
@@ -455,8 +455,8 @@ const QRManagement = () => {
   }
 
   const toggleQRStatus = (qr) => {
-    setQrCodes(qrCodes.map(q => 
-      q.id === qr.id 
+    setQrCodes(qrCodes.map(q =>
+      q.id === qr.id
         ? { ...q, isActive: !q.isActive }
         : q
     ))
@@ -505,7 +505,7 @@ const QRManagement = () => {
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = 'taponn-qr-codes.csv'
+    a.download = 'connectionunlimited-qr-codes.csv'
     a.click()
     toast.success('QR codes report exported')
   }
@@ -542,7 +542,7 @@ const QRManagement = () => {
             View and manage all user QR codes across the platform
           </p>
         </div>
-        
+
         <div className="mt-4 lg:mt-0 flex items-center space-x-3">
           <button
             onClick={handleGenerateMissingQRCodes}
@@ -645,7 +645,7 @@ const QRManagement = () => {
             <QrCode className="w-8 h-8 text-blue-500" />
           </div>
         </div>
-        
+
         <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-gray-700">
           <div className="flex items-center justify-between">
             <div>
@@ -657,7 +657,7 @@ const QRManagement = () => {
             <BarChart3 className="w-8 h-8 text-green-500" />
           </div>
         </div>
-        
+
         <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-gray-700">
           <div className="flex items-center justify-between">
             <div>
@@ -669,7 +669,7 @@ const QRManagement = () => {
             <Eye className="w-8 h-8 text-purple-500" />
           </div>
         </div>
-        
+
         <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-gray-700">
           <div className="flex items-center justify-between">
             <div>
@@ -696,7 +696,7 @@ const QRManagement = () => {
               className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
             />
           </div>
-          
+
           <select
             value={filterType}
             onChange={(e) => setFilterType(e.target.value)}
@@ -750,9 +750,8 @@ const QRManagement = () => {
                       <span className={`px-2 py-1 text-xs font-semibold rounded-full ${getTypeColor(qr.type)}`}>
                         {getTypeIcon(qr.type)} {qr.type}
                       </span>
-                      <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
-                        qr.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                      }`}>
+                      <span className={`px-2 py-1 text-xs font-semibold rounded-full ${qr.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                        }`}>
                         {qr.isActive ? 'Active' : 'Inactive'}
                       </span>
                     </div>
@@ -798,7 +797,7 @@ const QRManagement = () => {
                           <ExternalLink className="w-4 h-4" />
                         </button>
                       </div>
-                      
+
                       <div className="flex items-center space-x-1">
                         <button
                           onClick={() => handleQRAction('regenerate', qr)}
@@ -808,11 +807,10 @@ const QRManagement = () => {
                         </button>
                         <button
                           onClick={() => handleQRAction('toggle', qr)}
-                          className={`px-3 py-1 text-xs rounded transition-colors ${
-                            qr.isActive 
-                              ? 'bg-red-500 text-white hover:bg-red-600' 
+                          className={`px-3 py-1 text-xs rounded transition-colors ${qr.isActive
+                              ? 'bg-red-500 text-white hover:bg-red-600'
                               : 'bg-green-500 text-white hover:bg-green-600'
-                          }`}
+                            }`}
                         >
                           {qr.isActive ? 'Disable' : 'Enable'}
                         </button>
@@ -828,7 +826,7 @@ const QRManagement = () => {
                 <QrCode className="w-16 h-16 text-gray-400 mx-auto mb-4" />
                 <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">No QR codes found</h3>
                 <p className="text-gray-500 dark:text-gray-400">
-                  {searchTerm || filterType !== 'all' 
+                  {searchTerm || filterType !== 'all'
                     ? 'Try adjusting your search or filter criteria'
                     : 'No QR codes have been generated yet'
                   }

@@ -3,10 +3,10 @@ import { Routes, Route, Link, useLocation, Navigate } from 'react-router-dom'
 import { Helmet } from 'react-helmet-async'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useAuth } from '../../contexts/AuthContext'
-import { 
-  User, 
-  BarChart3, 
-  Users, 
+import {
+  User,
+  BarChart3,
+  Users,
   Settings,
   Plus,
   Download,
@@ -32,7 +32,7 @@ import AppShop from './dashboard/Shop'
 import AppSettingsPage from './dashboard/SettingsPage'
 
 const AppDashboardPage = () => {
-  const { user, logout, isAuthenticated, hasPermission, isTapOnnUser, loading } = useAuth()
+  const { user, logout, isAuthenticated, hasPermission, isConnectionUnlimitedUser, loading } = useAuth()
   const location = useLocation()
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false)
@@ -64,31 +64,31 @@ const AppDashboardPage = () => {
 
   // Base navigation items available to all users
   const baseNavigation = [
-    { 
-      name: 'Dashboard', 
-      href: '/app/dashboard', 
-      icon: Home, 
+    {
+      name: 'Dashboard',
+      href: '/app/dashboard',
+      icon: Home,
       emoji: '🧠',
       description: 'Overview & stats'
     },
-    { 
-      name: 'Profile', 
-      href: '/app/dashboard/profile', 
-      icon: User, 
+    {
+      name: 'Profile',
+      href: '/app/dashboard/profile',
+      icon: User,
       emoji: '🙋‍♂️',
       description: 'Manage your digital profile'
     },
-    { 
-      name: 'Shop', 
-      href: '/app/dashboard/shop', 
-      icon: ShoppingBag, 
+    {
+      name: 'Shop',
+      href: '/app/dashboard/shop',
+      icon: ShoppingBag,
       emoji: '💳',
-      description: isTapOnnUser ? 'Manage Cards & Sales' : 'Buy NFC & Review cards'
+      description: isConnectionUnlimitedUser ? 'Manage Cards & Sales' : 'Buy NFC & Review cards'
     },
-    { 
-      name: 'Settings', 
-      href: '/app/dashboard/settings', 
-      icon: Settings, 
+    {
+      name: 'Settings',
+      href: '/app/dashboard/settings',
+      icon: Settings,
       emoji: '⚙️',
       description: 'Account & preferences'
     }
@@ -96,24 +96,24 @@ const AppDashboardPage = () => {
 
   // Admin-only navigation items
   const adminNavigation = [
-    { 
-      name: 'Analytics', 
-      href: '/app/dashboard/analytics', 
-      icon: BarChart3, 
+    {
+      name: 'Analytics',
+      href: '/app/dashboard/analytics',
+      icon: BarChart3,
       emoji: '📊',
       description: 'Track performance & sales'
     },
-    { 
-      name: 'QR Generator', 
-      href: '/app/dashboard/qr-generator', 
-      icon: QrCode, 
+    {
+      name: 'QR Generator',
+      href: '/app/dashboard/qr-generator',
+      icon: QrCode,
       emoji: '📎',
       description: 'Generate QR codes for cards'
     }
   ]
 
   // Combine navigation based on user role
-  const navigation = isTapOnnUser 
+  const navigation = isConnectionUnlimitedUser
     ? [...baseNavigation.slice(0, 2), ...adminNavigation, ...baseNavigation.slice(2)]
     : baseNavigation.filter(item => item.name !== 'Analytics')
 
@@ -141,13 +141,13 @@ const AppDashboardPage = () => {
   return (
     <>
       <Helmet>
-        <title>TapOnn App - Your Digital Profile Dashboard 🚀</title>
-        <meta name="description" content="Manage your TapOnn digital profile, track analytics, generate QR codes, and explore our shop." />
+        <title>Connection Unlimited App - Your Digital Profile Dashboard 🚀</title>
+        <meta name="description" content="Manage your Connection Unlimited digital profile, track analytics, generate QR codes, and explore our shop." />
       </Helmet>
 
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
         {/* Top Navigation */}
-        <motion.div 
+        <motion.div
           initial={{ y: -20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-40"
@@ -161,12 +161,12 @@ const AppDashboardPage = () => {
                 >
                   {sidebarOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
                 </button>
-                
+
                 <Link to="/" className="flex items-center space-x-2">
                   <div className="w-8 h-8 bg-gradient-to-br from-primary-500 to-accent-500 rounded-lg flex items-center justify-center">
                     <span className="text-white font-bold text-sm">T</span>
                   </div>
-                  <span className="text-xl font-bold text-gray-900 dark:text-white">TapOnn</span>
+                  <span className="text-xl font-bold text-gray-900 dark:text-white">Connection Unlimited</span>
                 </Link>
 
                 <div className="hidden md:block text-sm text-gray-500 dark:text-gray-400">
@@ -188,7 +188,7 @@ const AppDashboardPage = () => {
                 {/* Notifications */}
                 <button className="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 relative hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
                   <Bell className="w-5 h-5 text-gray-600 dark:text-gray-400" />
-                  <motion.span 
+                  <motion.span
                     animate={{ scale: [1, 1.2, 1] }}
                     transition={{ repeat: Infinity, duration: 2 }}
                     className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"
@@ -228,7 +228,7 @@ const AppDashboardPage = () => {
                             {user?.email}
                           </p>
                         </div>
-                        
+
                         <Link
                           to="/app/dashboard/profile"
                           className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
@@ -237,7 +237,7 @@ const AppDashboardPage = () => {
                           <User className="w-4 h-4 mr-3" />
                           Profile Settings
                         </Link>
-                        
+
                         <Link
                           to="/app/dashboard/settings"
                           className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
@@ -246,7 +246,7 @@ const AppDashboardPage = () => {
                           <Settings className="w-4 h-4 mr-3" />
                           Account Settings
                         </Link>
-                        
+
                         <div className="border-t border-gray-200 dark:border-gray-700">
                           <button
                             onClick={handleLogout}
@@ -282,19 +282,17 @@ const AppDashboardPage = () => {
                       <motion.div key={item.name} whileHover={{ x: 4 }}>
                         <Link
                           to={item.href}
-                          className={`group flex items-center px-3 py-3 text-sm font-medium rounded-lg transition-all ${
-                            isActive(item.href)
-                              ? 'bg-gradient-to-r from-primary-500 to-accent-500 text-white shadow-lg'
-                              : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white'
-                          }`}
+                          className={`group flex items-center px-3 py-3 text-sm font-medium rounded-lg transition-all ${isActive(item.href)
+                            ? 'bg-gradient-to-r from-primary-500 to-accent-500 text-white shadow-lg'
+                            : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white'
+                            }`}
                           onClick={() => setSidebarOpen(false)}
                         >
                           <span className="text-lg mr-3">{item.emoji}</span>
                           <div className="flex-1">
                             <div className="font-medium">{item.name}</div>
-                            <div className={`text-xs ${
-                              isActive(item.href) ? 'text-white/80' : 'text-gray-500 dark:text-gray-500'
-                            }`}>
+                            <div className={`text-xs ${isActive(item.href) ? 'text-white/80' : 'text-gray-500 dark:text-gray-500'
+                              }`}>
                               {item.description}
                             </div>
                           </div>
@@ -305,7 +303,7 @@ const AppDashboardPage = () => {
                 </div>
 
                 {/* Quick Actions */}
-                <motion.div 
+                <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.3 }}
@@ -315,7 +313,7 @@ const AppDashboardPage = () => {
                     ⚡ Quick Actions
                   </h3>
                   <div className="space-y-2">
-                    <motion.button 
+                    <motion.button
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                       className="w-full flex items-center px-3 py-2 text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
@@ -323,7 +321,7 @@ const AppDashboardPage = () => {
                       <span className="mr-3">📥</span>
                       Download QR
                     </motion.button>
-                    <motion.button 
+                    <motion.button
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                       className="w-full flex items-center px-3 py-2 text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
@@ -331,7 +329,7 @@ const AppDashboardPage = () => {
                       <span className="mr-3">📤</span>
                       Share Profile
                     </motion.button>
-                    <motion.button 
+                    <motion.button
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                       className="w-full flex items-center px-3 py-2 text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
@@ -343,7 +341,7 @@ const AppDashboardPage = () => {
                 </motion.div>
 
                 {/* User Profile Preview */}
-                <motion.div 
+                <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.4 }}
@@ -361,7 +359,7 @@ const AppDashboardPage = () => {
                           {user?.name || 'User'}
                         </p>
                         <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
-                          {user?.company || 'TapOnn User'}
+                          {user?.company || 'Connection Unlimited User'}
                         </p>
                       </div>
                     </div>
@@ -380,7 +378,7 @@ const AppDashboardPage = () => {
 
           {/* Main Content */}
           <div className="flex-1 min-w-0">
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
@@ -391,7 +389,7 @@ const AppDashboardPage = () => {
                   <Route path="/dashboard" element={<AppDashboardOverview />} />
                   <Route path="/dashboard/profile" element={<AppProfileManagement />} />
                   {/* Admin-only routes */}
-                  {isTapOnnUser && (
+                  {isConnectionUnlimitedUser && (
                     <>
                       <Route path="/dashboard/analytics" element={<AppAnalytics />} />
                       <Route path="/dashboard/qr-generator" element={<AppQRGenerator />} />
@@ -401,7 +399,7 @@ const AppDashboardPage = () => {
                   <Route path="/dashboard/settings" element={<AppSettingsPage />} />
                   <Route path="/" element={<Navigate to="/app/dashboard" replace />} />
                   {/* Fallback for unauthorized routes */}
-                  {!isTapOnnUser && (
+                  {!isConnectionUnlimitedUser && (
                     <>
                       <Route path="/dashboard/analytics" element={<Navigate to="/app/dashboard" replace />} />
                       <Route path="/dashboard/qr-generator" element={<Navigate to="/app/dashboard" replace />} />
@@ -427,14 +425,14 @@ const AppDashboardPage = () => {
         </AnimatePresence>
 
         {/* Sticky Mobile CTA */}
-        <motion.div 
+        <motion.div
           initial={{ y: 100 }}
           animate={{ y: 0 }}
           className="md:hidden fixed bottom-4 left-4 right-4 z-50"
         >
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 p-3">
             <div className="flex space-x-2">
-              {isTapOnnUser ? (
+              {isConnectionUnlimitedUser ? (
                 <>
                   <motion.button
                     whileHover={{ scale: 1.02 }}

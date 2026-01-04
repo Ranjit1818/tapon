@@ -2,10 +2,10 @@ import { useState } from 'react'
 import { Helmet } from 'react-helmet-async'
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
-import { 
-  CreditCard, 
-  Monitor, 
-  Star, 
+import {
+  CreditCard,
+  Monitor,
+  Star,
   Package,
   ArrowRight,
   Filter,
@@ -101,14 +101,14 @@ const ProductsPage = () => {
   const filteredProducts = products.filter(product => {
     const matchesCategory = selectedCategory === 'all' || product.id === selectedCategory
     const matchesSearch = product.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         product.description.toLowerCase().includes(searchTerm.toLowerCase())
+      product.description.toLowerCase().includes(searchTerm.toLowerCase())
     return matchesCategory && matchesSearch
   })
 
   return (
     <>
       <Helmet>
-        <title>Products - TapOnn | Digital Profile Platform</title>
+        <title>Products - Connection Unlimited | Digital Profile Platform</title>
         <meta name="description" content="Explore our range of NFC products including business cards, smart standees, and review cards designed to transform your networking experience." />
       </Helmet>
 
@@ -127,7 +127,7 @@ const ProductsPage = () => {
                 <span className="gradient-text">Products</span>
               </h1>
               <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
-                Choose from our range of innovative NFC products designed to transform your networking 
+                Choose from our range of innovative NFC products designed to transform your networking
                 and lead generation experience.
               </p>
             </motion.div>
@@ -143,11 +143,10 @@ const ProductsPage = () => {
                 <motion.button
                   key={category.id}
                   onClick={() => setSelectedCategory(category.id)}
-                  className={`flex items-center space-x-2 px-4 py-2 rounded-lg font-medium transition-all duration-300 ${
-                    selectedCategory === category.id
+                  className={`flex items-center space-x-2 px-4 py-2 rounded-lg font-medium transition-all duration-300 ${selectedCategory === category.id
                       ? 'bg-gradient-to-r from-primary-500 to-accent-500 text-white shadow-lg'
                       : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
-                  }`}
+                    }`}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
@@ -263,7 +262,7 @@ const ProductsPage = () => {
               Need Help Choosing?
             </h3>
             <p className="text-xl text-primary-100 mb-8 max-w-2xl mx-auto">
-              Our team is here to help you find the perfect product for your needs. 
+              Our team is here to help you find the perfect product for your needs.
               Get personalized recommendations and expert guidance.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">

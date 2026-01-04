@@ -10,7 +10,7 @@ const config = {
 
   // App Configuration
   APP: {
-    NAME: 'TapOnn',
+    NAME: 'Connection Unlimited',
     VERSION: '1.0.0',
     DESCRIPTION: 'Digital Profile Platform',
     DEMO_MODE: import.meta.env.VITE_DEMO_MODE === 'true',
@@ -19,7 +19,7 @@ const config = {
 
   // Authentication
   AUTH: {
-    TOKEN_KEY: 'taponn-token',
+    TOKEN_KEY: 'connectionunlimited-token',
     TOKEN_EXPIRY: 30 * 24 * 60 * 60 * 1000, // 30 days
     LOGIN_REDIRECT: '/app/dashboard',
     LOGOUT_REDIRECT: '/app/login',
@@ -82,7 +82,7 @@ const config = {
       {
         id: 'demo-admin-1',
         name: 'Admin User',
-        email: 'admin@taponn.com',
+        email: 'admin@connectionunlimited.com',
         role: 'admin',
         profileImage: null,
         permissions: ['qr_generate', 'card_manage', 'user_manage', 'analytics'],
@@ -127,7 +127,7 @@ const config = {
         id: 'demo-qr-1',
         name: 'Business Card QR',
         type: 'profile',
-        data: 'https://taponn.com/profile/johndoe',
+        data: 'https://connectionunlimited.com/profile/johndoe',
         status: 'active',
         scans: 45,
         createdAt: '2024-01-15T10:00:00Z',
@@ -242,11 +242,11 @@ const config = {
 
   // Local Storage Keys
   STORAGE: {
-    TOKEN: 'taponn-token',
-    USER: 'taponn-user',
-    THEME: 'taponn-theme',
-    LANGUAGE: 'taponn-language',
-    SETTINGS: 'taponn-settings',
+    TOKEN: 'connectionunlimited-token',
+    USER: 'connectionunlimited-user',
+    THEME: 'connectionunlimited-theme',
+    LANGUAGE: 'connectionunlimited-language',
+    SETTINGS: 'connectionunlimited-settings',
   },
 
   // Routes

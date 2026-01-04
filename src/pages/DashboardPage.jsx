@@ -2,10 +2,10 @@ import { useState } from 'react'
 import { Helmet } from 'react-helmet-async'
 import { motion } from 'framer-motion'
 import { Routes, Route, Link, useLocation } from 'react-router-dom'
-import { 
-  User, 
-  BarChart3, 
-  Users, 
+import {
+  User,
+  BarChart3,
+  Users,
   Settings,
   Plus,
   Edit,
@@ -50,7 +50,7 @@ const DashboardPage = () => {
     <>
       <Helmet>
         <title>Dashboard - LetsConnect</title>
-        <meta name="description" content="Manage your TapOnn digital profile, track leads, and view analytics." />
+        <meta name="description" content="Manage your Connection Unlimited digital profile, track leads, and view analytics." />
       </Helmet>
 
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -71,7 +71,7 @@ const DashboardPage = () => {
                   <div className="w-8 h-8 bg-gradient-to-br from-primary-500 to-accent-500 rounded-lg flex items-center justify-center">
                     <span className="text-white font-bold text-sm">T</span>
                   </div>
-                  <span className="text-xl font-bold text-gray-900 dark:text-white">TapOnn</span>
+                  <span className="text-xl font-bold text-gray-900 dark:text-white">Connection Unlimited</span>
                 </Link>
               </div>
 
@@ -98,11 +98,10 @@ const DashboardPage = () => {
                     <Link
                       key={item.name}
                       to={item.href}
-                      className={`group flex items-center px-2 py-2 text-sm font-medium rounded-lg transition-colors ${
-                        isActive(item.href)
+                      className={`group flex items-center px-2 py-2 text-sm font-medium rounded-lg transition-colors ${isActive(item.href)
                           ? 'bg-primary-100 dark:bg-primary-900 text-primary-600 dark:text-primary-400'
                           : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white'
-                      }`}
+                        }`}
                     >
                       <item.icon className="mr-3 w-5 h-5" />
                       {item.name}
