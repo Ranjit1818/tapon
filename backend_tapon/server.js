@@ -114,24 +114,16 @@ if (process.env.NODE_ENV === 'development') {
   app.use(morgan('combined'));
 }
 
-// Connect to MongoDB
-const initializeDatabase = async () => {
+// Database connection middleware
+app.use(async (req, res, next) => {
   try {
     await connectDB();
-    if (process.env.NODE_ENV === 'development') {
-      console.log('✅ MongoDB connected successfully');
-    }
+    next();
   } catch (error) {
-    console.error('❌ Database connection failed:', error.message);
-    // Do NOT exit process in serverless environment
-    if (process.env.NODE_ENV === 'development') {
-      process.exit(1);
-    }
+    console.error('Database connection failed in middleware:', error);
+    res.status(500).json({ error: 'Database connection failed' });
   }
-};
-
-// Initialize database
-initializeDatabase();
+});
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
