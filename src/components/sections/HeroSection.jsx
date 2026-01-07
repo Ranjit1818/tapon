@@ -1,66 +1,130 @@
-import { useEffect, useRef } from 'react'
-import { Link } from 'react-router-dom'
+import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
-import { gsap } from 'gsap'
+import { Play, ArrowRight, Download, Sparkles } from 'lucide-react'
+import { Link } from 'react-router-dom'
 import { useAnalytics } from '../../contexts/AnalyticsContext'
-import {
-  Play,
-  ArrowRight,
-  Download,
-  Sparkles,
-  Zap,
-  Globe,
-  Leaf
-} from 'lucide-react'
 
-const HeroSection = ({ typedRef }) => {
-  const { trackDemoBooking, trackAppDownload } = useAnalytics()
-  const heroRef = useRef(null)
-  const floatingBadgesRef = useRef(null)
+// --- Typing Effect Constants ---
+const textToType = [
+  'Share Instantly.',
+  'Connect Effortlessly.',
+  'Grow Your Network.',
+  'Manage Leads Smartly.',
+]
+const typingSpeed = 50
+const erasingSpeed = 30
+const delayAfterTyped = 2000
+const delayAfterErased = 100
+
+/**
+ * TypingEffect Component
+ * Handles the automatic typing and erasing of phrases in an array.
+ */
+const TypingEffect = () => {
+  const [displayText, setDisplayText] = useState('')
+  const [index, setIndex] = useState(0)
+  const [textIndex, setTextIndex] = useState(0)
+  const [isTyping, setIsTyping] = useState(true)
 
   useEffect(() => {
-    // No GSAP animations to prevent conflicts with Framer Motion
-    // All animations are now handled by Framer Motion for stability
-  }, [])
+    let timeoutId
 
-  const handleDemoBooking = () => {
-    trackDemoBooking('hero_section', 'cta_button')
-    // Scroll to demo form or open modal
+    // textToType is a constant, so the effect only needs textIndex
+    const currentText = textToType[textIndex]
+
+    if (!currentText) {
+      return
+    }
+
+    if (isTyping) {
+      // Logic for TYPING
+      if (index < currentText.length) {
+        timeoutId = setTimeout(() => {
+          setDisplayText((prev) => prev + currentText[index])
+          setIndex((prev) => prev + 1)
+        }, typingSpeed)
+      } else {
+        // Pause after typing is complete
+        timeoutId = setTimeout(() => {
+          setIsTyping(false)
+        }, delayAfterTyped)
+      }
+    } else {
+      // Logic for ERASING
+      if (index > 0) {
+        timeoutId = setTimeout(() => {
+          setDisplayText((prev) => prev.slice(0, -1))
+          setIndex((prev) => prev - 1)
+        }, erasingSpeed)
+      } else {
+        // Move to next text after erasing is complete
+        timeoutId = setTimeout(() => {
+          setIsTyping(true)
+          setTextIndex((prev) => (prev + 1) % textToType.length)
+        }, delayAfterErased)
+      }
+    }
+
+    return () => clearTimeout(timeoutId)
+    // Refinement: Removed 'currentText' from dependencies as it's derived from 'textIndex' (already included).
+  }, [index, isTyping, textIndex])
+
+  return (
+    <span className="inline-block min-h-[1.2em]">
+      {displayText}
+      {/* Typing cursor animation from CSS */}
+      <span className="typing-cursor text-primary-500 dark:text-primary-400">
+        |
+      </span>
+    </span>
+  )
+}
+
+const HeroSection = () => {
+  const { trackDemoBooking, trackAppDownload } = useAnalytics()
+
+  const handleDemoBooking = (product, source) => {
+    trackDemoBooking(product, source)
   }
 
   const handleAppDownload = (platform) => {
     trackAppDownload(platform)
-    // Handle app download
   }
 
   return (
     <section
-      ref={heroRef}
-      className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-primary-50 via-white to-accent-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900"
+      className="relative flex min-h-screen items-center justify-center overflow-hidden bg-gradient-to-br from-[var(--primary-700)] via-white to-[var(--accent-700)] dark:from-[var(--primary-500)] dark:via-black dark:to-[var(--accent-600)]"
       style={{ position: 'relative', zIndex: 1 }}
     >
-      {/* Background Elements */}
       <div className="absolute inset-0">
-        {/* Animated Background Pattern */}
         <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-20 left-20 w-72 h-72 bg-primary-300 rounded-full mix-blend-multiply filter blur-xl animate-float"></div>
-          <div className="absolute top-40 right-20 w-72 h-72 bg-accent-300 rounded-full mix-blend-multiply filter blur-xl animate-float" style={{ animationDelay: '2s' }}></div>
-          <div className="absolute -bottom-8 left-40 w-72 h-72 bg-secondary-300 rounded-full mix-blend-multiply filter blur-xl animate-float" style={{ animationDelay: '4s' }}></div>
+          <div className="bg-primary-300 animate-float absolute top-20 left-20 h-72 w-72 rounded-full mix-blend-multiply blur-xl filter"></div>
+          <div
+            className="bg-accent-300 animate-float absolute top-40 right-20 h-72 w-72 rounded-full mix-blend-multiply blur-xl filter"
+            style={{ animationDelay: '2s' }}
+          ></div>
+          <div
+            className="bg-secondary-300 animate-float absolute -bottom-8 left-40 h-72 w-72 rounded-full mix-blend-multiply blur-xl filter"
+            style={{ animationDelay: '4s' }}
+          ></div>
         </div>
 
         {/* Grid Pattern */}
         <div className="absolute inset-0 opacity-5">
-          <div className="absolute inset-0" style={{
-            backgroundImage: `radial-gradient(circle at 1px 1px, rgba(59, 130, 246, 0.3) 1px, transparent 0)`,
-            backgroundSize: '40px 40px'
-          }}></div>
+          <div
+            className="absolute inset-0"
+            style={{
+              backgroundImage: `radial-gradient(circle at 1px 1px, rgba(59, 130, 246, 0.3) 1px, transparent 0)`,
+              backgroundSize: '40px 40px',
+            }}
+          ></div>
         </div>
       </div>
 
       {/* Floating Badges */}
-      <div ref={floatingBadgesRef} className="absolute inset-0 pointer-events-none">
+      <div className="pointer-events-none absolute inset-0">
         <motion.div
-          className="absolute top-20 left-10 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 animate-float"
+          className="animate-floattop absolute top-20 left-10 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm font-medium text-gray-700 backdrop-blur-sm dark:text-gray-300"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5, duration: 0.8 }}
@@ -70,7 +134,7 @@ const HeroSection = ({ typedRef }) => {
         </motion.div>
 
         <motion.div
-          className="absolute top-32 right-20 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 animate-float"
+          className="animate-floatstop absolute top-32 right-20 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm font-medium text-gray-700 backdrop-blur-sm dark:text-gray-300"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.7, duration: 0.8 }}
@@ -80,7 +144,7 @@ const HeroSection = ({ typedRef }) => {
         </motion.div>
 
         <motion.div
-          className="absolute bottom-32 left-20 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 animate-float"
+          className="animate-floatbottom absolute bottom-32 left-20 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm font-medium text-gray-700 backdrop-blur-sm dark:text-gray-300"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.9, duration: 0.8 }}
@@ -90,7 +154,7 @@ const HeroSection = ({ typedRef }) => {
         </motion.div>
 
         <motion.div
-          className="absolute bottom-20 right-10 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 animate-float"
+          className="animate-floatsbottom absolute right-10 bottom-20 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm font-medium text-gray-700 backdrop-blur-sm dark:text-gray-300"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.1, duration: 0.8 }}
@@ -101,42 +165,39 @@ const HeroSection = ({ typedRef }) => {
       </div>
 
       {/* Main Content */}
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <div className="max-w-4xl mx-auto">
+      <div className="relative z-10 mx-auto max-w-7xl px-4 text-center sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-4xl">
           {/* Main Title */}
           <motion.h1
-            className="text-5xl md:text-7xl lg:text-8xl font-bold text-gray-900 dark:text-white mb-6 relative z-10 text-stable"
+            className="text-stable relative z-10 mb-6 text-5xl font-bold text-gray-900 md:text-7xl lg:text-8xl dark:text-white"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: "easeOut" }}
+            transition={{ duration: 0.8, ease: 'easeOut' }}
           >
-            <span className="gradient-text text-stable">Connection Unlimited</span>
+            <span className="gradient-text text-stable">JustTap</span>
           </motion.h1>
 
           {/* Typed Subtitle */}
           <motion.div
-            className="text-2xl md:text-3xl lg:text-4xl font-medium text-gray-700 dark:text-gray-300 mb-8 relative z-10 min-h-[3rem] text-stable"
+            className="relative z-10 mt-4 mb-8 min-h-[3rem] text-2xl font-medium text-gray-700 md:mt-6 md:text-3xl lg:text-4xl dark:text-gray-300"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
+            transition={{ duration: 0.8, delay: 0.3, ease: 'easeOut' }}
           >
-            <span ref={typedRef} className="typed-text text-stable"></span>
+            <TypingEffect />
           </motion.div>
-
-
-
           {/* CTA Buttons */}
           <motion.div
-            className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16 mt-12 relative z-10 text-stable"
+            className="text-stable relative z-10 mt-12 mb-16 flex flex-col items-center justify-center gap-4 sm:flex-row"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.5, ease: "easeOut" }}
+            transition={{ duration: 0.8, delay: 0.5, ease: 'easeOut' }}
           >
             <Link to="/app/register">
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="btn-primary flex items-center space-x-2 text-lg px-8 py-4"
+                className="btn-primary flex items-center space-x-2 px-8 py-4 text-lg"
               >
                 <Sparkles size={20} />
                 <span>Get Started</span>
@@ -147,8 +208,8 @@ const HeroSection = ({ typedRef }) => {
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              onClick={handleDemoBooking}
-              className="btn-secondary flex items-center space-x-2 text-lg px-8 py-4"
+              onClick={() => handleDemoBooking('Standard', 'cta_button')}
+              className="btn-secondary flex items-center space-x-2 px-8 py-4 text-lg"
             >
               <Play size={20} />
               <span>Book Demo</span>
@@ -157,7 +218,7 @@ const HeroSection = ({ typedRef }) => {
 
           {/* App Download Buttons */}
           <motion.div
-            className="flex flex-col sm:flex-row gap-4 justify-center items-center"
+            className="flex flex-col items-center justify-center gap-4 sm:flex-row"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.8 }}
@@ -165,8 +226,8 @@ const HeroSection = ({ typedRef }) => {
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              onClick={() => handleAppDownload('android')}
-              className="flex items-center space-x-3 bg-black text-white px-6 py-3 rounded-lg hover:bg-gray-800 transition-colors"
+              onClick={() => handleAppDownload('Android')}
+              className="flex items-center space-x-3 rounded-lg bg-black px-6 py-3 text-white transition-colors hover:bg-gray-800"
             >
               <Download size={20} />
               <div className="text-left">
@@ -178,8 +239,8 @@ const HeroSection = ({ typedRef }) => {
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              onClick={() => handleAppDownload('ios')}
-              className="flex items-center space-x-3 bg-black text-white px-6 py-3 rounded-lg hover:bg-gray-800 transition-colors"
+              onClick={() => handleAppDownload('IOS')}
+              className="flex items-center space-x-3 rounded-lg bg-black px-6 py-3 text-white transition-colors hover:bg-gray-800"
             >
               <Download size={20} />
               <div className="text-left">
@@ -193,7 +254,7 @@ const HeroSection = ({ typedRef }) => {
 
       {/* Scroll Indicator */}
       <motion.div
-        className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
+        className="absolute bottom-8 left-1/2 -translate-x-1/2 transform"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 1.5 }}
@@ -201,12 +262,12 @@ const HeroSection = ({ typedRef }) => {
         <motion.div
           animate={{ y: [0, 10, 0] }}
           transition={{ duration: 2, repeat: Infinity }}
-          className="w-6 h-10 border-2 border-gray-400 rounded-full flex justify-center"
+          className="flex h-10 w-6 justify-center rounded-full border-2 border-gray-400"
         >
           <motion.div
             animate={{ y: [0, 12, 0] }}
             transition={{ duration: 2, repeat: Infinity }}
-            className="w-1 h-3 bg-gray-400 rounded-full mt-2"
+            className="mt-2 h-3 w-1 rounded-full bg-gray-400"
           />
         </motion.div>
       </motion.div>
@@ -214,4 +275,4 @@ const HeroSection = ({ typedRef }) => {
   )
 }
 
-export default HeroSection 
+export default HeroSection

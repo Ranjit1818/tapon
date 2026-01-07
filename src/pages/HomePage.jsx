@@ -1,10 +1,9 @@
-import { useEffect, useRef } from 'react'
+import { useEffect } from 'react'
 import { Helmet } from 'react-helmet-async'
 import { motion } from 'framer-motion'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import Lottie from 'lottie-react'
-import Typed from 'typed.js'
 import { useAnalytics } from '../contexts/AnalyticsContext'
 
 // Components
@@ -20,48 +19,16 @@ import AboutSection from '../components/sections/AboutSection'
 
 const HomePage = () => {
   const { trackEvent } = useAnalytics()
-  const typedRef = useRef(null)
 
   useEffect(() => {
     // Track page view
     trackEvent('page_view', 'navigation', 'homepage')
-
-    // Initialize Typed.js with proper timing
-    let typed = null
-
-    const initTyped = () => {
-      if (typedRef.current && !typed) {
-        typed = new Typed(typedRef.current, {
-          strings: [
-            'Share Instantly.',
-            'Connect Effortlessly.',
-            'Grow Your Network.',
-            'Manage Leads Smartly.'
-          ],
-          typeSpeed: 60,
-          backSpeed: 40,
-          backDelay: 2000,
-          loop: true,
-          showCursor: true,
-          cursorChar: '|',
-          startDelay: 1500,
-        })
-      }
-    }
-
-    // Start typed animation after ensuring the component is mounted
-    const typedTimeout = setTimeout(initTyped, 1000)
 
     // Force kill all ScrollTrigger instances to prevent conflicts
     ScrollTrigger.getAll().forEach(trigger => trigger.kill())
 
     // Single cleanup function
     return () => {
-      clearTimeout(typedTimeout)
-      if (typed) {
-        typed.destroy()
-        typed = null
-      }
       // Kill any remaining ScrollTrigger instances
       ScrollTrigger.getAll().forEach(trigger => trigger.kill())
     }
@@ -91,7 +58,7 @@ const HomePage = () => {
 
       <div className="min-h-screen text-stable">
         {/* Hero Section */}
-        <HeroSection typedRef={typedRef} />
+        <HeroSection />
 
         {/* Why Digital Profile Section */}
         <WhyDigitalProfileSection />
