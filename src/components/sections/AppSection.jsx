@@ -21,7 +21,7 @@ const AppSection = () => {
   const appFeatures = [
     {
       icon: Zap,
-      title: 'Lightning Fast',
+      title: '',
       description: 'Instant profile sharing and connection',
     },
     {
@@ -73,7 +73,7 @@ const AppSection = () => {
           transition={{ duration: 0.8 }}
         >
           <h2 className="mb-6 text-4xl font-bold text-gray-900 md:text-5xl dark:text-white">
-            JustTap <span className="gradient-text">Mobile App</span>
+            FiindIt <span className="gradient-text">Mobile App</span>
           </h2>
           <p className="mx-auto max-w-3xl text-xl text-gray-600 dark:text-gray-400">
             Take your digital networking anywhere with our powerful mobile app.
@@ -170,7 +170,7 @@ const AppSection = () => {
                       <span className="text-2xl font-bold text-white">T</span>
                     </div>
                     <h3 className="mb-2 text-xl font-bold text-gray-900 dark:text-white">
-                      JustTap
+                      FiindIt
                     </h3>
                     <p className="text-gray-600 dark:text-gray-400">
                       Digital Networking Platform
@@ -298,7 +298,7 @@ const AppSection = () => {
         >
           <div className="mb-8 text-center">
             <h3 className="mb-4 text-3xl font-bold text-gray-900 dark:text-white">
-              Download JustTap App
+              Download FiindIt App
             </h3>
             <p className="text-xl text-gray-600 dark:text-gray-400">
               Get the app and start networking smarter today

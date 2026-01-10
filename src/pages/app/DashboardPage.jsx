@@ -141,8 +141,8 @@ const AppDashboardPage = () => {
   return (
     <>
       <Helmet>
-        <title>Connection Unlimited App - Your Digital Profile Dashboard 🚀</title>
-        <meta name="description" content="Manage your Connection Unlimited digital profile, track analytics, generate QR codes, and explore our shop." />
+        <title>FiindIt App - Your Digital Profile Dashboard 🚀</title>
+        <meta name="description" content="Manage your FiindIt digital profile, track analytics, generate QR codes, and explore our shop." />
       </Helmet>
 
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -166,7 +166,7 @@ const AppDashboardPage = () => {
                   <div className="w-8 h-8 bg-gradient-to-br from-primary-500 to-accent-500 rounded-lg flex items-center justify-center">
                     <span className="text-white font-bold text-sm">T</span>
                   </div>
-                  <span className="text-xl font-bold text-gray-900 dark:text-white">Connection Unlimited</span>
+                  <span className="text-xl font-bold text-gray-900 dark:text-white">FiindIt</span>
                 </Link>
 
                 <div className="hidden md:block text-sm text-gray-500 dark:text-gray-400">
@@ -359,7 +359,7 @@ const AppDashboardPage = () => {
                           {user?.name || 'User'}
                         </p>
                         <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
-                          {user?.company || 'Connection Unlimited User'}
+                          {user?.company || 'FiindIt User'}
                         </p>
                       </div>
                     </div>

@@ -85,28 +85,28 @@ const TeamsSection = () => {
     {
       icon: Users,
       label: 'Team Members',
-      value: '12',
+      value: '10',
       change: '+2',
       color: 'text-blue-600',
     },
     {
       icon: Target,
       label: 'Total Leads',
-      value: '1,247',
+      value: 'Counting...',
       change: '+15%',
       color: 'text-green-600',
     },
     {
       icon: TrendingUp,
       label: 'Conversion Rate',
-      value: '23.4%',
+      value: 'Calculating...',
       change: '+2.1%',
       color: 'text-purple-600',
     },
     {
       icon: DollarSign,
       label: 'Revenue',
-      value: '$45.2K',
+      value: 'Calculating...',
       change: '+8.3%',
       color: 'text-orange-600',
     },
@@ -137,7 +137,7 @@ const TeamsSection = () => {
           transition={{ duration: 0.8 }}
         >
           <h2 className="mb-6 text-4xl font-bold text-gray-900 md:text-5xl dark:text-white">
-            TapOnn for <span className="gradient-text">Teams</span>
+            FiindIt for <span className="gradient-text">Teams</span>
           </h2>
           <p className="mx-auto max-w-3xl text-xl text-gray-600 dark:text-gray-400">
             Empower your entire team with unified digital profiles, advanced CRM

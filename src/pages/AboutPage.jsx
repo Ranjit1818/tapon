@@ -51,8 +51,8 @@ const AboutPage = () => {
   return (
     <>
       <Helmet>
-        <title>About Us - Connection Unlimited | Digital Profile Platform</title>
-        <meta name="description" content="Learn about Connection Unlimited's mission to revolutionize digital networking and the team behind our innovative NFC solutions." />
+        <title>About Us - FiindIt | Digital Profile Platform</title>
+        <meta name="description" content="Learn about FiindIt's mission to revolutionize digital networking and the team behind our innovative NFC solutions." />
       </Helmet>
 
       <div className="pt-20 pb-16">
@@ -67,7 +67,7 @@ const AboutPage = () => {
             >
               <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-6">
                 About{' '}
-                <span className="gradient-text">Connection Unlimited</span>
+                <span className="gradient-text">FiindIt</span>
               </h1>
               <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
                 We're revolutionizing the way people connect and network through innovative
@@ -214,7 +214,7 @@ const AboutPage = () => {
                 Meet Our Founders
               </h2>
               <p className="text-lg text-gray-600 dark:text-gray-400">
-                The passionate team behind Connection Unlimited's success
+                The passionate team behind FiindIt's success
               </p>
             </motion.div>
 

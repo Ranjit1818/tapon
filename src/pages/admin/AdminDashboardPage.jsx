@@ -293,8 +293,8 @@ const AdminDashboardPage = () => {
   return (
     <>
       <Helmet>
-        <title>Connection Unlimited Admin Dashboard | Administrative Control Panel</title>
-        <meta name="description" content="Connection Unlimited administrative dashboard for managing users, orders, and QR codes" />
+        <title>FiindIt Admin Dashboard | Administrative Control Panel</title>
+        <meta name="description" content="FiindIt administrative dashboard for managing users, orders, and QR codes" />
       </Helmet>
 
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -316,7 +316,7 @@ const AdminDashboardPage = () => {
                     <Crown className="w-5 h-5 text-white" />
                   </div>
                   <div>
-                    <h1 className="text-lg font-bold text-gray-900 dark:text-white">Connection Unlimited Admin</h1>
+                    <h1 className="text-lg font-bold text-gray-900 dark:text-white">FiindIt Admin</h1>
                     <p className="text-xs text-gray-500 dark:text-gray-400">Administrative Dashboard</p>
                   </div>
                 </div>

@@ -19,6 +19,22 @@ const ProductsSection = () => {
 
   const products = [
     {
+      id: 'Subscription',
+      icon: Star,
+      title: 'Subscription Plan',
+      subtitle: 'letsconnect',
+      description:
+        'One month subscription plan to grow your business.',
+      features: [
+        'Techincal team support',
+        'Automated collection',
+        'Profile management',
+        'Analytics dashboard',
+      ],
+      price: '',
+      gradient: 'from-yellow-500 to-orange-600',
+    },
+    {
       id: 'nfc-cards',
       icon: CreditCard,
       title: 'NFC Business Cards',
@@ -31,7 +47,7 @@ const ProductsSection = () => {
         'Lead tracking',
         'Analytics dashboard',
       ],
-      price: 'From $29',
+      price: '',
       popular: true,
       gradient: 'from-blue-500 to-purple-600',
       badge: 'Most Popular',
@@ -49,26 +65,11 @@ const ProductsSection = () => {
         'Content management',
         'Real-time analytics',
       ],
-      price: 'From $199',
+      price: '',
       gradient: 'from-green-500 to-teal-600',
       badge: 'New',
     },
-    {
-      id: 'review-cards',
-      icon: Star,
-      title: 'Review Cards',
-      subtitle: 'Feedback Collection',
-      description:
-        'Smart cards designed to collect customer reviews and feedback across multiple platforms instantly.',
-      features: [
-        'Multi-platform reviews',
-        'Automated collection',
-        'Review management',
-        'Response tracking',
-      ],
-      price: 'From $19',
-      gradient: 'from-yellow-500 to-orange-600',
-    },
+    
     {
       id: 'bundle-cards',
       icon: Package,
@@ -82,7 +83,7 @@ const ProductsSection = () => {
         'Advanced analytics',
         'Priority support',
       ],
-      price: 'From $99',
+      price: '',
       gradient: 'from-purple-500 to-pink-600',
       badge: 'Best Value',
     },
@@ -203,7 +204,7 @@ const ProductsSection = () => {
         >
           <div className="mb-12 text-center">
             <h3 className="mb-4 text-3xl font-bold text-gray-900 md:text-4xl dark:text-white">
-              Why Choose TapOnn Products?
+              Why Choose FiindIt Products?
             </h3>
             <p className="text-xl text-gray-600 dark:text-gray-400">
               Built with cutting-edge technology and designed for modern

@@ -174,7 +174,7 @@ const HeroSection = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: 'easeOut' }}
           >
-            <span className="gradient-text text-stable">JustTap</span>
+            <span className="gradient-text text-stable">FiindIt</span>
           </motion.h1>
 
           {/* Typed Subtitle */}
@@ -205,72 +205,27 @@ const HeroSection = () => {
               </motion.button>
             </Link>
 
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => handleDemoBooking('Standard', 'cta_button')}
-              className="btn-secondary flex items-center space-x-2 px-8 py-4 text-lg"
-            >
-              <Play size={20} />
-              <span>Book Demo</span>
-            </motion.button>
+           
           </motion.div>
 
           {/* App Download Buttons */}
-          <motion.div
-            className="flex flex-col items-center justify-center gap-4 sm:flex-row"
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.8 }}
-          >
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => handleAppDownload('Android')}
-              className="flex items-center space-x-3 rounded-lg bg-black px-6 py-3 text-white transition-colors hover:bg-gray-800"
-            >
-              <Download size={20} />
-              <div className="text-left">
-                <div className="text-xs">Download on</div>
-                <div className="text-sm font-semibold">Google Play</div>
-              </div>
-            </motion.button>
+      
+           
+            
 
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => handleAppDownload('IOS')}
-              className="flex items-center space-x-3 rounded-lg bg-black px-6 py-3 text-white transition-colors hover:bg-gray-800"
-            >
-              <Download size={20} />
-              <div className="text-left">
-                <div className="text-xs">Download on</div>
-                <div className="text-sm font-semibold">App Store</div>
-              </div>
-            </motion.button>
-          </motion.div>
+           
         </div>
       </div>
 
-      {/* Scroll Indicator */}
-      <motion.div
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 transform"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1.5 }}
-      >
-        <motion.div
-          animate={{ y: [0, 10, 0] }}
-          transition={{ duration: 2, repeat: Infinity }}
-          className="flex h-10 w-6 justify-center rounded-full border-2 border-gray-400"
-        >
+      
+       
           <motion.div
             animate={{ y: [0, 12, 0] }}
             transition={{ duration: 2, repeat: Infinity }}
             className="mt-2 h-3 w-1 rounded-full bg-gray-400"
           />
-        </motion.div>
-      </motion.div>
+        
+      
     </section>
   )
 }

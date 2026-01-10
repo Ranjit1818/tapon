@@ -100,7 +100,7 @@ const RegisterPage = () => {
     const result = await register(formData)
 
     if (result.success) {
-      toast.success('🎉 Welcome to Connection Unlimited! Your account has been created successfully!')
+      toast.success('🎉 Welcome to FiindIt! Your account has been created successfully!')
     } else {
       toast.error(result.error)
     }
@@ -111,8 +111,8 @@ const RegisterPage = () => {
   return (
     <>
       <Helmet>
-        <title>Join Connection Unlimited 🚀 - Create Your Digital Profile</title>
-        <meta name="description" content="Join Connection Unlimited and create your smart digital profile. Connect instantly, share effortlessly, and grow your network." />
+        <title>Join FiindIt 🚀 - Create Your Digital Profile</title>
+        <meta name="description" content="Join FiindIt and create your smart digital profile. Connect instantly, share effortlessly, and grow your network." />
       </Helmet>
 
       <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-accent-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center px-4 py-8">
@@ -126,13 +126,13 @@ const RegisterPage = () => {
           >
             <Link to="/" className="inline-flex items-center space-x-2 mb-6">
               <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-accent-500 rounded-xl flex items-center justify-center">
-                <span className="text-white font-bold text-lg">C</span>
+                <span className="text-white font-bold text-lg">F</span>
               </div>
-              <span className="text-2xl font-bold text-gray-900 dark:text-white">Connection Unlimited</span>
+              <span className="text-2xl font-bold text-gray-900 dark:text-white">FiindIt</span>
             </Link>
 
             <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-              {step === 1 ? '🚀 Join Connection Unlimited' : '🙋‍♂️ Tell us about yourself'}
+              {step === 1 ? '🚀 Join FiindIt' : '🙋‍♂️ Tell us about yourself'}
             </h1>
             <p className="text-gray-600 dark:text-gray-400">
               {step === 1

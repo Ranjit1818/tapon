@@ -49,32 +49,32 @@ const AboutSection = () => {
 
   const timeline = [
     {
-      year: '2020',
+      year: '11/05/2025',
       title: 'The Beginning',
       description:
-        'JustTap was founded with a vision to revolutionize digital networking',
+        'FiindIt was founded with a vision to revolutionize digital networking',
       icon: Lightbulb,
     },
     {
-      year: '2021',
+      year: '2026',
       title: 'First Product Launch',
       description: 'Launched our first NFC business card solution',
       icon: Rocket,
     },
     {
-      year: '2022',
+      year: '2026',
       title: 'Team Expansion',
       description: 'Grew to 50+ team members and 10,000+ users',
       icon: Users,
     },
     {
-      year: '2023',
+      year: '2026',
       title: 'Global Expansion',
       description: 'Expanded to 25+ countries with 100,000+ users',
       icon: Globe,
     },
     {
-      year: '2024',
+      year: '2028',
       title: 'Future Vision',
       description: 'Leading the future of digital networking worldwide',
       icon: TrendingUp,
@@ -178,7 +178,7 @@ const AboutSection = () => {
           transition={{ duration: 0.8 }}
         >
           <h2 className="mb-6 text-4xl font-bold text-gray-900 md:text-5xl dark:text-white">
-            About <span className="gradient-text">JustTap</span>
+            About <span className="gradient-text">FiindIt</span>
           </h2>
           <p className="mx-auto max-w-3xl text-xl text-gray-600 dark:text-gray-400">
             Learn about our journey, mission, and the team behind the revolution

@@ -135,7 +135,7 @@ const UserManagement = () => {
           createdAt: '2024-01-01',
           lastLogin: '2024-01-20',
           phone: '+1234567892',
-          company: 'Connection Unlimited',
+          company: 'FiindIt',
           location: 'San Francisco, CA',
           profileViews: 0,
           qrScans: 0,
@@ -477,7 +477,7 @@ const UserManagement = () => {
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">User Management</h1>
           <p className="text-gray-600 dark:text-gray-400">
-            Manage all Connection Unlimited users, their roles, and access permissions
+            Manage all FiindIt users, their roles, and access permissions
           </p>
         </div>
 

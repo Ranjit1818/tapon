@@ -25,7 +25,7 @@ const AdminSettings = () => {
   // Settings state
   const [settings, setSettings] = useState({
     general: {
-      siteName: 'Connection Unlimited',
+      siteName: 'FiindIt', 
       siteDescription: 'Smart Digital Profile Platform',
       contactEmail: 'support@connectionunlimited.com',
       timezone: 'UTC',

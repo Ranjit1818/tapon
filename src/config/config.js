@@ -10,7 +10,7 @@ const config = {
 
   // App Configuration
   APP: {
-    NAME: 'Connection Unlimited',
+    NAME: 'FiindIt',
     VERSION: '1.0.0',
     DESCRIPTION: 'Digital Profile Platform',
     DEMO_MODE: import.meta.env.VITE_DEMO_MODE === 'true',

@@ -37,7 +37,7 @@ const ProductsPage = () => {
         'Multiple profile links',
         'Real-time updates'
       ],
-      price: 'From $29',
+      price: '',
       popular: true,
       gradient: 'from-blue-500 to-purple-600',
       badge: 'Most Popular',
@@ -108,7 +108,7 @@ const ProductsPage = () => {
   return (
     <>
       <Helmet>
-        <title>Products - Connection Unlimited | Digital Profile Platform</title>
+        <title>Products - FiindIt | Digital Profile Platform</title>
         <meta name="description" content="Explore our range of NFC products including business cards, smart standees, and review cards designed to transform your networking experience." />
       </Helmet>
 

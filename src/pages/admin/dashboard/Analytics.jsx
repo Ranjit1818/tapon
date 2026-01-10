@@ -243,7 +243,7 @@ const AdminAnalytics = () => {
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Analytics Dashboard</h1>
           <p className="text-gray-600 dark:text-gray-400">
-            Comprehensive analytics and insights for Connection Unlimited platform
+            Comprehensive analytics and insights for FiindIt platform
           </p>
         </div>
 

@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { motion, useInView, AnimatePresence } from 'framer-motion'
+import { Link } from 'react-router-dom'
 import {
   Briefcase,
   Star,
@@ -117,7 +118,7 @@ const FeaturesSection = () => {
             Powerful <span className="gradient-text">Features</span>
           </h2>
           <p className="mx-auto max-w-3xl text-xl text-gray-600 dark:text-gray-400">
-            Discover the advanced features that make JustTap the ultimate digital
+            Discover the advanced features that make FiindIt the ultimate digital
             networking platform for modern professionals and teams.
           </p>
         </motion.div>
@@ -307,10 +308,11 @@ const FeaturesSection = () => {
             Ready to Experience These Features?
           </h3>
           <p className="mx-auto mb-8 max-w-2xl text-lg text-gray-600 dark:text-gray-400">
-            Start using JustTap today and discover how these powerful features
+            Start using FiindIt today and discover how these powerful features
             can transform your networking experience.
           </p>
           <div className="flex flex-col justify-center gap-4 sm:flex-row">
+            <Link to="/app/register">
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
@@ -318,13 +320,8 @@ const FeaturesSection = () => {
             >
               Start Free Trial
             </motion.button>
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="btn-secondary px-8 py-4 text-lg"
-            >
-              Schedule Demo
-            </motion.button>
+            </Link>
+            
           </div>
         </motion.div>
       </div>

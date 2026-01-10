@@ -22,6 +22,7 @@ const protect = async (req, res, next) => {
 
     // Make sure token exists
     if (!token) {
+      console.log('Auth Middleware: No token provided for path:', req.path);
       return res.status(401).json({
         success: false,
         message: 'Not authorized to access this route'
@@ -31,11 +32,13 @@ const protect = async (req, res, next) => {
     try {
       // Verify token using config
       const decoded = jwt.verify(token, config.JWT_SECRET);
+      console.log('Auth Middleware: Token verified for user ID:', decoded.id);
 
       // Get user from token
       const user = await User.findById(decoded.id).select('-password');
       
       if (!user) {
+        console.log('Auth Middleware: No user found for token ID:', decoded.id);
         return res.status(401).json({
           success: false,
           message: 'No user found with this token'
@@ -44,29 +47,24 @@ const protect = async (req, res, next) => {
 
       // Check if user account is active
       if (user.status !== 'active') {
+        console.log('Auth Middleware: User account not active:', user.status);
         return res.status(401).json({
           success: false,
           message: 'User account is not active'
         });
       }
 
-      // Check if user is locked
-      if (user.isLocked) {
-        return res.status(423).json({
-          success: false,
-          message: 'User account is temporarily locked'
-        });
-      }
-
       req.user = user;
       next();
     } catch (error) {
+      console.error('Auth Middleware: Token verification failed:', error.message);
       return res.status(401).json({
         success: false,
         message: 'Not authorized to access this route'
       });
     }
   } catch (error) {
+    console.error('Auth Middleware: Server error:', error);
     return res.status(500).json({
       success: false,
       message: 'Server error during authentication'
@@ -78,13 +76,17 @@ const protect = async (req, res, next) => {
 const authorize = (...roles) => {
   return (req, res, next) => {
     if (!req.user) {
+      console.log('Authorize Middleware: User not authenticated');
       return res.status(401).json({
         success: false,
         message: 'User not authenticated'
       });
     }
 
+    console.log(`Authorize Middleware: Checking role '${req.user.role}' against allowed: [${roles.join(', ')}]`);
+
     if (!roles.includes(req.user.role)) {
+      console.log(`Authorize Middleware: Access denied. Role '${req.user.role}' required: [${roles.join(', ')}]`);
       return res.status(403).json({
         success: false,
         message: `User role '${req.user.role}' is not authorized to access this route`

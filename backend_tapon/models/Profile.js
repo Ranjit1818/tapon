@@ -64,7 +64,8 @@ const profileSchema = new mongoose.Schema({
     facebook: String,
     youtube: String,
     github: String,
-    googleReview: String
+    googleReview: String,
+    googleMap: String
   },
   contactInfo: {
     email: String,

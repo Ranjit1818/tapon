@@ -1,5 +1,6 @@
 import { useRef } from 'react'
 import { motion, useInView } from 'framer-motion'
+import { Link } from 'react-router-dom'
 import {
   Brain,
   Link as LinkIcon,
@@ -209,7 +210,9 @@ const WhyDigitalProfileSection = () => {
             Join thousands of professionals who have already upgraded to digital
             profiles and are experiencing the benefits of smart networking.
           </p>
+         
           <div className="flex flex-col justify-center gap-4 sm:flex-row">
+           <Link to="app/register">
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
@@ -217,13 +220,7 @@ const WhyDigitalProfileSection = () => {
             >
               Get Started Free
             </motion.button>
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="btn-secondary px-8 py-4 text-lg"
-            >
-              Watch Demo
-            </motion.button>
+         </Link>
           </div>
         </motion.div>
       </div>

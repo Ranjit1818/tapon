@@ -424,7 +424,7 @@ const Shop = () => {
         <div>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2 flex items-center space-x-3">
             <span>💳</span>
-            <span>{isConnectionUnlimitedUser ? 'Connection Unlimited Admin Shop' : 'Connection Unlimited Shop'}</span>
+            <span>{isConnectionUnlimitedUser ? 'FiindIt Admin Shop' : 'FiindIt Shop'}</span>
             {isConnectionUnlimitedUser && (
               <motion.span
                 initial={{ scale: 0 }}
@@ -678,7 +678,7 @@ const Shop = () => {
       >
         <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center space-x-2">
           <span>🛡️</span>
-          <span>Why Choose Connection Unlimited?</span>
+          <span>Why Choose FiindIt?</span>
         </h3>
 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">

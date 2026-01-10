@@ -118,8 +118,8 @@ const LoginPage = () => {
   return (
     <>
       <Helmet>
-        <title>Login to Connection Unlimited 🔐 - Access Your Digital Profile</title>
-        <meta name="description" content="Login to your Connection Unlimited account and manage your smart digital profile. Connect instantly, share effortlessly." />
+        <title>Login to FiindIt 🔐 - Access Your Digital Profile</title>
+        <meta name="description" content="Login to your FiindIt account and manage your smart digital profile. Connect instantly, share effortlessly." />
       </Helmet>
 
       <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-accent-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center px-4 py-8">
@@ -135,7 +135,7 @@ const LoginPage = () => {
               <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-accent-500 rounded-xl flex items-center justify-center">
                 <span className="text-white font-bold text-lg">C</span>
               </div>
-              <span className="text-2xl font-bold text-gray-900 dark:text-white">Connection Unlimited</span>
+              <span className="text-2xl font-bold text-gray-900 dark:text-white">FiindIt</span>
             </Link>
             <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
               🔐 Welcome Back

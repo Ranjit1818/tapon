@@ -480,7 +480,7 @@ const PublicProfilePage = () => {
             {(profile.socialLinks?.whatsapp || profile.socialLinks?.linkedin || profile.socialLinks?.instagram ||
               profile.socialLinks?.twitter || profile.socialLinks?.facebook || profile.socialLinks?.youtube ||
               profile.socialLinks?.twitter || profile.socialLinks?.facebook || profile.socialLinks?.youtube ||
-              profile.socialLinks?.github || profile.socialLinks?.googleReview) && (
+              profile.socialLinks?.github || profile.socialLinks?.googleReview || profile.socialLinks?.googleMap) && (
                 <div className="mb-8">
                   <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 text-center">
                     Connect on Social Media
@@ -635,6 +635,23 @@ const PublicProfilePage = () => {
                         </span>
                       </motion.button>
                     )}
+
+                    {profile.socialLinks?.googleMap && (
+                      <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => handleSocialClick('googleMap', profile.socialLinks.googleMap)}
+                        disabled={isTracking}
+                        className="flex flex-col items-center space-y-2 p-4 bg-red-50 dark:bg-red-900 rounded-xl hover:bg-red-100 dark:hover:bg-red-800 transition-colors group"
+                      >
+                        <div className="w-12 h-12 bg-red-600 rounded-lg flex items-center justify-center text-white">
+                          <MapPin className="w-6 h-6" />
+                        </div>
+                        <span className="text-sm font-medium text-gray-900 dark:text-white group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors">
+                          Google Map
+                        </span>
+                      </motion.button>
+                    )}
                   </div>
                 </div>
               )}
@@ -675,7 +692,7 @@ const PublicProfilePage = () => {
             {/* Footer */}
             <div className="text-center pt-6 border-t border-gray-200 dark:border-gray-700">
               <p className="text-sm text-gray-500 dark:text-gray-400">
-                Powered by Connection Unlimited - Digital Business Cards
+                Powered by FiindIt - Digital Business Cards
               </p>
             </div>
           </div>

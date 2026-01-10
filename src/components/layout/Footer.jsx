@@ -20,7 +20,7 @@ const Footer = () => {
     product: [
       { name: 'NFC Business Cards', href: '/product/nfc-cards' },
       { name: 'Smart Standee', href: '/product/smart-standee' },
-      { name: 'Review Cards', href: '/product/review-cards' },
+      { name: 'Subscription plan', href: '/product/review-cards' },
       { name: 'Bundle Cards', href: '/product/bundle-cards' },
     ],
     company: [
@@ -67,9 +67,9 @@ const Footer = () => {
             >
               <Link to="/" className="flex items-center space-x-2">
                 <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-accent-500 rounded-lg flex items-center justify-center">
-                  <span className="text-white font-bold text-xl">C</span>
+                  <span className="text-white font-bold text-xl">F</span>
                 </div>
-                <span className="text-xl font-bold">Connection Unlimited</span>
+                <span className="text-xl font-bold">FiindIt</span>
               </Link>
 
               <p className="text-gray-400 max-w-md">
@@ -81,7 +81,7 @@ const Footer = () => {
               <div className="space-y-2">
                 <div className="flex items-center space-x-2 text-gray-400">
                   <Mail size={16} />
-                  <span>ranjeetkulkarni18@gmail.com</span>
+                  <span>customerservice.fiindit@gmail.com</span>
                 </div>
                 <div className="flex items-center space-x-2 text-gray-400">
                   <Phone size={16} />
@@ -148,7 +148,7 @@ const Footer = () => {
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             {/* Copyright */}
             <div className="flex items-center space-x-2 text-gray-400">
-              <span>&copy; {currentYear} Connection Unlimited. All rights reserved.</span>
+              <span>&copy; {currentYear} FiindIt. All rights reserved.</span>
             </div>
 
             {/* Eco-friendly Message */}
@@ -188,7 +188,7 @@ const Footer = () => {
       >
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h3 className="text-2xl font-bold mb-2">
-            Stay Updated with Connection Unlimited
+            Stay Updated with FiindIt
           </h3>
           <p className="text-primary-100 mb-6">
             Get the latest updates on new features, tips, and industry insights.

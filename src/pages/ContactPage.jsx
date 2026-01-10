@@ -56,19 +56,19 @@ const ContactPage = () => {
     {
       icon: Mail,
       title: 'Email Us',
-      details: ['hello@connectionunlimited.com', 'support@connectionunlimited.com'],
+      details: ['customerservice.fiindit@gmail.com'],
       description: 'We typically respond within 24 hours'
     },
     {
       icon: Phone,
       title: 'Call Us',
-      details: ['+1 (555) 123-4567', '+91 98765 43210'],
+      details: ['8105183599', '+91 8105183599'],
       description: 'Mon-Fri 9AM-6PM IST'
     },
     {
       icon: MapPin,
       title: 'Visit Us',
-      details: ['Mumbai, India', 'Bangalore, India'],
+      details: ['Vijayapura, India', 'Bangalore, India'],
       description: 'Schedule a meeting at our office'
     }
   ]
@@ -85,8 +85,8 @@ const ContactPage = () => {
   return (
     <>
       <Helmet>
-        <title>Contact Us - Connection Unlimited | Digital Profile Platform</title>
-        <meta name="description" content="Get in touch with the Connection Unlimited team. We're here to help with any questions about our digital networking solutions." />
+        <title>Contact Us - FiindIt | Digital Profile Platform</title>
+        <meta name="description" content="Get in touch with the FiindIt team. We're here to help with any questions about our digital networking solutions." />
       </Helmet>
 
       <div className="pt-20 pb-16">
@@ -104,7 +104,7 @@ const ContactPage = () => {
                 <span className="gradient-text">Touch</span>
               </h1>
               <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
-                Have questions about Connection Unlimited? We're here to help. Reach out to our team
+                Have questions about FiindIt? We're here to help. Reach out to our team
                 and we'll get back to you as soon as possible.
               </p>
             </motion.div>
@@ -309,32 +309,11 @@ const ContactPage = () => {
                     <div className="space-y-6">
                       <div>
                         <h4 className="font-semibold text-gray-900 dark:text-white mb-2">
-                          Mumbai Office
+                          Bengaluru Office
                         </h4>
                         <p className="text-gray-600 dark:text-gray-400 mb-2">
-                          Connection Unlimited Technologies Pvt. Ltd.<br />
-                          Andheri West, Mumbai 400058<br />
-                          Maharashtra, India
-                        </p>
-                        <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-500">
-                          <span className="flex items-center">
-                            <Clock className="w-4 h-4 mr-1" />
-                            Mon-Fri 9AM-6PM IST
-                          </span>
-                          <span className="flex items-center">
-                            <Phone className="w-4 h-4 mr-1" />
-                            +91 98765 43210
-                          </span>
-                        </div>
-                      </div>
-
-                      <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
-                        <h4 className="font-semibold text-gray-900 dark:text-white mb-2">
-                          Bangalore Office
-                        </h4>
-                        <p className="text-gray-600 dark:text-gray-400 mb-2">
-                          Connection Unlimited Technologies Pvt. Ltd.<br />
-                          Koramangala, Bangalore 560034<br />
+                       FiindIt Technologies Pvt. Ltd.<br />
+                          Bangalore <br />
                           Karnataka, India
                         </p>
                         <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-500">
@@ -344,7 +323,27 @@ const ContactPage = () => {
                           </span>
                           <span className="flex items-center">
                             <Phone className="w-4 h-4 mr-1" />
-                            +91 98765 43211
+                            +91 8105183599
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
+                        <h4 className="font-semibold text-gray-900 dark:text-white mb-2">
+                          Vijayapura Office
+                        </h4>
+                        <p className="text-gray-600 dark:text-gray-400 mb-2">
+                           Bangalore<br />
+                          Karnataka, India
+                        </p>
+                        <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-500">
+                          <span className="flex items-center">
+                            <Clock className="w-4 h-4 mr-1" />
+                            Mon-Fri 9AM-6PM IST
+                          </span>
+                          <span className="flex items-center">
+                            <Phone className="w-4 h-4 mr-1" />
+                            +91 8105183599
                           </span>
                         </div>
                       </div>
@@ -419,7 +418,7 @@ const ContactPage = () => {
               Ready to Get Started?
             </h2>
             <p className="text-xl text-primary-100 mb-8 max-w-2xl mx-auto">
-              Join thousands of professionals who have already transformed their networking with Connection Unlimited.
+              Join thousands of professionals who have already transformed their networking with FiindIt.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <motion.button

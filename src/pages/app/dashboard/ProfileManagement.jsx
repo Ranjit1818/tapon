@@ -46,7 +46,8 @@ const ProfileManagement = () => {
       facebook: '',
       facebook: '',
       youtube: '',
-      googleReview: ''
+      googleReview: '',
+      googleMap: ''
     },
     customLinks: []
   })
@@ -114,6 +115,14 @@ const ProfileManagement = () => {
       placeholder: 'https://g.page/r/.../review',
       color: 'text-yellow-600',
       bgColor: 'bg-yellow-100 dark:bg-yellow-900/20'
+    },
+    {
+      key: 'googleMap',
+      name: 'Google Map',
+      emoji: '📍',
+      placeholder: 'https://goo.gl/maps/...',
+      color: 'text-red-600',
+      bgColor: 'bg-red-100 dark:bg-red-900/20'
     }
   ]
 
@@ -150,7 +159,8 @@ const ProfileManagement = () => {
             facebook: profileData.socialLinks?.facebook || '',
             facebook: profileData.socialLinks?.facebook || '',
             youtube: profileData.socialLinks?.youtube || '',
-            googleReview: profileData.socialLinks?.googleReview || ''
+            googleReview: profileData.socialLinks?.googleReview || '',
+            googleMap: profileData.socialLinks?.googleMap || ''
           },
           customLinks: profileData.customLinks || []
         })
@@ -163,7 +173,13 @@ const ProfileManagement = () => {
         }))
       }
     } catch (error) {
-      console.error('Failed to fetch profile:', error)
+      console.error('Failed to fetch profile. Error details:', {
+        message: error.message,
+        response: error.response,
+        status: error.response?.status,
+        data: error.response?.data
+      });
+      console.error('Full error object:', error);
       toast.error('Failed to load profile data')
 
       // Fallback to user data

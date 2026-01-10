@@ -55,40 +55,40 @@ const TrustedBySection = () => {
 
   const testimonials = [
     {
-      name: 'Sarah Johnson',
-      role: 'Sales Director',
-      company: 'TechCorp',
+      name: ' ',
+      role: ' ',
+      company: '',
       content:
-        'TapOnn has revolutionized how our sales team networks. The instant sharing and lead tracking features have increased our conversion rates by 40%.',
-      rating: 5,
-      avatar: 'SJ',
+        '',
+      rating: '',
+      avatar: '',
     },
     {
-      name: 'Michael Chen',
-      role: 'Marketing Manager',
-      company: 'InnovateLab',
+      name: '',
+      role: '',
+      company: '',
       content:
-        'The digital profiles are incredibly professional and the analytics help us understand our networking ROI. Highly recommended for any business.',
-      rating: 5,
-      avatar: 'MC',
+        '',
+      rating: '',
+      avatar: '',
     },
     {
-      name: 'Emma Davis',
-      role: 'Business Development',
-      company: 'GrowthCo',
+      name: '',
+      role: '',
+      company: '',
       content:
-        "Our team loves the ease of use and the professional appearance. It's made networking events so much more productive and efficient.",
-      rating: 5,
-      avatar: 'ED',
+        '',
+      rating: '',
+      avatar: '',
     },
     {
-      name: 'Alex Rodriguez',
-      role: 'CEO',
-      company: 'StartupXYZ',
+      name: '',
+      role: '',
+      company: '',
       content:
-        'JustTap has been a game-changer for our startup. The cost savings from not printing business cards and the professional image it creates is invaluable.',
-      rating: 5,
-      avatar: 'AR',
+        '',
+      rating: '',
+      avatar: '',
     },
   ]
 
@@ -120,7 +120,7 @@ const TrustedBySection = () => {
             Trusted by <span className="gradient-text">Leading Brands</span>
           </h2>
           <p className="mx-auto max-w-3xl text-xl text-gray-600 dark:text-gray-400">
-            Join thousands of professionals and companies who trust JustTap for
+            Join thousands of professionals and companies who trust FiindIt for
             their digital networking needs.
           </p>
         </motion.div>
@@ -164,7 +164,7 @@ const TrustedBySection = () => {
             </h3>
             <p className="text-lg text-gray-600 dark:text-gray-400">
               Real feedback from professionals who have transformed their
-              networking with JustTap
+              networking with FiindIt
             </p>
           </div>
 
@@ -227,7 +227,7 @@ const TrustedBySection = () => {
           transition={{ duration: 0.8, delay: 0.8 }}
         >
           <h3 className="mb-8 text-3xl font-bold md:text-4xl">
-            Join the JustTap Community
+            Join the FiindIt Community
           </h3>
 
           <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
@@ -264,7 +264,7 @@ const TrustedBySection = () => {
             Ready to Join Them?
           </h3>
           <p className="mx-auto mb-8 max-w-2xl text-lg text-gray-600 dark:text-gray-400">
-            Start your journey with JustTap today and experience the future of
+            Start your journey with FiindIt today and experience the future of
             digital networking.
           </p>
           <div className="flex flex-col justify-center gap-4 sm:flex-row">

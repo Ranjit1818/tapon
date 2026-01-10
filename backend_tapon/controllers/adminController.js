@@ -10,10 +10,10 @@ const ErrorResponse = require('../utils/errorResponse');
 // @access  Private (Admin only)
 const getDashboardStats = async (req, res, next) => {
   try {
-    // Check if user is admin
-    if (req.user.role !== 'admin') {
-      return next(new ErrorResponse('Access denied. Admin role required.', 403));
-    }
+
+
+    // Log request to debug
+    console.log('Received dashboard stats request from user:', req.user._id, req.user.role);
 
     // Get total counts
     const totalUsers = await User.countDocuments();
@@ -113,10 +113,7 @@ const getDashboardStats = async (req, res, next) => {
 // @access  Private (Admin only)
 const getAllUsers = async (req, res, next) => {
   try {
-    // Check if user is admin
-    if (req.user.role !== 'admin') {
-      return next(new ErrorResponse('Access denied. Admin role required.', 403));
-    }
+
 
     const page = parseInt(req.query.page, 10) || 1;
     const limit = parseInt(req.query.limit, 10) || 10;
@@ -183,10 +180,7 @@ const getAllUsers = async (req, res, next) => {
 // @access  Private (Admin only)
 const getAllProfiles = async (req, res, next) => {
   try {
-    // Check if user is admin
-    if (req.user.role !== 'admin') {
-      return next(new ErrorResponse('Access denied. Admin role required.', 403));
-    }
+
 
     const page = parseInt(req.query.page, 10) || 1;
     const limit = parseInt(req.query.limit, 10) || 10;
@@ -248,10 +242,7 @@ const getAllProfiles = async (req, res, next) => {
 // @access  Private (Admin only)
 const getAllOrders = async (req, res, next) => {
   try {
-    // Check if user is admin
-    if (req.user.role !== 'admin') {
-      return next(new ErrorResponse('Access denied. Admin role required.', 403));
-    }
+
 
     const page = parseInt(req.query.page, 10) || 1;
     const limit = parseInt(req.query.limit, 10) || 10;
@@ -318,10 +309,7 @@ const getAllOrders = async (req, res, next) => {
 // @access  Private (Admin only)
 const updateUserRole = async (req, res, next) => {
   try {
-    // Check if user is admin
-    if (req.user.role !== 'admin') {
-      return next(new ErrorResponse('Access denied. Admin role required.', 403));
-    }
+
 
     const { role } = req.body;
 
@@ -358,10 +346,7 @@ const updateUserRole = async (req, res, next) => {
 // @access  Private (Admin only)
 const toggleUserLock = async (req, res, next) => {
   try {
-    // Check if user is admin
-    if (req.user.role !== 'admin') {
-      return next(new ErrorResponse('Access denied. Admin role required.', 403));
-    }
+
 
     // Prevent admin from locking themselves
     if (req.params.id === req.user.id) {
@@ -395,10 +380,7 @@ const toggleUserLock = async (req, res, next) => {
 // @access  Private (Admin only)
 const deleteUser = async (req, res, next) => {
   try {
-    // Check if user is admin
-    if (req.user.role !== 'admin') {
-      return next(new ErrorResponse('Access denied. Admin role required.', 403));
-    }
+
 
     // Prevent admin from deleting themselves
     if (req.params.id === req.user.id) {
@@ -433,10 +415,7 @@ const deleteUser = async (req, res, next) => {
 // @access  Private (Admin only)
 const getSystemAnalytics = async (req, res, next) => {
   try {
-    // Check if user is admin
-    if (req.user.role !== 'admin') {
-      return next(new ErrorResponse('Access denied. Admin role required.', 403));
-    }
+
 
     // Get date range from query params
     const startDate = req.query.startDate ? new Date(req.query.startDate) : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);

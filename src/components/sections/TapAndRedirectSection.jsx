@@ -327,7 +327,7 @@ const TapAndRedirectSection = () => {
             Ready to Experience Instant Sharing?
           </h3>
           <p className="mx-auto mb-8 max-w-2xl text-lg text-gray-600 dark:text-gray-400">
-            Get your personalized TapOnn card and start sharing your digital
+            Get your personalized FiindIt card and start sharing your digital
             profile instantly.
           </p>
           <div className="flex flex-col justify-center gap-4 sm:flex-row">

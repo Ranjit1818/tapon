@@ -13,7 +13,6 @@ import ProductsSection from '../components/sections/ProductsSection'
 import TapAndRedirectSection from '../components/sections/TapAndRedirectSection'
 import TeamsSection from '../components/sections/TeamsSection'
 import FeaturesSection from '../components/sections/FeaturesSection'
-import AppSection from '../components/sections/AppSection'
 import TrustedBySection from '../components/sections/TrustedBySection'
 import AboutSection from '../components/sections/AboutSection'
 
@@ -37,21 +36,21 @@ const HomePage = () => {
   return (
     <>
       <Helmet>
-        <title>Connection Unlimited - Digital Profile Platform | Share Instantly. Connect Effortlessly.</title>
-        <meta name="description" content="Transform your networking with Connection Unlimited's NFC-based digital profile platform. Share instantly, connect effortlessly, and manage leads smartly." />
-        <meta name="keywords" content="NFC, digital business card, lead management, smart sharing, professional networking, Connection Unlimited" />
-        <link rel="canonical" href="https://connectionunlimited.com" />
+        <title>FiindIt - Digital Profile Platform | Share Instantly. Connect Effortlessly.</title>
+        <meta name="description" content="Transform your networking with FiindIt's NFC-based digital profile platform. Share instantly, connect effortlessly, and manage leads smartly." />
+        <meta name="keywords" content="NFC, digital business card, lead management, smart sharing, professional networking, FiindIt" />
+        <link rel="canonical" href="https://fiindit.com" />
 
         {/* Open Graph */}
-        <meta property="og:title" content="Connection Unlimited - Digital Profile Platform" />
+        <meta property="og:title" content="FiindIt - Digital Profile Platform" />
         <meta property="og:description" content="Share Instantly. Connect Effortlessly. Transform your networking experience." />
         <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://connectionunlimited.com" />
+        <meta property="og:url" content="https://fiindit.com" />
         <meta property="og:image" content="/og-image.jpg" />
 
         {/* Twitter */}
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Connection Unlimited - Digital Profile Platform" />
+        <meta name="twitter:title" content="FiindIt - Digital Profile Platform" />
         <meta name="twitter:description" content="Share Instantly. Connect Effortlessly. Transform your networking experience." />
         <meta name="twitter:image" content="/og-image.jpg" />
       </Helmet>
@@ -69,14 +68,14 @@ const HomePage = () => {
         {/* Tap and Redirect Feature */}
         <TapAndRedirectSection />
 
-        {/* Connection Unlimited for Teams */}
+        {/* for Teams */}
         <TeamsSection />
 
         {/* Features Section */}
         <FeaturesSection />
 
         {/* App Section */}
-        <AppSection />
+       
 
         {/* Trusted By Section */}
         <TrustedBySection />

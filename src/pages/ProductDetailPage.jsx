@@ -28,8 +28,8 @@ const ProductDetailPage = () => {
       subtitle: 'Visiting + Complete Cards',
       description: 'Revolutionary NFC-enabled business cards that instantly share your digital profile with a simple tap.',
       longDescription: 'Transform your networking experience with our cutting-edge NFC business cards. These smart cards combine elegant design with powerful technology to make sharing your information effortless and professional.',
-      price: 29,
-      originalPrice: 49,
+      price: '',
+      originalPrice: '',
       features: [
         'Instant contact sharing with a simple tap',
         'Customizable design and branding',
@@ -67,8 +67,8 @@ const ProductDetailPage = () => {
       subtitle: 'Interactive Display',
       description: 'Interactive digital displays that engage visitors and collect leads automatically through NFC technology.',
       longDescription: 'Our Smart Standee transforms static displays into interactive engagement tools. Perfect for events, trade shows, and retail environments.',
-      price: 199,
-      originalPrice: 299,
+      price: '',
+      originalPrice: '',
       features: [
         'Interactive touch display',
         'Automatic lead collection',
@@ -101,12 +101,12 @@ const ProductDetailPage = () => {
       inStock: true
     },
     'review-cards': {
-      title: 'Review Cards',
+      title: 'Subscription Plan',
       subtitle: 'Feedback Collection',
-      description: 'Smart cards designed to collect customer reviews and feedback across multiple platforms instantly.',
-      longDescription: 'Streamline your review collection process with our intelligent review cards that automatically direct customers to leave feedback on your preferred platforms.',
-      price: 19,
-      originalPrice: 39,
+      description: 'One month subscription plan to grow your business',
+      longDescription: 'One month subscription plan to grow your business with our intelligent review cards that automatically direct customers to leave feedback on your preferred platorms.',
+      price: '',
+      originalPrice: '',
       features: [
         'Multi-platform review collection',
         'Automated review requests',
@@ -161,7 +161,7 @@ const ProductDetailPage = () => {
   return (
     <>
       <Helmet>
-        <title>{product.title} - Connection Unlimited | Digital Profile Platform</title>
+        <title>{product.title} - FiindIt | Digital Profile Platform</title>
         <meta name="description" content={product.description} />
       </Helmet>
 

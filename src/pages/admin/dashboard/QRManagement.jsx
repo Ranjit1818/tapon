@@ -226,7 +226,7 @@ const QRManagement = () => {
     toast.success('QR downloaded')
   }
 
-  const printQrSvg = (domId, title = 'Connection Unlimited QR Code', subtitle = 'Digital Profile') => {
+  const printQrSvg = (domId, title = 'FiindIt QR Code', subtitle = 'Digital Profile') => {
     const svg = document.getElementById(domId)
     if (!svg) return toast.error('QR not ready')
     const serializer = new XMLSerializer()
@@ -262,7 +262,7 @@ const QRManagement = () => {
         <body>
           <div class="wrap">
             <div class="heading">
-              <div class="brand">Connection Unlimited</div>
+              <div class="brand">FiindIt</div>
               <div class="title">${title}</div>
               <div class="subtitle">${subtitle}</div>
             </div>
@@ -334,7 +334,7 @@ const QRManagement = () => {
       let y = margin
       doc.setTextColor(37, 99, 235)
       doc.setFontSize(11)
-      doc.text('Connection Unlimited', pageWidth / 2, y, { align: 'center' })
+      doc.text('FiindIt', pageWidth / 2, y, { align: 'center' })
       y += 6
       doc.setTextColor(0, 0, 0)
       doc.setFontSize(20)

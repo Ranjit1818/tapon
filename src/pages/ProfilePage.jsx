@@ -129,7 +129,7 @@ const ProfilePage = () => {
   return (
     <>
       <Helmet>
-        <title>{profile.name} - Connection Unlimited Profile</title>
+        <title>{profile.name} - FiindIt Profile</title>
         <meta name="description" content={`Connect with ${profile.name}, ${profile.title} at ${profile.company}`} />
       </Helmet>
 
@@ -352,7 +352,7 @@ const ProfilePage = () => {
             <p className="text-sm text-gray-500 dark:text-gray-400">
               Powered by{' '}
               <span className="font-semibold text-primary-600 dark:text-primary-400">
-                Connection Unlimited
+                FiindIt
               </span>
             </p>
           </motion.div>

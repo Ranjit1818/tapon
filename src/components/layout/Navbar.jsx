@@ -58,10 +58,10 @@ const Navbar = () => {
               whileHover={{ scale: 1.05 }}
               className="w-10 h-10 bg-gradient-to-br from-primary-500 to-accent-500 rounded-lg flex items-center justify-center"
             >
-              <span className="text-white font-bold text-xl">C</span>
+              <span className="text-white font-bold text-xl">F</span>
             </motion.div>
             <span className="text-xl font-bold text-gray-900 dark:text-white">
-              Connection Unlimited
+              FiindIt
             </span>
           </Link>
 
@@ -111,7 +111,7 @@ const Navbar = () => {
                 {/* Dropdown Menu */}
                 <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
                   <Link
-                    to="/dashboard"
+                    to="app/dashboard"
                     className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
                   >
                     Dashboard
@@ -127,13 +127,14 @@ const Navbar = () => {
             ) : (
               <div className="flex items-center space-x-3">
                 <Link
-                  to="/login"
+                  to="app/login"
                   className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
                 >
                   Login
                 </Link>
+
                 <Link
-                  to="/register"
+                  to="app/register"
                   className="btn-primary text-sm"
                 >
                   Get Started

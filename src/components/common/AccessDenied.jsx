@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 
 const AccessDenied = ({
   title = "Access Restricted",
-  message = "This feature is only available to Connection Unlimited administrators.",
+  message = "This feature is only available to FiindIt administrators.",
   requiredRole = "admin"
 }) => {
   return (
@@ -55,11 +55,11 @@ const AccessDenied = ({
           <div className="flex items-center justify-center mb-3">
             <Crown className="w-5 h-5 text-yellow-500 mr-2" />
             <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-              Connection Unlimited Admin Access Required
+              FiindIt Admin Access Required
             </span>
           </div>
           <p className="text-xs text-gray-600 dark:text-gray-400 mb-3">
-            This feature is exclusive to Connection Unlimited administrators who can:
+            This feature is exclusive to FiindIt administrators who can:
           </p>
           <ul className="text-xs text-gray-600 dark:text-gray-400 space-y-1">
             <li>📎 Generate QR codes for cards</li>
@@ -101,7 +101,7 @@ const AccessDenied = ({
           transition={{ delay: 0.6 }}
           className="text-xs text-gray-500 dark:text-gray-400 mt-6"
         >
-          Need admin access? Contact Connection Unlimited support
+          Need admin access? Contact FiindIt support
         </motion.p>
       </motion.div>
     </div>

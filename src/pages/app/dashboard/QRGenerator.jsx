@@ -29,7 +29,7 @@ const QRGenerator = () => {
     return (
       <AccessDenied
         title="QR Generator Access Restricted"
-        message="QR code generation is exclusive to Connection Unlimited administrators. Regular users can purchase pre-made cards with QR codes from our shop."
+        message="QR code generation is exclusive to FiindIt administrators. Regular users can purchase pre-made cards with QR codes from our shop."
       />
     )
   }
@@ -56,7 +56,7 @@ const QRGenerator = () => {
       label: 'My Profile',
       url: `${window.location.origin}/profile/${user?.username || 'demo'}`,
       emoji: '👤',
-      description: 'Your public Connection Unlimited profile'
+      description: 'Your public FiindItprofile'
     },
     {
       label: 'WhatsApp',
@@ -184,7 +184,7 @@ const QRGenerator = () => {
       printWindow.document.write(`
         <html>
           <head>
-            <title>Connection Unlimited QR Code - ${user?.name || 'User'}</title>
+            <title>FiindIt QR Code - ${user?.name || 'User'}</title>
             <style>
               body {
                 font-family: Arial, sans-serif;
@@ -202,7 +202,7 @@ const QRGenerator = () => {
             </style>
           </head>
           <body>
-            <h1>Connection Unlimited Digital Profile</h1>
+            <h1>FiindIt Digital Profile</h1>
             <h2>${user?.name || 'User Profile'}</h2>
             <div class="qr-container">
               ${svgData}
@@ -226,8 +226,8 @@ const QRGenerator = () => {
     if (navigator.share) {
       try {
         await navigator.share({
-          title: 'My Connection Unlimited Digital Profile',
-          text: 'Check out my digital profile on Connection Unlimited!',
+          title: 'My FiindIt Digital Profile',
+          text: 'Check out my digital profile on FiindIt!',
           url: qrData
         })
         setShareCount(prev => prev + 1)
