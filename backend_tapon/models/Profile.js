@@ -43,6 +43,10 @@ const profileSchema = new mongoose.Schema({
     type: String,
     trim: true
   },
+  coverImage: {
+    type: String,
+    default: null
+  },
   avatar: {
     type: String,
     default: null
@@ -56,6 +60,12 @@ const profileSchema = new mongoose.Schema({
     type: Boolean,
     default: true
   },
+  colors: {
+    background: { type: String, default: '#000000' },
+    card: { type: String, default: '#1a1a1a' },
+    text: { type: String, default: '#ffffff' },
+    primary: { type: String, default: '#6366f1' }
+  },
   socialLinks: {
     website: String,
     linkedin: String,
@@ -66,6 +76,12 @@ const profileSchema = new mongoose.Schema({
     github: String,
     googleReview: String,
     googleMap: String
+  },
+  paymentInfo: {
+    upiId: String,
+    googlePay: String,
+    phonePe: String,
+    paytm: String
   },
   contactInfo: {
     email: String,

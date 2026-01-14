@@ -92,7 +92,7 @@ const TeamsSection = () => {
     {
       icon: Target,
       label: 'Total Leads',
-      value: 'Counting...',
+      value: 'Counting...', 
       change: '+15%',
       color: 'text-green-600',
     },

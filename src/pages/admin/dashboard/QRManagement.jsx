@@ -30,6 +30,7 @@ const QRManagement = () => {
   const [userIdToUsername, setUserIdToUsername] = useState({})
   const [userProfileMap, setUserProfileMap] = useState({}) // userId -> profileId
   const [qrCodesByUser, setQrCodesByUser] = useState({}) // userId -> qrCode data
+  const [userFullProfiles, setUserFullProfiles] = useState({}) // userId -> full profile object
 
   useEffect(() => {
     loadQRCodes()
@@ -171,14 +172,17 @@ const QRManagement = () => {
       if (profilesRes.data?.success) {
         const usernameMap = {}
         const profileMap = {}
+        const fullProfileMap = {}
         for (const p of profilesRes.data.data) {
           if (p.user?._id) {
             if (p.username) usernameMap[p.user._id] = p.username
             profileMap[p.user._id] = p._id // Map userId to profileId
+            fullProfileMap[p.user._id] = p
           }
         }
         setUserIdToUsername(usernameMap)
         setUserProfileMap(profileMap)
+        setUserFullProfiles(fullProfileMap)
       }
     } catch (e) {
       console.error('Failed to load users/profiles for QR:', e)
@@ -333,7 +337,7 @@ const QRManagement = () => {
       const pageWidth = doc.internal.pageSize.getWidth()
       let y = margin
       doc.setTextColor(37, 99, 235)
-      doc.setFontSize(11)
+      doc.setFontSize(18)
       doc.text('FiindIt', pageWidth / 2, y, { align: 'center' })
       y += 6
       doc.setTextColor(0, 0, 0)
@@ -532,8 +536,263 @@ const QRManagement = () => {
     }
   }
 
+  // ------------------------------------------------------------------
+  // Premium PDF / Print Generation
+  // ------------------------------------------------------------------
+  const printPremiumCard = (user, url, domId) => {
+    const qrElement = document.getElementById(domId)
+    const profile = userFullProfiles[user.id] || {}
+
+    if (!qrElement) {
+      toast.error('QR Code not found')
+      return
+    }
+
+    const printWindow = window.open('', '_blank')
+    if (!printWindow) {
+      toast.error('Popup blocked. Please allow popups.')
+      return
+    }
+
+    if (qrElement) {
+      let svg = qrElement
+      if (qrElement.tagName.toLowerCase() !== 'svg') {
+        svg = qrElement.querySelector('svg')
+      }
+
+      if (!svg) {
+        printWindow.close()
+        toast.error('QR SVG not found')
+        return
+      }
+
+      // --------------------------------------------------------
+      // 1. Colorize QR Code (Inject Theme Color)
+      // --------------------------------------------------------
+      
+      // QR Gradient Definition
+      const QR_GRADIENT = `
+        <defs>
+          <linearGradient id="qrGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#050e11ff"/>
+            <stop offset="50%" stop-color="#150d03ff"/>
+            <stop offset="100%" stop-color="#0e0b08ff"/>
+          </linearGradient>   
+        </defs>
+      `
+
+      let svgData = new XMLSerializer().serializeToString(svg)
+      
+      // Inject gradient inside <svg> (preserving attributes)
+      svgData = svgData.replace(/(<svg[^>]*>)/, `$1${QR_GRADIENT}`)
+
+      // Replace black fills with gradient
+      svgData = svgData.replace(/fill="#000000"/g, `fill="url(#qrGradient)"`)
+      svgData = svgData.replace(/fill="black"/g, `fill="url(#qrGradient)"`)
+      
+      // Make background transparent (remove white fills)
+      svgData = svgData.replace(/fill="#ffffff"/gi, 'fill="none"')
+      svgData = svgData.replace(/fill="white"/gi, 'fill="none"')
+      
+      // Theme Constants
+      const THEME_BG = '#000000'
+      const THEME_TEXT = '#100a0aff'
+
+      printWindow.document.write(`
+        <html>
+          <head>
+            <title>FiindIt - ${user.name} QR</title>
+            <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&display=swap" rel="stylesheet">
+            <style>
+              body {
+                margin: 0;
+                padding: 0;
+                background-color: ${THEME_BG};
+                color: ${THEME_TEXT};
+                font-family: 'Outfit', sans-serif;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                min-height: 100vh;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+              }
+              
+              /* iPhone / Mobile Dimensions */
+              .card {
+                width: 320px;
+                min-height: 600px;
+                text-align: center;
+                padding: 60px 30px; /* Increased top/bottom padding */
+                border: 8px solid #ffffff;
+           /* Rounded corners like a phone */
+                background: linear-gradient(180deg, #ffffff 0%, #ffffff100%);
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+                align-items: center;
+                position: relative;
+              }
+
+              /* Notch simulation (Optional visual flair) */
+              .card::before {
+                content: '';
+                position: absolute;
+                top: 15px;
+                width: 100px;
+                height: 20px;
+                background: #ffffff;
+                border-radius: 20px;
+              }
+              
+              .content-wrap {
+                width: 100%;
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                gap: 20px;
+              }
+
+              /* 1. Company Name */
+              .company-name {
+                font-size: 40px;
+                font-weight: 900;
+                letter-spacing: 1px;
+                color: #f47a00ff;
+                opacity: 0.5;
+                margin-top: 20px;
+                margin-bottom: 20px;
+              }
+
+              /* 2. Review Text Headline */
+              .review-text {
+                font-size: 28px;
+                font-weight: 800;
+                line-height: 1.1;
+                color: ${THEME_TEXT};
+                margin-bottom: 1px;
+              }
+              .review-text span {
+                background: linear-gradient(90deg, #0a0101ff, #0a0606ff, #0e0c0cff);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+              }
+
+              /* 3. QR Code Container */
+              .qr-container {
+                background: #;
+                padding: 10px; /* Reduced padding for larger QR */
+                border-radius: 30px;
+                width: 300px; /* Increased size */
+                height: 300px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+             
+                margin: 20px 0;
+              }
+              .qr-container svg {
+                width: 100%;
+                height: 100%;
+              }
+              
+              /* 4. Shop Name */
+              .shop-name {
+                font-size: 24px;
+                font-weight: 700;
+                color: ${THEME_TEXT};
+                margin-top: 5px;
+                margin-bottom: 20px;
+              }
+
+              /* 5. Shop Details */
+              .shop-details {
+                font-size: 14px;
+                color: rgba(255,255,255,0.5);
+               margin-bottom: 30px;
+              }
+
+              .footer-hint {
+                font-size: 18px;
+                opacity: 0.8;
+                letter-spacing: 1px;
+  
+              }
+
+              @media print {
+                body {
+                  background-color: ${THEME_BG} !important;
+                }
+                .card {
+                   border: 2px solid #333; /* Thinner border for print */
+                   box-shadow: none;
+                }
+              }
+            </style>
+          </head>
+          <body>
+            <div class="card">
+              <div class="company-name">FiindIt</div>
+              
+              <div class="content-wrap">
+                  <div class="review-text">
+                      Scan to <br/>
+                      <span> Connect</span>
+                  </div>
+                  
+                  <div class="qr-container">
+                    ${svgData}
+                  </div>
+
+                  <div>
+                     <div class="shop-name">${profile.displayName || user.name}</div>
+                  </div>
+              </div>
+
+              <div class="footer-hint">© www.fiindit.in</div>
+            </div>
+
+            <script>
+               document.fonts.ready.then(() => {
+                 setTimeout(() => {
+                   window.print();
+                 }, 500);
+               });
+            </script>
+          </body>
+        </html>
+      `)
+      printWindow.document.close()
+    }
+  }
+
   return (
     <div className="space-y-6">
+      {/* Gradient Definition for QR Codes */}
+      <svg style={{ width: 0, height: 0, position: 'absolute' }} aria-hidden="true">
+        <defs>
+          <linearGradient id="qr-gradient-primary-accent" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#3b82f6" />
+            <stop offset="100%" stopColor="#f2750d" />
+          </linearGradient>
+        </defs>
+      </svg>
+      <style>
+        {`
+          .qr-code-gradient svg path {
+            fill: url(#qr-gradient-primary-accent) !important;
+          }
+          .qr-code-gradient svg rect[fill="#000000"], 
+          .qr-code-gradient svg rect[fill="black"] {
+            fill: url(#qr-gradient-primary-accent) !important;
+          }
+        `}
+      </style>
+
       {/* Header */}
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
         <div>
@@ -593,7 +852,9 @@ const QRManagement = () => {
                 </div>
                 <div className="bg-white p-2 rounded mb-3">
                   {hasUrl ? (
-                    <QRCodeDisplay id={domId} value={url} size={128} level="M" />
+                    <div className="qr-code-gradient">
+                      <QRCodeDisplay id={domId} value={url} size={128} level="M" />
+                    </div>
                   ) : (
                     <div className="w-[128px] h-[128px] flex flex-col items-center justify-center text-xs text-gray-400 border-2 border-dashed border-gray-300 rounded">
                       <QrCode className="w-8 h-8 mb-1 opacity-50" />
@@ -612,10 +873,10 @@ const QRManagement = () => {
                         <Download className="w-3 h-3 mr-1" /> SVG
                       </button>
                       <button
-                        onClick={() => downloadQrPdf(domId, filename, u.name, url)}
-                        className="inline-flex items-center px-3 py-1.5 bg-gray-700 text-white rounded hover:bg-gray-800 text-xs"
+                        onClick={() => printPremiumCard(u, url, domId)}
+                        className="inline-flex items-center px-3 py-1.5 bg-orange-600 text-white rounded hover:bg-orange-700 text-xs shadow-sm"
                       >
-                        <span className="mr-1">⬇️</span> PDF
+                        <Printer className="w-3 h-3 mr-1" /> Premium PDF
                       </button>
                     </>
                   ) : (
@@ -734,7 +995,7 @@ const QRManagement = () => {
                   className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 hover:shadow-lg transition-all duration-300"
                 >
                   {/* QR Code Display */}
-                  <div className="bg-white p-4 rounded-lg mb-4 flex items-center justify-center">
+                  <div className="bg-white p-4 rounded-lg mb-4 flex items-center justify-center qr-code-gradient">
                     <QRCodeDisplay
                       value={qr.qrData}
                       size={120}

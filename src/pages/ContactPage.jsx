@@ -312,7 +312,7 @@ const ContactPage = () => {
                           Bengaluru Office
                         </h4>
                         <p className="text-gray-600 dark:text-gray-400 mb-2">
-                       FiindIt Technologies Pvt. Ltd.<br />
+                      
                           Bangalore <br />
                           Karnataka, India
                         </p>
@@ -333,7 +333,7 @@ const ContactPage = () => {
                           Vijayapura Office
                         </h4>
                         <p className="text-gray-600 dark:text-gray-400 mb-2">
-                           Bangalore<br />
+                           Vijayapura<br />
                           Karnataka, India
                         </p>
                         <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-500">

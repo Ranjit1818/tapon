@@ -16,7 +16,8 @@ import {
   X,
   Check,
   Upload,
-  Link as LinkIcon
+  Link as LinkIcon,
+  CreditCard
 } from 'lucide-react'
 import { useAuth } from '../../../contexts/AuthContext'
 import { profileAPI, uploadAPI } from '../../../services/api'
@@ -44,18 +45,24 @@ const ProfileManagement = () => {
       instagram: '',
       twitter: '',
       facebook: '',
-      facebook: '',
       youtube: '',
       googleReview: '',
       googleMap: ''
     },
-    customLinks: []
+    customLinks: [],
+    paymentInfo: {
+      upiId: '',
+      googlePay: '',
+      phonePe: '',
+      paytm: ''
+    }
   })
 
   const tabs = [
     { id: 'basic', name: 'Basic Info', emoji: '👤', description: 'Name, title, bio' },
     { id: 'contact', name: 'Contact', emoji: '📞', description: 'Phone, email, location' },
     { id: 'social', name: 'Social Media', emoji: '🌐', description: 'Social platforms' },
+    { id: 'payments', name: 'Payments', emoji: '💳', description: 'UPI & Wallets' },
     { id: 'links', name: 'Custom Links', emoji: '🔗', description: 'Additional links' }
   ]
 
@@ -162,6 +169,12 @@ const ProfileManagement = () => {
             googleReview: profileData.socialLinks?.googleReview || '',
             googleMap: profileData.socialLinks?.googleMap || ''
           },
+          paymentInfo: {
+            upiId: profileData.paymentInfo?.upiId || '',
+            googlePay: profileData.paymentInfo?.googlePay || '',
+            phonePe: profileData.paymentInfo?.phonePe || '',
+            paytm: profileData.paymentInfo?.paytm || ''
+          },
           customLinks: profileData.customLinks || []
         })
       } else {
@@ -248,6 +261,7 @@ const ProfileManagement = () => {
           website: profileData.website,
           avatar: profileData.avatar,
           socialLinks: profileData.socialLinks,
+          paymentInfo: profileData.paymentInfo,
           customLinks: profileData.customLinks,
           contactInfo: {
             email: profileData.email,
@@ -271,6 +285,7 @@ const ProfileManagement = () => {
           website: profileData.website,
           avatar: profileData.avatar,
           socialLinks: profileData.socialLinks,
+          paymentInfo: profileData.paymentInfo,
           customLinks: profileData.customLinks,
           contactInfo: {
             email: profileData.email,
@@ -643,6 +658,69 @@ const ProfileManagement = () => {
                       />
                     </div>
                   ))}
+                </div>
+              </div>
+            )}
+
+            {activeTab === 'payments' && (
+              <div className="space-y-6">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center space-x-2">
+                  <span>💳</span>
+                  <span>Payment Details</span>
+                </h3>
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  Add your UPI ID or wallet numbers to receive payments directly.
+                </p>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      UPI ID (VPA)
+                    </label>
+                    <input
+                      type="text"
+                      value={profileData.paymentInfo.upiId}
+                      onChange={(e) => handleInputChange('paymentInfo.upiId', e.target.value)}
+                      className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-800"
+                      placeholder="username@upi"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Google Pay Number
+                    </label>
+                    <input
+                      type="tel"
+                      value={profileData.paymentInfo.googlePay}
+                      onChange={(e) => handleInputChange('paymentInfo.googlePay', e.target.value)}
+                      className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-800"
+                      placeholder="+91 98765 43210"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      PhonePe Number
+                    </label>
+                    <input
+                      type="tel"
+                      value={profileData.paymentInfo.phonePe}
+                      onChange={(e) => handleInputChange('paymentInfo.phonePe', e.target.value)}
+                      className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-800"
+                      placeholder="+91 98765 43210"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Paytm Number
+                    </label>
+                    <input
+                      type="tel"
+                      value={profileData.paymentInfo.paytm}
+                      onChange={(e) => handleInputChange('paymentInfo.paytm', e.target.value)}
+                      className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-800"
+                      placeholder="+91 98765 43210"
+                    />
+                  </div>
                 </div>
               </div>
             )}

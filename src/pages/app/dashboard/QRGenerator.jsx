@@ -173,6 +173,9 @@ const QRGenerator = () => {
     }
   }
 
+  // ------------------------------------------------------------------
+  // Premium PDF / Print Generation
+  // ------------------------------------------------------------------
   const printQR = () => {
     const printWindow = window.open('', '_blank')
     const qrElement = qrRef.current
@@ -180,45 +183,133 @@ const QRGenerator = () => {
     if (qrElement && printWindow) {
       const svg = qrElement.querySelector('svg')
       const svgData = new XMLSerializer().serializeToString(svg)
+      
+      // Theme Constants
+      const THEME_BG = '#000000'
+      const THEME_ACCENT = '#f97316' // Orange-500
+      const THEME_TEXT = '#ffffff'
 
       printWindow.document.write(`
         <html>
           <head>
-            <title>FiindIt QR Code - ${user?.name || 'User'}</title>
+            <title>FiindIt - ${user?.displayName || 'Profile'} QR</title>
+            <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&display=swap" rel="stylesheet">
             <style>
               body {
-                font-family: Arial, sans-serif;
-                text-align: center;
-                padding: 20px;
+                margin: 0;
+                padding: 0;
+                background-color: ${THEME_BG};
+                color: ${THEME_TEXT};
+                font-family: 'Outfit', sans-serif;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                min-height: 100vh;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
               }
-              .qr-container {
-                margin: 20px auto;
+              .card {
+                width: 100%;
                 max-width: 400px;
+                text-align: center;
+                padding: 40px;
+                border: 1px solid rgba(255,255,255,0.1);
+                border-radius: 30px;
+                background: linear-gradient(145deg, #111111, #050505);
+                box-shadow: 0 20px 50px rgba(0,0,0,0.5);
               }
-              .info {
-                margin-top: 20px;
-                color: #666;
+              
+              /* 1. Company Name */
+              .company-name {
+                font-size: 24px;
+                font-weight: 900;
+                letter-spacing: 2px;
+                text-transform: uppercase;
+                margin-bottom: 5px;
+                color: ${THEME_TEXT};
+                opacity: 0.9;
+              }
+
+              /* 2. Review Text */
+              .review-text {
+                font-size: 32px;
+                font-weight: 700;
+                color: ${THEME_ACCENT};
+                margin-bottom: 30px;
+                text-transform: capitalize;
+              }
+
+              /* 3. QR Code Container */
+              .qr-container {
+                background: #ffffff;
+                padding: 15px;
+                border-radius: 20px;
+                display: inline-block;
+                margin-bottom: 30px;
+                box-shadow: 0 0 30px rgba(249, 115, 22, 0.2);
+              }
+              
+              /* 4. Shop Name */
+              .shop-name {
+                font-size: 28px;
+                font-weight: 700;
+                margin-bottom: 10px;
+                color: ${THEME_TEXT};
+              }
+
+              /* 5. Shop Details */
+              .shop-details {
+                font-size: 14px;
+                color: rgba(255,255,255,0.6);
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                max-width: 100%;
+                padding: 0 10px;
+                font-weight: 400;
+                letter-spacing: 0.5px;
+              }
+
+              @media print {
+                body {
+                  background-color: ${THEME_BG} !important;
+                }
+                .card {
+                   border: none;
+                   box-shadow: none;
+                }
               }
             </style>
           </head>
           <body>
-            <h1>FiindIt Digital Profile</h1>
-            <h2>${user?.name || 'User Profile'}</h2>
-            <div class="qr-container">
-              ${svgData}
+            <div class="card">
+              <!-- Hierarchy -->
+              <div class="company-name">FiindIt</div>
+              <div class="review-text">Review Us</div>
+              
+              <div class="qr-container">
+                ${svgData}
+              </div>
+
+              <div class="shop-name">${user?.displayName || 'My Shop'}</div>
+              <div class="shop-details">
+                ${user?.jobTitle || ''} ${user?.jobTitle && user?.company ? '|' : ''} ${user?.company || ''}
+              </div>
             </div>
-            <div class="info">
-              <p>Scan this QR code to view the digital profile</p>
-              <p>Generated on: ${new Date().toLocaleDateString()}</p>
-              <p>Powered by ConnectionUnlimited.com</p>
-            </div>
+
+            <script>
+               // Auto print after fonts load
+               document.fonts.ready.then(() => {
+                 setTimeout(() => {
+                   window.print();
+                 }, 500);
+               });
+            </script>
           </body>
         </html>
       `)
-
       printWindow.document.close()
-      printWindow.print()
-      toast.success('🖨️ Print dialog opened!')
     }
   }
 

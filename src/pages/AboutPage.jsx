@@ -15,10 +15,10 @@ import {
 
 const AboutPage = () => {
   const stats = [
-    { number: '50K+', label: 'Active Users', icon: Users },
-    { number: '1M+', label: 'Connections Made', icon: Globe },
-    { number: '500+', label: 'Companies', icon: Award },
-    { number: '25+', label: 'Countries', icon: TrendingUp }
+    { number: 'Counting...', label: 'Active Users', icon: Users },
+    { number: 'Counting...', label: 'Connections Made', icon: Globe },
+    { number: 'Counting...', label: 'Companies', icon: Award },
+    { number: 'Counting...', label: 'Countries', icon: TrendingUp }
   ]
 
   const values = [

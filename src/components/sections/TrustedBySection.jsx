@@ -168,55 +168,7 @@ const TrustedBySection = () => {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
-            {testimonials.map((testimonial, index) => (
-              <motion.div
-                key={index}
-                className="testimonial-card card h-full p-6"
-                initial={{ opacity: 0, y: 30 }}
-                animate={isInView ? { opacity: 1, y: 0 } : {}}
-                transition={{ duration: 0.6, delay: 0.6 + index * 0.1 }}
-                whileHover={{ y: -5, scale: 1.02 }}
-              >
-                {/* Quote Icon */}
-                <div className="from-primary-500 to-accent-500 mb-4 flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br">
-                  <Quote className="h-4 w-4 text-white" />
-                </div>
-
-                {/* Rating */}
-                <div className="mb-4 flex items-center">
-                  {[...Array(testimonial.rating)].map((_, i) => (
-                    <Star
-                      key={i}
-                      className="h-4 w-4 fill-current text-yellow-400"
-                    />
-                  ))}
-                </div>
-
-                {/* Content */}
-                <p className="mb-6 text-sm leading-relaxed text-gray-600 dark:text-gray-400">
-                  "{testimonial.content}"
-                </p>
-
-                {/* Author */}
-                <div className="flex items-center space-x-3">
-                  <div className="from-primary-500 to-accent-500 flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br">
-                    <span className="text-sm font-semibold text-white">
-                      {testimonial.avatar}
-                    </span>
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-gray-900 dark:text-white">
-                      {testimonial.name}
-                    </p>
-                    <p className="text-xs text-gray-600 dark:text-gray-400">
-                      {testimonial.role} at {testimonial.company}
-                    </p>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
+          
         </motion.div>
 
         {/* Stats Section */}
@@ -232,10 +184,10 @@ const TrustedBySection = () => {
 
           <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
             {[
-              { number: '50K+', label: 'Active Users' },
-              { number: '1M+', label: 'Connections Made' },
-              { number: '500+', label: 'Companies' },
-              { number: '99%', label: 'Satisfaction Rate' },
+              { number: 'Counting...', label: 'Active Users' },
+              { number: 'Counting...', label: 'Connections Made' },
+              { number: 'Counting...', label: 'Companies' },
+              { number: 'Counting...', label: 'Satisfaction Rate' },
             ].map((stat, index) => (
               <motion.div
                 key={index}

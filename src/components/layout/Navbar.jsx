@@ -60,7 +60,7 @@ const Navbar = () => {
             >
               <span className="text-white font-bold text-xl">F</span>
             </motion.div>
-            <span className="text-xl font-bold text-gray-900 dark:text-white">
+            <span className="text-xl font-bold text-gray-900 dark:text-orange-500">
               FiindIt
             </span>
           </Link>

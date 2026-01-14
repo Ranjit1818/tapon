@@ -93,21 +93,11 @@ const HeroSection = () => {
 
   return (
     <section
-      className="relative flex min-h-screen items-center justify-center overflow-hidden bg-gradient-to-br from-[var(--primary-700)] via-white to-[var(--accent-700)] dark:from-[var(--primary-500)] dark:via-black dark:to-[var(--accent-600)]"
+      className="relative flex min-h-screen items-center justify-center overflow-hidden bg-gray-50 dark:bg-[#050505]"
       style={{ position: 'relative', zIndex: 1 }}
     >
       <div className="absolute inset-0">
-        <div className="absolute inset-0 opacity-10">
-          <div className="bg-primary-300 animate-float absolute top-20 left-20 h-72 w-72 rounded-full mix-blend-multiply blur-xl filter"></div>
-          <div
-            className="bg-accent-300 animate-float absolute top-40 right-20 h-72 w-72 rounded-full mix-blend-multiply blur-xl filter"
-            style={{ animationDelay: '2s' }}
-          ></div>
-          <div
-            className="bg-secondary-300 animate-float absolute -bottom-8 left-40 h-72 w-72 rounded-full mix-blend-multiply blur-xl filter"
-            style={{ animationDelay: '4s' }}
-          ></div>
-        </div>
+
 
         {/* Grid Pattern */}
         <div className="absolute inset-0 opacity-5">
@@ -123,45 +113,12 @@ const HeroSection = () => {
 
       {/* Floating Badges */}
       <div className="pointer-events-none absolute inset-0">
-        <motion.div
-          className="animate-floattop absolute top-20 left-10 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm font-medium text-gray-700 backdrop-blur-sm dark:text-gray-300"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5, duration: 0.8 }}
-          style={{ animationDelay: '0s' }}
-        >
-          🌱 Eco-friendly
-        </motion.div>
+        
+      
 
-        <motion.div
-          className="animate-floatstop absolute top-32 right-20 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm font-medium text-gray-700 backdrop-blur-sm dark:text-gray-300"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.7, duration: 0.8 }}
-          style={{ animationDelay: '1s' }}
-        >
-          ⚡ Instant Sharing
-        </motion.div>
+       
 
-        <motion.div
-          className="animate-floatbottom absolute bottom-32 left-20 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm font-medium text-gray-700 backdrop-blur-sm dark:text-gray-300"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.9, duration: 0.8 }}
-          style={{ animationDelay: '2s' }}
-        >
-          🌍 Global Network
-        </motion.div>
-
-        <motion.div
-          className="animate-floatsbottom absolute right-10 bottom-20 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm font-medium text-gray-700 backdrop-blur-sm dark:text-gray-300"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.1, duration: 0.8 }}
-          style={{ animationDelay: '3s' }}
-        >
-          🎯 Lead Management
-        </motion.div>
+        
       </div>
 
       {/* Main Content */}
@@ -174,7 +131,7 @@ const HeroSection = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: 'easeOut' }}
           >
-            <span className="gradient-text text-stable">FiindIt</span>
+            <span className="text-orange-500">FiindIt</span>
           </motion.h1>
 
           {/* Typed Subtitle */}
@@ -199,7 +156,7 @@ const HeroSection = () => {
                 whileTap={{ scale: 0.95 }}
                 className="btn-primary flex items-center space-x-2 px-8 py-4 text-lg"
               >
-                <Sparkles size={20} />
+                <Sparkles size={20} />  
                 <span>Get Started</span>
                 <ArrowRight size={20} />
               </motion.button>

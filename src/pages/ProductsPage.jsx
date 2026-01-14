@@ -37,7 +37,7 @@ const ProductsPage = () => {
         'Multiple profile links',
         'Real-time updates'
       ],
-      price: '',
+      price: 'Coming Soon',
       popular: true,
       gradient: 'from-blue-500 to-purple-600',
       badge: 'Most Popular',
@@ -56,7 +56,7 @@ const ProductsPage = () => {
         'Custom branding',
         'Multi-language support'
       ],
-      price: 'From $199',
+      price: 'Coming Soon',
       gradient: 'from-green-500 to-teal-600',
       badge: 'New',
       image: '/smart-standee-mockup.png'
@@ -74,7 +74,7 @@ const ProductsPage = () => {
         'Analytics dashboard',
         'Custom landing pages'
       ],
-      price: 'From $19',
+      price: 'Coming Soon',
       gradient: 'from-yellow-500 to-orange-600',
       image: '/review-card-mockup.png'
     },
@@ -91,7 +91,7 @@ const ProductsPage = () => {
         'Custom integrations',
         'White-label options'
       ],
-      price: 'From $99',
+      price: 'Coming Soon',
       gradient: 'from-purple-500 to-pink-600',
       badge: 'Best Value',
       image: '/bundle-mockup.png'

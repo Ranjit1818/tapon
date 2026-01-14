@@ -49,7 +49,7 @@ const AboutSection = () => {
 
   const timeline = [
     {
-      year: '11/05/2025',
+      year: '2025',
       title: 'The Beginning',
       description:
         'FiindIt was founded with a vision to revolutionize digital networking',
