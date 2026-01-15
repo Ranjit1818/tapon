@@ -16,7 +16,10 @@ import {
   Download,
   Share2,
   Settings,
-  Trash2
+  Trash2,
+  Youtube,
+  MessageCircle,
+  Star
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useAnalytics } from '../../contexts/AnalyticsContext';
@@ -40,6 +43,10 @@ const ProfileManagement = () => {
     twitter: user?.twitter || '',
     instagram: user?.instagram || '',
     facebook: user?.facebook || '',
+    youtube: user?.youtube || '',
+    whatsapp: user?.whatsapp || '',
+    googleReview: user?.googleReview || '',
+    googleMap: user?.googleMap || '',
     profileImage: user?.profileImage || '',
     coverImage: user?.coverImage || '',
     theme: user?.theme || 'default',
@@ -111,7 +118,11 @@ const ProfileManagement = () => {
     { key: 'linkedin', icon: Linkedin, label: 'LinkedIn', color: 'text-blue-600' },
     { key: 'twitter', icon: Twitter, label: 'Twitter', color: 'text-blue-400' },
     { key: 'instagram', icon: Instagram, label: 'Instagram', color: 'text-pink-500' },
-    { key: 'facebook', icon: Facebook, label: 'Facebook', color: 'text-blue-700' }
+    { key: 'facebook', icon: Facebook, label: 'Facebook', color: 'text-blue-700' },
+    { key: 'youtube', icon: Youtube, label: 'YouTube', color: 'text-red-600' },
+    { key: 'whatsapp', icon: MessageCircle, label: 'WhatsApp', color: 'text-green-500' },
+    { key: 'googleReview', icon: Star, label: 'Google Review', color: 'text-yellow-500' },
+    { key: 'googleMap', icon: MapPin, label: 'Google Map', color: 'text-green-600' }
   ];
 
   return (

@@ -228,7 +228,7 @@ const ProfilePage = () => {
                     twitter: Twitter,
                     instagram: Instagram,
                     facebook: Facebook,
-                    youtube: Youtube
+                    youtube: Youtube,
                   }
                   const Icon = icons[platform]
                   const colors = {

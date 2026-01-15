@@ -243,7 +243,8 @@ const updateDetails = async (req, res, next) => {
   try {
     const fieldsToUpdate = {
       name: req.body.name,
-      email: req.body.email
+      email: req.body.email,
+      phone: req.body.phone
     };
 
     const user = await User.findByIdAndUpdate(req.user.id, fieldsToUpdate, {
@@ -251,9 +252,49 @@ const updateDetails = async (req, res, next) => {
       runValidators: true
     });
 
+    // Also update the associated profile
+    const profileFields = {
+      displayName: req.body.name,
+      jobTitle: req.body.title,
+      company: req.body.company,
+      location: req.body.location,
+      bio: req.body.bio,
+      website: req.body.website,
+      contactInfo: {
+        email: req.body.email,
+        phone: req.body.phone
+      },
+      socialLinks: {
+        linkedin: req.body.linkedin,
+        twitter: req.body.twitter,
+        instagram: req.body.instagram,
+        facebook: req.body.facebook,
+        youtube: req.body.youtube,
+        whatsapp: req.body.whatsapp,
+        googleReview: req.body.googleReview,
+        googleMap: req.body.googleMap
+      },
+      customLinks: req.body.customLinks
+    };
+
+    // Clean up undefined fields
+    Object.keys(profileFields.socialLinks).forEach(key => 
+      profileFields.socialLinks[key] === undefined && delete profileFields.socialLinks[key]
+    );
+
+    // Find profile by user ID and update
+    await Profile.findOneAndUpdate(
+      { user: req.user.id },
+      { $set: profileFields },
+      { new: true, runValidators: false } // runValidators false to avoid issues with partial updates if strict
+    );
+
+    // Return user with populated profile for frontend consistency
+    const fullUser = await User.findById(req.user.id).populate('profile');
+
     res.status(200).json({
       success: true,
-      data: user
+      data: fullUser
     });
   } catch (error) {
     next(error);

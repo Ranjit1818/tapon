@@ -75,7 +75,8 @@ const profileSchema = new mongoose.Schema({
     youtube: String,
     github: String,
     googleReview: String,
-    googleMap: String
+    googleMap: String,
+    whatsapp: String
   },
   paymentInfo: {
     upiId: String,
@@ -88,6 +89,11 @@ const profileSchema = new mongoose.Schema({
     phone: String,
     address: String
   },
+  customLinks: [{
+    title: String,
+    url: String,
+    icon: String
+  }],
   customFields: [{
     label: String,
     value: String,
