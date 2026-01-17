@@ -49,7 +49,7 @@ const DashboardPage = () => {
   return (
     <>
       <Helmet>
-        <title>Dashboard - LetsConnect</title>
+        <title>Dashboard - FiindIt</title>
         <meta name="description" content="Manage your FiindIt digital profile, track leads, and view analytics." />
       </Helmet>
 

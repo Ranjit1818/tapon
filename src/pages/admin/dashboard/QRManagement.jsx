@@ -598,7 +598,7 @@ const QRManagement = () => {
       const THEME_BG = '#000000'
       const THEME_TEXT = '#100a0aff'
 
-      printWindow.document.write(`
+     printWindow.document.write(`
         <html>
           <head>
             <title>FiindIt - ${user.name} QR</title>
@@ -617,6 +617,7 @@ const QRManagement = () => {
                 min-height: 100vh;
                 -webkit-print-color-adjust: exact;
                 print-color-adjust: exact;
+                overflow: hidden;
               }
               
               /* iPhone / Mobile Dimensions */
@@ -661,8 +662,8 @@ const QRManagement = () => {
                 font-size: 40px;
                 font-weight: 900;
                 letter-spacing: 1px;
-                color: #f47a00ff;
-                opacity: 0.5;
+                color: #e89209ff;
+                opacity: 1;
                 margin-top: 20px;
                 margin-bottom: 20px;
               }
@@ -704,7 +705,7 @@ const QRManagement = () => {
               .shop-name {
                 font-size: 24px;
                 font-weight: 700;
-                color: ${THEME_TEXT};
+                color: #0789e6ff;
                 margin-top: 5px;
                 margin-bottom: 20px;
               }
@@ -722,13 +723,26 @@ const QRManagement = () => {
                 letter-spacing: 1px;
   
               }
+              
+              .thin-rectangle-box {
+                    position: absolute;
+                    bottom: 0;                /* 👈 stick to bottom */
+                    left: 0;
+                    width: 96%;
+                    height: 10px;
+                    background-color: #e89209ff;
+                    border-radius: 0 0 22px 22px; /* 👈 matches card rounding */
+                    margin-left: 2%;
+              }
+
 
               @media print {
                 body {
                   background-color: ${THEME_BG} !important;
                 }
                 .card {
-                   border: 2px solid #333; /* Thinner border for print */
+                   border: 5px solid #333; /* Thinner border for print */
+                   border-radius: 30px;
                    box-shadow: none;
                 }
               }
@@ -754,8 +768,9 @@ const QRManagement = () => {
               </div>
 
               <div class="footer-hint">© www.fiindit.in</div>
+              <div class="thin-rectangle-box"></div>
             </div>
-
+            
             <script>
                document.fonts.ready.then(() => {
                  setTimeout(() => {
@@ -766,7 +781,8 @@ const QRManagement = () => {
           </body>
         </html>
       `)
-      printWindow.document.close()
+      printWindow.document.close()  
+
     }
   }
 

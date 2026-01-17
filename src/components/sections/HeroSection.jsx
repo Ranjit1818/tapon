@@ -154,7 +154,7 @@ const HeroSection = () => {
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="btn-primary flex items-center space-x-2 px-8 py-4 text-lg"
+                className="btn-primary flex items-center space-x-2 px-8 py-4 text-lg color-white"
               >
                 <Sparkles size={20} />  
                 <span>Get Started</span>
@@ -166,11 +166,6 @@ const HeroSection = () => {
           </motion.div>
 
           {/* App Download Buttons */}
-      
-           
-            
-
-           
         </div>
       </div>
 

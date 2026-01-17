@@ -256,7 +256,7 @@ const ProductDetailPage = () => {
                 {/* Price */}
                 <div className="flex items-center space-x-4">
                   <span className="text-4xl font-bold text-gray-900 dark:text-white">
-                    ${product.price}
+                    {product.price}
                   </span>
                   {product.originalPrice && (
                     <span className="text-2xl text-gray-500 line-through">
@@ -294,14 +294,7 @@ const ProductDetailPage = () => {
                     <span>Add to Cart</span>
                   </motion.button>
 
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="btn-secondary flex items-center justify-center space-x-2 text-lg px-8 py-4"
-                  >
-                    <Play className="w-5 h-5" />
-                    <span>Live Demo</span>
-                  </motion.button>
+                  
                 </div>
 
                 {/* Additional Actions */}

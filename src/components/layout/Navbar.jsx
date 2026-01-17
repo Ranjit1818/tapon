@@ -54,13 +54,8 @@ const Navbar = () => {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              className="w-10 h-10 bg-gradient-to-br from-primary-500 to-accent-500 rounded-lg flex items-center justify-center"
-            >
-              <span className="text-white font-bold text-xl">F</span>
-            </motion.div>
-            <span className="text-xl font-bold text-gray-900 dark:text-orange-500">
+           
+            <span className="text-xl font-bold text-orange-500 dark:text-orange-500">
               FiindIt
             </span>
           </Link>

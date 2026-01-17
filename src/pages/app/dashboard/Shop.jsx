@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import React from "react"
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   ShoppingBag,
@@ -21,7 +22,12 @@ import { useAuth } from '../../../contexts/AuthContext'
 import { orderAPI } from '../../../services/api'
 import toast from 'react-hot-toast'
 
+
+
 const Shop = () => {
+  const [paymentDone, setPaymentDone] = useState(false)
+const HARD_CODED_UPI_ID = "8105183599-2@ybl" // replace with your GPay UPI
+const DISPLAY_NAME = "FiindIt"
   const { user, isConnectionUnlimitedUser, hasPermission } = useAuth()
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [flippedCards, setFlippedCards] = useState(new Set())
@@ -42,107 +48,43 @@ const Shop = () => {
   const categories = [
     { id: 'all', name: 'All Products', emoji: '🛍️' },
     { id: 'nfc', name: 'NFC Cards', emoji: '💳' },
-    { id: 'review', name: 'Review Cards', emoji: '⭐' },
     { id: 'accessories', name: 'Accessories', emoji: '🎁' }
   ]
 
   const products = [
     {
-      id: 'nfc-premium',
-      name: 'Premium NFC Card',
-      category: 'nfc',
-      price: 49.99,
-      originalPrice: 69.99,
-      image: 'https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=300&h=200&fit=crop',
-      description: 'High-quality NFC card with instant profile sharing',
-      features: ['Instant sharing', 'Custom design', 'Waterproof', 'Lifetime warranty'],
+      id: 'Premium Subscription plan',
+      name: 'Premium Subscription plan',
+      category: 'Plan',
+      price: 999,
+      originalPrice: 999,
+      image: 'https://thumbs.dreamstime.com/b/subscription-stamp-label-transparent-background-round-sign-344051764.jpg',
+      description: 'Subscription plan For complete 1 year',
+      features: ['Public Profile', '24*7 Techincal Support', 'Business Growth'],
       tags: ['🔥 Bestseller', '✨ Premium'],
       rating: 4.9,
-      reviews: 234,
+      reviews: 100,
       inStock: true,
-      colors: ['Black', 'White', 'Gold', 'Silver'],
-      delivery: '2-3 days'
+      colors: ['Dark Mode'],
+      delivery: 'Instantant'
     },
     {
-      id: 'nfc-standard',
-      name: 'Standard NFC Card',
-      category: 'nfc',
-      price: 29.99,
-      originalPrice: 39.99,
-      image: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=300&h=200&fit=crop',
-      description: 'Affordable NFC card for digital profile sharing',
+      id: 'Stickers',
+      name: 'Stickers',
+      category: 'qr code',
+      price: 999,
+      originalPrice: 999,
+      image: 'https://aura-print.com/media/wysiwyg/AP_Stickers_QR_Code_Stickers_Rectangle.jpg',
+      description: 'Affordable Stickers for QR code sharing',
       features: ['Quick setup', 'Durable material', 'Multiple colors'],
       tags: ['💰 Best Value'],
       rating: 4.7,
-      reviews: 156,
+      reviews: 100,
       inStock: true,
-      colors: ['Black', 'White', 'Blue'],
-      delivery: '3-5 days'
+      colors: ['Black'],
+      delivery: 'within 2 days'
     },
-    {
-      id: 'review-card-pro',
-      name: 'Review Card Pro',
-      category: 'review',
-      price: 39.99,
-      originalPrice: 49.99,
-      image: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=300&h=200&fit=crop',
-      description: 'Professional review collection card with QR code',
-      features: ['Google Reviews', 'Custom branding', 'Analytics', 'QR code'],
-      tags: ['🚀 New'],
-      rating: 4.8,
-      reviews: 89,
-      inStock: true,
-      colors: ['Professional Black', 'Business Blue'],
-      delivery: '2-4 days'
-    },
-    {
-      id: 'nfc-bundle',
-      name: 'NFC Card Bundle (5 Pack)',
-      category: 'nfc',
-      price: 199.99,
-      originalPrice: 249.99,
-      image: 'https://images.unsplash.com/photo-1553729459-efe14ef6055d?w=300&h=200&fit=crop',
-      description: 'Perfect for teams - 5 premium NFC cards',
-      features: ['Team setup', 'Bulk discount', 'Custom designs', 'Priority support'],
-      tags: ['👥 Team Pack', '💸 Save 20%'],
-      rating: 4.9,
-      reviews: 67,
-      inStock: true,
-      colors: ['Mixed', 'Uniform'],
-      delivery: '1-2 days'
-    },
-    {
-      id: 'card-holder',
-      name: 'Premium Card Holder',
-      category: 'accessories',
-      price: 19.99,
-      originalPrice: 24.99,
-      image: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=300&h=200&fit=crop',
-      description: 'Elegant leather card holder for your NFC cards',
-      features: ['Genuine leather', 'RFID blocking', 'Compact design'],
-      tags: ['🎁 Gift Ready'],
-      rating: 4.6,
-      reviews: 123,
-      inStock: true,
-      colors: ['Brown', 'Black', 'Navy'],
-      delivery: '3-5 days'
-    },
-    {
-      id: 'phone-stand',
-      name: 'Smart Phone Stand',
-      category: 'accessories',
-      price: 15.99,
-      originalPrice: 19.99,
-      image: 'https://images.unsplash.com/photo-1512499617640-c2f999943b0f?w=300&h=200&fit=crop',
-      description: 'Adjustable phone stand with NFC trigger zone',
-      features: ['Adjustable angle', 'Non-slip base', 'NFC compatible'],
-      tags: ['📱 Tech Accessory'],
-      rating: 4.5,
-      reviews: 89,
-      inStock: true,
-      colors: ['White', 'Black'],
-      delivery: '5-7 days'
-    }
+   
   ]
 
   const filteredProducts = selectedCategory === 'all'
@@ -310,7 +252,7 @@ const Shop = () => {
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center space-x-2">
                     <span className="text-lg font-bold text-gray-900 dark:text-white">
-                      ${product.price}
+                      {product.price}
                     </span>
                     {product.originalPrice > product.price && (
                       <span className="text-sm text-gray-500 line-through">
@@ -424,15 +366,15 @@ const Shop = () => {
         <div>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2 flex items-center space-x-3">
             <span>💳</span>
-            <span>{isConnectionUnlimitedUser ? 'FiindIt Admin Shop' : 'FiindIt Shop'}</span>
+            <span>{isConnectionUnlimitedUser ? 'FiindIt Shop' : 'FiindIt Shop'}</span>
             {isConnectionUnlimitedUser && (
               <motion.span
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-xs px-2 py-1 rounded-full flex items-center space-x-1"
               >
-                <span>👑</span>
-                <span>Admin</span>
+                
+                <span>FiindIt</span>
               </motion.span>
             )}
           </h1>
@@ -556,7 +498,7 @@ const Shop = () => {
                             {item.name}
                           </h3>
                           <p className="text-sm text-gray-500 dark:text-gray-400">
-                            ${item.price} each
+                            {item.price} each
                           </p>
                           <div className="flex items-center space-x-2 mt-2">
                             <button
@@ -578,7 +520,7 @@ const Shop = () => {
                         </div>
                         <div className="text-right">
                           <p className="font-medium text-gray-900 dark:text-white">
-                            ${(item.price * item.quantity).toFixed(2)}
+                            {(item.price * item.quantity).toFixed(2)}
                           </p>
                           <button
                             onClick={() => removeFromCart(item.id)}
@@ -594,7 +536,7 @@ const Shop = () => {
                   <div className="border-t border-gray-200 dark:border-gray-600 pt-4">
                     <div className="flex items-center justify-between mb-4">
                       <span className="text-lg font-bold text-gray-900 dark:text-white">
-                        Total: ${getTotalPrice().toFixed(2)}
+                        Total: {getTotalPrice().toFixed(2)}
                       </span>
                     </div>
 
@@ -609,7 +551,7 @@ const Shop = () => {
                     </motion.button>
 
                     <p className="text-xs text-gray-500 dark:text-gray-400 text-center mt-2">
-                      🔒 Secure checkout • Free shipping on orders over $100
+                      🔒 Secure checkout • Free shipping on orders over 100
                     </p>
                   </div>
                 </>
@@ -660,10 +602,50 @@ const Shop = () => {
 
               <div className="mt-4 flex items-center justify-between">
                 <div className="text-sm text-gray-600 dark:text-gray-400">Total</div>
-                <div className="text-lg font-bold text-gray-900 dark:text-white">${getTotalPrice().toFixed(2)}</div>
-              </div>
 
-              <button onClick={placeOrder} className="mt-4 w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg font-medium">Place Order (COD)</button>
+                <div className="text-lg font-bold text-gray-900 dark:text-white">{getTotalPrice().toFixed(2)}</div>
+              </div>
+            <div className="w-full px-1 space-y-3">
+
+  {/* Pay Now Button */}
+  <a
+    href={
+      paymentDone
+        ? `upi://pay?pa=${HARD_CODED_UPI_ID}&pn=${encodeURIComponent(DISPLAY_NAME)}&cu=INR`
+        : undefined
+    }
+    onClick={() => {
+      if (paymentDone) {
+        trackClick("payment_click", "upi", HARD_CODED_UPI_ID)
+      }
+    }}
+    className={`w-full py-4 px-4 rounded-2xl flex items-center justify-center gap-3 shadow-lg
+      ${
+        paymentDone
+          ? "bg-gradient-to-r from-amber-500 to-orange-600 shadow-orange-500/20 cursor-pointer"
+          : "bg-gray-400 cursor-not-allowed"
+      }`}
+  >
+    <CreditCard className="w-6 h-6 text-white" />
+    <span className="text-lg font-bold text-white">Pay Now</span>
+  </a>
+
+  {/* Checkbox */}
+  <label className="flex items-center gap-2 text-sm text-gray-700">
+    <input
+      type="checkbox"
+      checked={paymentDone}
+      onChange={(e) => setPaymentDone(e.target.checked)}
+      className="w-4 h-4 accent-orange-600"
+    />
+    I have done this payment
+  </label>
+
+</div>
+
+
+
+              <button onClick={placeOrder} className="mt-4 w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg font-medium">Place Order</button>
             </motion.div>
           </motion.div>
         )}
